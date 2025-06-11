@@ -15,7 +15,7 @@ pub struct Post {
     pub created_at: i64,
     pub is_published: bool,
     pub is_liked: bool,
-    pub tags: Vec<String>,
+    pub tags: Vec<Tag>,
     pub is_comments_denied: bool,
     pub count: Count,
     pub publish_time: i64,
@@ -25,7 +25,7 @@ pub struct Post {
     pub id: String,
     pub comments: Comments,
     pub donations: i32,
-    pub teaser: Vec<String>,
+    pub teaser: Vec<MediaData>,
     pub is_waiting_video: bool,
     pub int_id: Option<i64>,
     pub is_deleted: bool,
@@ -150,6 +150,13 @@ pub struct CurrencyPrices {
     pub rub: f32,
     #[serde(alias = "USD")]
     pub usd: f32,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Tag {
+    pub title: String,
+    pub id: i64,
 }
 
 #[derive(Deserialize, Debug)]
