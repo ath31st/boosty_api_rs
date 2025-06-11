@@ -1,0 +1,142 @@
+{
+  "data": [
+    {
+      "user": {
+        "blogUrl": "testblog",
+        "avatarUrl": "https://example.com/avatar.jpg",
+        "name": "TestUser1",
+        "hasAvatar": true,
+        "id": 111,
+        "flags": {
+          "showPostDonations": true
+        }
+      },
+      "isPinned": false,
+      "isBlocked": false,
+      "hasAccess": true,
+      "data": [],
+      "isRecord": false,
+      "contentCounters": [],
+      "donators": {
+        "extra": {
+          "isLast": true
+        },
+        "data": []
+      },
+      "showViewsCounter": true,
+      "createdAt": 1710000001,
+      "isPublished": true,
+      "isLiked": false,
+      "tags": [
+        "tag1"
+      ],
+      "isCommentsDenied": false,
+      "count": {
+        "comments": 0,
+        "reactions": {
+          "dislike": 0,
+          "heart": 0,
+          "fire": 0,
+          "angry": 0,
+          "wonder": 0,
+          "laught": 0,
+          "sad": 0,
+          "like": 0
+        },
+        "likes": 0
+      },
+      "publishTime": 1710000001,
+      "title": "Post One",
+      "sortOrder": 1710000001,
+      "price": 0,
+      "id": "post001",
+      "comments": {
+        "extra": {
+          "isLast": true
+        },
+        "data": []
+      },
+      "donations": 0,
+      "teaser": [],
+      "isWaitingVideo": false,
+      "intId": 100,
+      "isDeleted": false,
+      "updatedAt": 1710000002,
+      "signedQuery": "",
+      "advertiserInfo": null,
+      "currencyPrices": {
+        "rub": 0,
+        "usd": 0
+      }
+    },
+    {
+      "user": {
+        "blogUrl": "testblog",
+        "avatarUrl": "https://example.com/avatar2.jpg",
+        "name": "TestUser2",
+        "hasAvatar": true,
+        "id": 222,
+        "flags": {
+          "showPostDonations": false
+        }
+      },
+      "isPinned": false,
+      "isBlocked": false,
+      "hasAccess": true,
+      "data": [],
+      "isRecord": false,
+      "contentCounters": [],
+      "donators": {
+        "extra": {
+          "isLast": true
+        },
+        "data": []
+      },
+      "showViewsCounter": true,
+      "createdAt": 1710001000,
+      "isPublished": true,
+      "isLiked": false,
+      "tags": [
+        "tag2"
+      ],
+      "isCommentsDenied": false,
+      "count": {
+        "comments": 1,
+        "reactions": {
+          "dislike": 0,
+          "heart": 1,
+          "fire": 0,
+          "angry": 0,
+          "wonder": 0,
+          "laught": 0,
+          "sad": 0,
+          "like": 1
+        },
+        "likes": 1
+      },
+      "publishTime": 1710001000,
+      "title": "Post Two",
+      "sortOrder": 1710001000,
+      "price": 0,
+      "id": "post002",
+      "comments": {
+        "extra": {
+          "isLast": true
+        },
+        "data": []
+      },
+      "donations": 0,
+      "teaser": [],
+      "isWaitingVideo": false,
+      "intId": 101,
+      "isDeleted": false,
+      "updatedAt": 1710001001,
+      "signedQuery": "",
+      "advertiserInfo": null,
+      "currencyPrices": {
+        "rub": 0,
+        "usd": 0
+      }
+    }
+  ]
+}

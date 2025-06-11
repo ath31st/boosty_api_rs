@@ -1,0 +1,142 @@
+{
+  "user": {
+    "blogUrl": "testblog",
+    "avatarUrl": "https://example.com/avatar.jpg",
+    "name": "TestUser",
+    "hasAvatar": true,
+    "id": 12345,
+    "flags": {
+      "showPostDonations": true
+    }
+  },
+  "isPinned": false,
+  "isBlocked": false,
+  "hasAccess": true,
+  "data": [
+    {
+      "type": "video",
+      "uploadStatus": "completed",
+      "width": 1280,
+      "status": "available",
+      "title": "Test Video",
+      "url": "https://example.com/video.mp4",
+      "previewId": "preview123",
+      "playerUrls": [
+        {
+          "type": "mp4",
+          "url": "https://example.com/player.mp4"
+        }
+      ],
+      "id": "video001",
+      "vid": "vid123",
+      "preview": "https://example.com/preview.jpg",
+      "height": 720,
+      "timeCode": 0,
+      "showViewsCounter": true,
+      "duration": 60,
+      "complete": true,
+      "viewsCounter": 10,
+      "defaultPreview": "https://example.com/default.jpg",
+      "failoverHost": "cdn.example.com"
+    },
+    {
+      "type": "image",
+      "url": "https://example.com/image.jpg",
+      "width": 800,
+      "height": 600,
+      "preview": "https://example.com/image_preview.jpg",
+      "id": "image001"
+    },
+    {
+      "type": "ok_video",
+      "uploadStatus": "ok",
+      "width": 1920,
+      "status": "ok",
+      "title": "OK Video Example",
+      "url": "https://example.com/okvideo.mp4",
+      "previewId": "okpreview123",
+      "playerUrls": [
+        {
+          "type": "hls",
+          "url": "https://example.com/okplayer.m3u8"
+        }
+      ],
+      "id": "okvid001",
+      "vid": "okvid123",
+      "preview": "https://example.com/okpreview.jpg",
+      "height": 1080,
+      "timeCode": 0,
+      "showViewsCounter": true,
+      "duration": 90,
+      "complete": true,
+      "viewsCounter": 25,
+      "defaultPreview": "https://example.com/okdefault.jpg",
+      "failoverHost": "okcdn.example.com"
+    }
+  ],
+  "isRecord": false,
+  "contentCounters": [
+    {
+      "type": "video",
+      "count": 1,
+      "size": 1000
+    },
+    {
+      "type": "image",
+      "count": 1,
+      "size": 500
+    }
+  ],
+  "donators": {
+    "extra": {
+      "isLast": true
+    },
+    "data": []
+  },
+  "showViewsCounter": true,
+  "createdAt": 1710000000,
+  "isPublished": true,
+  "isLiked": false,
+  "tags": [
+    "test",
+    "video"
+  ],
+  "isCommentsDenied": false,
+  "count": {
+    "comments": 5,
+    "reactions": {
+      "dislike": 0,
+      "heart": 2,
+      "fire": 1,
+      "angry": 0,
+      "wonder": 0,
+      "laught": 1,
+      "sad": 0,
+      "like": 4
+    },
+    "likes": 4
+  },
+  "publishTime": 1710001234,
+  "title": "Test post",
+  "sortOrder": 1710001234,
+  "price": 0,
+  "id": "post001",
+  "comments": {
+    "extra": {
+      "isLast": true
+    },
+    "data": []
+  },
+  "donations": 0,
+  "teaser": [],
+  "isWaitingVideo": false,
+  "intId": 777,
+  "isDeleted": false,
+  "updatedAt": 1710004567,
+  "signedQuery": "",
+  "advertiserInfo": null,
+  "currencyPrices": {
+    "rub": 0,
+    "usd": 0
+  }
+}
