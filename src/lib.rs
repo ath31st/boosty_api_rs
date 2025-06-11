@@ -29,7 +29,7 @@ mod tests {
             .await;
 
         let client = ApiClient::new(&server.url());
-        let result = client.fetch_post(blog_name, post_id, None).await.unwrap();
+        let result = client.fetch_post(blog_name, post_id).await.unwrap();
 
         assert_eq!(result.id, "post001");
         assert_eq!(result.title, "Test post");
@@ -54,7 +54,7 @@ mod tests {
             .await;
 
         let client = ApiClient::new(&server.url());
-        let result = client.fetch_posts(blog_name, limit, None).await.unwrap();
+        let result = client.fetch_posts(blog_name, limit).await.unwrap();
 
         assert_eq!(result.len(), 2);
 
