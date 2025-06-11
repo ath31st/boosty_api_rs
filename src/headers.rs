@@ -2,7 +2,7 @@ use anyhow::Result;
 use reqwest::header::{AUTHORIZATION, HeaderMap, HeaderValue};
 
 pub struct Headers {
-    map: HeaderMap,
+    pub map: HeaderMap,
 }
 
 impl Headers {
