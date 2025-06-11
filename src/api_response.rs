@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ApiResponse {
     pub user: User,
@@ -27,7 +27,7 @@ pub struct ApiResponse {
     pub donations: i32,
     pub teaser: Vec<String>,
     pub is_waiting_video: bool,
-    pub int_id: i64,
+    pub int_id: Option<i64>,
     pub is_deleted: bool,
     pub updated_at: i64,
     pub signed_query: String,
@@ -35,7 +35,7 @@ pub struct ApiResponse {
     pub currency_prices: CurrencyPrices,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub blog_url: String,
@@ -46,13 +46,13 @@ pub struct User {
     pub flags: Flags,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Flags {
     pub show_post_donations: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoData {
     pub upload_status: String,
@@ -60,7 +60,7 @@ pub struct VideoData {
     pub status: String,
     pub title: String,
     pub url: String,
-    pub preview_id: String,
+    pub preview_id: Option<String>,
     pub player_urls: Vec<PlayerUrl>,
     pub id: String,
     pub vid: String,
@@ -75,7 +75,7 @@ pub struct VideoData {
     pub failover_host: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageData {
     pub url: String,
@@ -85,7 +85,7 @@ pub struct ImageData {
     pub id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerUrl {
     #[serde(rename = "type")]
@@ -93,7 +93,7 @@ pub struct PlayerUrl {
     pub url: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ContentCounter {
     #[serde(rename = "type")]
@@ -102,27 +102,27 @@ pub struct ContentCounter {
     pub size: u64,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Donators {
     pub extra: ExtraFlag,
     pub data: Vec<serde_json::Value>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtraFlag {
     pub is_last: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Comments {
     pub extra: ExtraFlag,
     pub data: Vec<serde_json::Value>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Count {
     pub comments: u32,
@@ -130,7 +130,7 @@ pub struct Count {
     pub likes: u32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Reactions {
     pub dislike: u32,
@@ -143,14 +143,16 @@ pub struct Reactions {
     pub like: u32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CurrencyPrices {
+    #[serde(alias = "RUB")]
     pub rub: f32,
+    #[serde(alias = "USD")]
     pub usd: f32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum MediaData {
     #[serde(rename = "video", rename_all = "camelCase")]
