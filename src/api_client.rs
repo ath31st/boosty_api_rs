@@ -1,4 +1,4 @@
-use crate::api_response::ApiResponse;
+use crate::api_response::Post;
 use anyhow::Result;
 use reqwest::header::{ACCEPT, AUTHORIZATION, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response};
@@ -45,14 +45,14 @@ impl ApiClient {
         Ok(response)
     }
 
-    pub async fn fetch_post(&self, blog_name: &str, post_id: &str) -> Result<ApiResponse> {
+    pub async fn fetch_post(&self, blog_name: &str, post_id: &str) -> Result<Post> {
         let path = format!("blog/{}/post/{}", blog_name, post_id);
         let response = self.get_request(&path).await?;
-        let parsed = response.json::<ApiResponse>().await?;
+        let parsed = response.json::<Post>().await?;
         Ok(parsed)
     }
 
-    pub async fn fetch_posts(&self, blog_name: &str, limit: i32) -> Result<Vec<ApiResponse>> {
+    pub async fn fetch_posts(&self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
         let response = self.get_request(&path).await?;
         let json: Value = response.json().await?;
