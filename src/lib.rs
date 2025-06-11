@@ -1,6 +1,5 @@
 pub mod api_client;
 pub mod api_response;
-pub mod headers;
 
 #[cfg(test)]
 mod tests {
