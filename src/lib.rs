@@ -1,16 +1,72 @@
-mod headers;
-
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub mod api_client;
+pub mod api_response;
+pub mod headers;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::api_client::ApiClient;
+    use std::fs;
+    use tokio;
+    #[tokio::test]
+    async fn test_fetch_post() {
+        let mut server = mockito::Server::new_async().await;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let blog_name = "testblog";
+        let post_id = "123";
+
+        let mock_response =
+            fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
+
+        server
+            .mock(
+                "GET",
+                format!("/v1/blog/{}/post/{}", blog_name, post_id).as_str(),
+            )
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(mock_response)
+            .create_async()
+            .await;
+
+        let client = ApiClient::new(&server.url());
+        let result = client.fetch_post(blog_name, post_id, None).await.unwrap();
+
+        assert_eq!(result.id, "post001");
+        assert_eq!(result.title, "Test post");
+    }
+
+    #[tokio::test]
+    async fn test_fetch_posts() {
+        let mut server = mockito::Server::new_async().await;
+
+        let blog_name = "testblog";
+        let limit = 2;
+
+        let mock_response = fs::read_to_string("tests/fixtures/api_response_posts.json").unwrap();
+        let path = format!("/v1/blog/{}/post/?limit={}", blog_name, limit);
+
+        server
+            .mock("GET", path.as_str())
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(&mock_response)
+            .create_async()
+            .await;
+
+        let client = ApiClient::new(&server.url());
+        let result = client.fetch_posts(blog_name, limit, None).await.unwrap();
+
+        assert_eq!(result.len(), 2);
+
+        let first = &result[0];
+        assert_eq!(first.id, "post001");
+        assert_eq!(first.title, "Post One");
+
+        let second = &result[1];
+        assert_eq!(second.id, "post002");
+        assert_eq!(second.title, "Post Two");
+
+        assert_eq!(first.user.name, "TestUser1");
+        assert_eq!(second.user.flags.show_post_donations, false);
     }
 }

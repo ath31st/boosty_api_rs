@@ -44,7 +44,7 @@ impl ApiClient {
     pub async fn fetch_posts(
         &self,
         blog_name: &str,
-        limit: usize,
+        limit: i32,
         headers: Option<&Headers>,
     ) -> Result<Vec<ApiResponse>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
