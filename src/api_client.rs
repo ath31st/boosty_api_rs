@@ -34,6 +34,17 @@ impl ApiClient {
         self.headers.insert(AUTHORIZATION, value);
     }
 
+    pub fn headers_as_map(&self) -> std::collections::HashMap<String, String> {
+        self.headers
+            .iter()
+            .filter_map(|(k, v)| {
+                v.to_str()
+                    .ok()
+                    .map(|value| (k.to_string(), value.to_string()))
+            })
+            .collect()
+    }
+
     async fn get_request(&self, path: &str) -> Result<Response> {
         let url = format!("{}/v1/{}", self.base_url, path);
         let response = self
