@@ -12,6 +12,7 @@ pub enum ContentItem {
         url: String,
         video_title: String,
     },
+    Unknown,
 }
 
 impl Post {
@@ -37,6 +38,9 @@ impl Post {
                         });
                     }
                 }
+                MediaData::Unknown => {
+                    result.push(ContentItem::Unknown);
+                }
             }
         }
         result
@@ -54,7 +58,7 @@ fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option<String> {
             return Some(pu.url.clone());
         }
     }
-    
+
     player_urls
         .iter()
         .find(|pu| !pu.url.is_empty())

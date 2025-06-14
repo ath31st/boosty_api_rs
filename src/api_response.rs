@@ -168,4 +168,6 @@ pub enum MediaData {
     OkVideo(VideoData),
     #[serde(rename = "image", rename_all = "camelCase")]
     Image(ImageData),
+    #[serde(other)]
+    Unknown,
 }
