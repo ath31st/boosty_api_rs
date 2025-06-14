@@ -1,5 +1,5 @@
 [package]
-name = "roosty_downloader_api"
+name = "boosty_downloader_api"
 version = "0.1.0"
 edition = "2024"
 
