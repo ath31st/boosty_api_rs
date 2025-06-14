@@ -1,7 +1,7 @@
 use crate::api_response::Post;
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use reqwest::header::{ACCEPT, AUTHORIZATION, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
-use reqwest::{Client, Response};
+use reqwest::{Client, Response, StatusCode};
 use serde_json::{Value, from_value};
 
 pub struct ApiClient {
@@ -61,6 +61,13 @@ impl ApiClient {
             .get_request(&path)
             .await
             .with_context(|| format!("Failed to get post from path '{}'", path))?;
+
+        let status = response.status();
+        if status == StatusCode::UNAUTHORIZED {
+            bail!("Unauthorized (401): Invalid or missing token");
+        } else if !status.is_success() {
+            bail!("HTTP error {} when fetching post", status);
+        }
 
         let parsed = response
             .json::<Post>()
