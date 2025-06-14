@@ -1,5 +1,5 @@
 use crate::api_response::Post;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use reqwest::header::{ACCEPT, AUTHORIZATION, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response};
 use serde_json::{Value, from_value};
@@ -47,27 +47,43 @@ impl ApiClient {
 
     async fn get_request(&self, path: &str) -> Result<Response> {
         let url = format!("{}/v1/{}", self.base_url, path);
-        let response = self
-            .client
+        self.client
             .get(&url)
             .headers(self.headers.clone())
             .send()
-            .await?;
-        Ok(response)
+            .await
+            .with_context(|| format!("Failed to send GET request to '{}'", url))
     }
 
     pub async fn fetch_post(&self, blog_name: &str, post_id: &str) -> Result<Post> {
         let path = format!("blog/{}/post/{}", blog_name, post_id);
-        let response = self.get_request(&path).await?;
-        let parsed = response.json::<Post>().await?;
+        let response = self
+            .get_request(&path)
+            .await
+            .with_context(|| format!("Failed to get post from path '{}'", path))?;
+
+        let parsed = response
+            .json::<Post>()
+            .await
+            .with_context(|| "Failed to deserialize Post")?;
         Ok(parsed)
     }
 
     pub async fn fetch_posts(&self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
-        let response = self.get_request(&path).await?;
-        let json: Value = response.json().await?;
-        let parsed = from_value(json["data"].clone())?;
+        let response = self
+            .get_request(&path)
+            .await
+            .with_context(|| format!("Failed to get posts from path '{}'", path))?;
+
+        let json: Value = response
+            .json()
+            .await
+            .with_context(|| "Failed to parse response body as JSON")?;
+
+        let parsed = from_value(json["data"].clone())
+            .with_context(|| "Failed to deserialize 'data' field into Vec<Post>")?;
+
         Ok(parsed)
     }
 }
