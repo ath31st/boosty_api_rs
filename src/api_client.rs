@@ -1,6 +1,8 @@
 use crate::api_response::Post;
 use anyhow::{Context, Result, bail};
-use reqwest::header::{ACCEPT, AUTHORIZATION, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
+use reqwest::header::{
+    ACCEPT, AUTHORIZATION, CACHE_CONTROL, COOKIE, HeaderMap, HeaderValue, USER_AGENT,
+};
 use reqwest::{Client, Response, StatusCode};
 use serde_json::{Value, from_value};
 
@@ -16,7 +18,7 @@ impl ApiClient {
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
         headers.insert(
             USER_AGENT,
-            HeaderValue::from_static("roosty-downloader/0.1"),
+            HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"),
         );
         headers.insert(CACHE_CONTROL, HeaderValue::from_static("no-cache"));
         headers.insert("DNT", HeaderValue::from_static("1"));
@@ -32,6 +34,26 @@ impl ApiClient {
         let value = HeaderValue::from_str(&format!("Bearer {}", access_token))
             .expect("Invalid token format");
         self.headers.insert(AUTHORIZATION, value);
+    }
+
+    pub fn append_cookie(&mut self, key: &str, value: &str) {
+        use std::fmt::Write;
+
+        let mut existing = self
+            .headers
+            .get(COOKIE)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("")
+            .to_string();
+
+        if !existing.is_empty() {
+            existing.push_str("; ");
+        }
+
+        write!(&mut existing, "{}={}", key, value).unwrap();
+
+        self.headers
+            .insert(COOKIE, HeaderValue::from_str(&existing).unwrap());
     }
 
     pub fn headers_as_map(&self) -> std::collections::HashMap<String, String> {
