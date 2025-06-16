@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use std::time::{Duration, Instant};
@@ -48,7 +48,7 @@ impl AuthProvider {
 
     pub async fn get_access_token(&mut self) -> Result<String> {
         if self.device_id.is_none() {
-            bail!("device_id не задан");
+            bail!("Empty device id");
         }
 
         if let Some(exp) = self.expires_at {
@@ -72,14 +72,14 @@ impl AuthProvider {
     fn get_refresh_token(&mut self) -> Result<String> {
         let refresh_token = match &self.refresh_token {
             Some(t) if !t.is_empty() => t.clone(),
-            _ => bail!("empty refresh token"),
+            _ => bail!("Empty refresh token"),
         };
         Ok(refresh_token)
     }
 
     async fn refresh_internal(&mut self) -> Result<()> {
         let refresh_token = self.get_refresh_token()?;
-        let device_id = self.device_id.as_ref().context("empty device id")?;
+        let device_id = self.device_id.as_ref().context("Empty device id")?;
 
         let url = format!("{}/oauth/token/", self.base_url);
         let params = [
@@ -95,19 +95,22 @@ impl AuthProvider {
             .form(&params)
             .send()
             .await
-            .context("send refresh request failed")?;
+            .context("Send refresh tokens request failed")?;
 
         if resp.status() != StatusCode::OK {
-            bail!("refresh failed: HTTP {}", resp.status());
+            bail!("Refresh tokens failed: HTTP {}", resp.status());
         }
 
-        let data: RefreshResponse = resp.json().await.context("parse refresh response failed")?;
+        let data: RefreshResponse = resp
+            .json()
+            .await
+            .context("Parse refresh token response failed")?;
         let now = Instant::now();
-        
+
         self.access_token = Some(data.access_token.clone());
         self.refresh_token = Some(data.refresh_token.clone());
         self.expires_at = Some(now + Duration::from_secs(data.expires_in as u64));
-        
+
         Ok(())
     }
 }
