@@ -23,7 +23,7 @@ impl AuthProvider {
     pub fn new(base_url: impl Into<String>) -> Self {
         Self {
             client: Client::new(),
-            base_url: base_url.into().trim_end_matches('/').to_string(),
+            base_url: base_url.into(),
             device_id: None,
             access_token: None,
             refresh_token: None,

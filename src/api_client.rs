@@ -1,4 +1,5 @@
 use crate::api_response::Post;
+use crate::auth_provider::AuthProvider;
 use anyhow::{Context, Result, bail};
 use reqwest::header::{
     ACCEPT, AUTHORIZATION, CACHE_CONTROL, COOKIE, HeaderMap, HeaderValue, USER_AGENT,
@@ -10,10 +11,23 @@ pub struct ApiClient {
     base_url: String,
     client: Client,
     headers: HeaderMap,
+    auth_provider: AuthProvider,
 }
 
 impl ApiClient {
-    pub fn new(base_url: impl Into<String>) -> Self {
+    pub fn new(base_url: impl Into<String> + Clone) -> Self {
+        let base_url = base_url.into();
+        let headers = Self::prepare_headers();
+
+        Self {
+            base_url: base_url.clone(),
+            client: Client::new(),
+            headers,
+            auth_provider: AuthProvider::new(base_url),
+        }
+    }
+
+    fn prepare_headers() -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(ACCEPT, HeaderValue::from_static("application/json"));
         headers.insert(
@@ -22,12 +36,7 @@ impl ApiClient {
         );
         headers.insert(CACHE_CONTROL, HeaderValue::from_static("no-cache"));
         headers.insert("DNT", HeaderValue::from_static("1"));
-
-        Self {
-            base_url: base_url.into(),
-            client: Client::new(),
-            headers,
-        }
+        headers
     }
 
     pub fn set_bearer_token(&mut self, access_token: &str) {
