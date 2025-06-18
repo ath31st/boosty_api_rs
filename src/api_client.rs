@@ -1,11 +1,9 @@
 use crate::api_response::Post;
 use crate::auth_provider::AuthProvider;
-use anyhow::{bail, Context, Result};
-use reqwest::header::{
-    HeaderMap, HeaderValue, ACCEPT, CACHE_CONTROL, COOKIE, USER_AGENT,
-};
+use anyhow::{Context, Result, bail};
+use reqwest::header::{ACCEPT, CACHE_CONTROL, COOKIE, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response, StatusCode};
-use serde_json::{from_value, Value};
+use serde_json::{Value, from_value};
 
 pub struct ApiClient {
     base_url: String,
@@ -97,20 +95,18 @@ impl ApiClient {
             .with_context(|| format!("Failed to send GET request to '{}'", url))
     }
 
-    pub async fn fetch_post(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
+    async fn fetch_post_once(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
         let path = format!("blog/{}/post/{}", blog_name, post_id);
         let response = self
             .get_request(&path)
             .await
             .with_context(|| format!("Failed to get post from path '{}'", path))?;
-
         let status = response.status();
         if status == StatusCode::UNAUTHORIZED {
             bail!("Unauthorized (401): Invalid or missing token");
         } else if !status.is_success() {
             bail!("HTTP error {} when fetching post", status);
         }
-
         let parsed = response
             .json::<Post>()
             .await
@@ -118,7 +114,19 @@ impl ApiClient {
         Ok(parsed)
     }
 
-    pub async fn fetch_posts(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+    pub async fn fetch_post(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
+        let mut post = self.fetch_post_once(blog_name, post_id).await?;
+        if post.not_available() && self.auth_provider.has_refresh_and_device_id() {
+            self.auth_provider
+                .force_refresh()
+                .await
+                .context("Failed to refresh access token")?;
+            post = self.fetch_post_once(blog_name, post_id).await?;
+        }
+        Ok(post)
+    }
+
+    pub async fn fetch_posts_once(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
         let response = self
             .get_request(&path)
@@ -134,5 +142,18 @@ impl ApiClient {
             .with_context(|| "Failed to deserialize 'data' field into Vec<Post>")?;
 
         Ok(parsed)
+    }
+
+    pub async fn fetch_posts(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+        let mut posts = self.fetch_posts_once(blog_name, limit).await?;
+        if posts.iter().any(|p| p.not_available()) && self.auth_provider.has_refresh_and_device_id()
+        {
+            self.auth_provider
+                .force_refresh()
+                .await
+                .context("Failed to refresh access token")?;
+            posts = self.fetch_posts_once(blog_name, limit).await?;
+        }
+        Ok(posts)
     }
 }
