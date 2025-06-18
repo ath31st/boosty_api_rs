@@ -1,11 +1,11 @@
 use crate::api_response::Post;
 use crate::auth_provider::AuthProvider;
-use anyhow::{Context, Result, bail};
+use anyhow::{bail, Context, Result};
 use reqwest::header::{
-    ACCEPT, AUTHORIZATION, CACHE_CONTROL, COOKIE, HeaderMap, HeaderValue, USER_AGENT,
+    HeaderMap, HeaderValue, ACCEPT, CACHE_CONTROL, COOKIE, USER_AGENT,
 };
 use reqwest::{Client, Response, StatusCode};
-use serde_json::{Value, from_value};
+use serde_json::{from_value, Value};
 
 pub struct ApiClient {
     base_url: String,
@@ -39,10 +39,18 @@ impl ApiClient {
         headers
     }
 
-    pub fn set_bearer_token(&mut self, access_token: &str) {
-        let value = HeaderValue::from_str(&format!("Bearer {}", access_token))
-            .expect("Invalid token format");
-        self.headers.insert(AUTHORIZATION, value);
+    pub fn set_bearer_token(&mut self, access_token: &str) -> Result<()> {
+        self.auth_provider
+            .set_access_token_only(access_token.to_string())
+    }
+
+    pub fn set_refresh_token_and_device_id(
+        &mut self,
+        refresh_token: &str,
+        device_id: &str,
+    ) -> Result<()> {
+        self.auth_provider
+            .set_refresh_token_and_device_id(refresh_token.to_string(), device_id.to_string())
     }
 
     pub fn append_cookie(&mut self, key: &str, value: &str) {
@@ -76,17 +84,20 @@ impl ApiClient {
             .collect()
     }
 
-    async fn get_request(&self, path: &str) -> Result<Response> {
+    async fn get_request(&mut self, path: &str) -> Result<Response> {
+        let mut headers = self.headers.clone();
+        self.auth_provider.apply_auth_header(&mut headers).await?;
+
         let url = format!("{}/v1/{}", self.base_url, path);
         self.client
             .get(&url)
-            .headers(self.headers.clone())
+            .headers(headers)
             .send()
             .await
             .with_context(|| format!("Failed to send GET request to '{}'", url))
     }
 
-    pub async fn fetch_post(&self, blog_name: &str, post_id: &str) -> Result<Post> {
+    pub async fn fetch_post(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
         let path = format!("blog/{}/post/{}", blog_name, post_id);
         let response = self
             .get_request(&path)
@@ -107,7 +118,7 @@ impl ApiClient {
         Ok(parsed)
     }
 
-    pub async fn fetch_posts(&self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+    pub async fn fetch_posts(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
         let response = self
             .get_request(&path)
