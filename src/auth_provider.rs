@@ -2,6 +2,7 @@ use anyhow::{Context, Result, bail};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use std::time::{Duration, Instant};
+use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 
 #[derive(Deserialize)]
 struct RefreshResponse {
@@ -13,6 +14,7 @@ struct RefreshResponse {
 pub struct AuthProvider {
     client: Client,
     base_url: String,
+    static_access_token: Option<String>,
     device_id: Option<String>,
     access_token: Option<String>,
     refresh_token: Option<String>,
@@ -24,11 +26,42 @@ impl AuthProvider {
         Self {
             client: Client::new(),
             base_url: base_url.into(),
+            static_access_token: None,
             device_id: None,
             access_token: None,
             refresh_token: None,
             expires_at: None,
         }
+    }
+
+    pub async fn apply_auth_header(&mut self, headers: &mut HeaderMap) -> Result<()> {
+        if let Some(static_tok) = &self.static_access_token {
+            let hv = HeaderValue::from_str(&format!("Bearer {}", static_tok))
+                .context("Invalid static token format")?;
+            headers.insert(AUTHORIZATION, hv);
+            return Ok(());
+        }
+        if self.refresh_token.is_some() && self.device_id.is_some() {
+            let tok = self.get_access_token().await?;
+            let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
+                .context("Invalid refreshed token format")?;
+            headers.insert(AUTHORIZATION, hv);
+            return Ok(());
+        }
+        Ok(())
+    }
+
+    pub fn set_access_token_only(&mut self, access: String) -> Result<()> {
+        if access.is_empty() {
+            bail!("Access token is empty");
+        }
+        self.static_access_token = Some(access);
+
+        self.device_id = None;
+        self.refresh_token = None;
+        self.access_token = None;
+        self.expires_at = None;
+        Ok(())
     }
 
     pub fn set_refresh_token_and_device_id(
@@ -39,6 +72,8 @@ impl AuthProvider {
         if refresh.is_empty() || device_id.is_empty() {
             bail!("Refresh token and/or device id are empty");
         }
+        self.static_access_token = None;
+
         self.refresh_token = Some(refresh);
         self.device_id = Some(device_id);
         self.access_token = None;
@@ -47,8 +82,12 @@ impl AuthProvider {
     }
 
     pub async fn get_access_token(&mut self) -> Result<String> {
-        if self.device_id.is_none() {
-            bail!("Empty device id");
+        if let Some(tok) = &self.static_access_token {
+            return Ok(tok.clone());
+        }
+
+        if self.device_id.is_none() || self.refresh_token.is_none() {
+            bail!("No credentials: neither static access token nor refresh + device_id set");
         }
 
         if let Some(exp) = self.expires_at {
