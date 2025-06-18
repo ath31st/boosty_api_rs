@@ -16,6 +16,10 @@ pub enum ContentItem {
 }
 
 impl Post {
+    pub fn not_available(&self) -> bool {
+        !self.has_access || self.data.is_empty()
+    }
+    
     pub fn extract_content(&self) -> Vec<ContentItem> {
         let mut result = Vec::new();
         let post_title = self.title.clone();

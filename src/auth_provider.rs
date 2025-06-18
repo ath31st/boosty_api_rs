@@ -152,4 +152,8 @@ impl AuthProvider {
 
         Ok(())
     }
+    
+    pub fn has_refresh_and_device_id(&self) -> bool {
+        self.refresh_token.is_some() && self.device_id.is_some()
+    }
 }
