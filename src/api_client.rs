@@ -51,7 +51,7 @@ impl ApiClient {
             .set_refresh_token_and_device_id(refresh_token.to_string(), device_id.to_string())
     }
 
-    pub fn append_cookie(&mut self, key: &str, value: &str) {
+    fn _append_cookie(&mut self, key: &str, value: &str) {
         use std::fmt::Write;
 
         let mut existing = self
@@ -126,7 +126,7 @@ impl ApiClient {
         Ok(post)
     }
 
-    pub async fn fetch_posts_once(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+    async fn fetch_posts_once(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
         let response = self
             .get_request(&path)
