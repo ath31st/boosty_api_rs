@@ -1,11 +1,12 @@
 pub mod api_client;
 pub mod api_response;
-pub mod post_data_extractor;
 mod auth_provider;
+pub mod post_data_extractor;
 
 #[cfg(test)]
 mod tests {
     use crate::api_client::ApiClient;
+    use reqwest::Client;
     use std::fs;
     use tokio;
     #[tokio::test]
@@ -29,7 +30,8 @@ mod tests {
             .create_async()
             .await;
 
-        let mut client = ApiClient::new(&server.url());
+        let req_client = Client::new();
+        let client = ApiClient::new(req_client, &server.url());
         let result = client.fetch_post(blog_name, post_id).await.unwrap();
 
         assert_eq!(result.id, "post001");
@@ -54,7 +56,8 @@ mod tests {
             .create_async()
             .await;
 
-        let mut client = ApiClient::new(&server.url());
+        let req_client = Client::new();
+        let client = ApiClient::new(req_client, &server.url());
         let result = client.fetch_posts(blog_name, limit).await.unwrap();
 
         assert_eq!(result.len(), 2);
