@@ -1,9 +1,9 @@
 use crate::api_response::Post;
 use crate::auth_provider::AuthProvider;
-use anyhow::{Context, Result, bail};
-use reqwest::header::{ACCEPT, CACHE_CONTROL, COOKIE, HeaderMap, HeaderValue, USER_AGENT};
+use anyhow::{bail, Context, Result};
+use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, CACHE_CONTROL, USER_AGENT};
 use reqwest::{Client, Response, StatusCode};
-use serde_json::{Value, from_value};
+use serde_json::{from_value, Value};
 
 pub struct ApiClient {
     base_url: String,
@@ -13,15 +13,17 @@ pub struct ApiClient {
 }
 
 impl ApiClient {
-    pub fn new(base_url: impl Into<String> + Clone) -> Self {
+    pub fn new(client: Client, base_url: impl Into<String> + Clone) -> Self {
         let base_url = base_url.into();
         let headers = Self::prepare_headers();
 
+        let auth_provider = AuthProvider::new(client.clone(), base_url.clone());
+        
         Self {
-            base_url: base_url.clone(),
-            client: Client::new(),
+            base_url,
+            client,
             headers,
-            auth_provider: AuthProvider::new(base_url),
+            auth_provider,
         }
     }
 
@@ -37,38 +39,20 @@ impl ApiClient {
         headers
     }
 
-    pub fn set_bearer_token(&mut self, access_token: &str) -> Result<()> {
+    pub async fn set_bearer_token(&self, access_token: &str) -> Result<()> {
         self.auth_provider
             .set_access_token_only(access_token.to_string())
+            .await
     }
 
-    pub fn set_refresh_token_and_device_id(
-        &mut self,
+    pub async fn set_refresh_token_and_device_id(
+        &self,
         refresh_token: &str,
         device_id: &str,
     ) -> Result<()> {
         self.auth_provider
             .set_refresh_token_and_device_id(refresh_token.to_string(), device_id.to_string())
-    }
-
-    fn _append_cookie(&mut self, key: &str, value: &str) {
-        use std::fmt::Write;
-
-        let mut existing = self
-            .headers
-            .get(COOKIE)
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("")
-            .to_string();
-
-        if !existing.is_empty() {
-            existing.push_str("; ");
-        }
-
-        write!(&mut existing, "{}={}", key, value).unwrap();
-
-        self.headers
-            .insert(COOKIE, HeaderValue::from_str(&existing).unwrap());
+            .await
     }
 
     pub fn headers_as_map(&self) -> std::collections::HashMap<String, String> {
@@ -82,7 +66,7 @@ impl ApiClient {
             .collect()
     }
 
-    async fn get_request(&mut self, path: &str) -> Result<Response> {
+    async fn get_request(&self, path: &str) -> Result<Response> {
         let mut headers = self.headers.clone();
         self.auth_provider.apply_auth_header(&mut headers).await?;
 
@@ -95,7 +79,7 @@ impl ApiClient {
             .with_context(|| format!("Failed to send GET request to '{}'", url))
     }
 
-    async fn fetch_post_once(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
+    async fn fetch_post_once(&self, blog_name: &str, post_id: &str) -> Result<Post> {
         let path = format!("blog/{}/post/{}", blog_name, post_id);
         let response = self
             .get_request(&path)
@@ -114,9 +98,9 @@ impl ApiClient {
         Ok(parsed)
     }
 
-    pub async fn fetch_post(&mut self, blog_name: &str, post_id: &str) -> Result<Post> {
+    pub async fn fetch_post(&self, blog_name: &str, post_id: &str) -> Result<Post> {
         let mut post = self.fetch_post_once(blog_name, post_id).await?;
-        if post.not_available() && self.auth_provider.has_refresh_and_device_id() {
+        if post.not_available() && self.auth_provider.has_refresh_and_device_id().await {
             self.auth_provider
                 .force_refresh()
                 .await
@@ -126,7 +110,7 @@ impl ApiClient {
         Ok(post)
     }
 
-    async fn fetch_posts_once(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+    async fn fetch_posts_once(&self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let path = format!("blog/{}/post/?limit={}", blog_name, limit);
         let response = self
             .get_request(&path)
@@ -144,9 +128,10 @@ impl ApiClient {
         Ok(parsed)
     }
 
-    pub async fn fetch_posts(&mut self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
+    pub async fn fetch_posts(&self, blog_name: &str, limit: i32) -> Result<Vec<Post>> {
         let mut posts = self.fetch_posts_once(blog_name, limit).await?;
-        if posts.iter().any(|p| p.not_available()) && self.auth_provider.has_refresh_and_device_id()
+        if posts.iter().any(|p| p.not_available())
+            && self.auth_provider.has_refresh_and_device_id().await
         {
             self.auth_provider
                 .force_refresh()
