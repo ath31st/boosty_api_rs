@@ -2,6 +2,13 @@
 name = "boosty_downloader_api"
 version = "0.1.0"
 edition = "2024"
+description = "API client for interacting with Boosty platform"
+license = "MIT"
+repository = "https://github.com/ath31st/boosty-downloader"
+readme = "README.md"
+keywords = ["api", "boosty", "client", "http", "async"]
+categories = ["api-bindings", "web-programming"]
+documentation = "https://docs.rs/boosty-downloader-api"
 
 [dependencies]
 anyhow = "1.0.98"
