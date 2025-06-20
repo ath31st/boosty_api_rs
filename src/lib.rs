@@ -2,6 +2,7 @@ pub mod api_client;
 pub mod api_response;
 mod auth_provider;
 pub mod post_data_extractor;
+pub mod error;
 
 #[cfg(test)]
 mod tests {
