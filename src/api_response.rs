@@ -87,6 +87,21 @@ pub struct ImageData {
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct TextData {
+    pub modificator: String,
+    pub content: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LinkData {
+    pub explicit: bool,
+    pub content: String,
+    pub url: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct PlayerUrl {
     #[serde(rename = "type")]
     pub type_: String,
@@ -168,6 +183,10 @@ pub enum MediaData {
     OkVideo(VideoData),
     #[serde(rename = "image", rename_all = "camelCase")]
     Image(ImageData),
+    #[serde(rename = "text", rename_all = "camelCase")]
+    Text(TextData),
+    #[serde(rename = "link", rename_all = "camelCase")]
+    Link(LinkData),
     #[serde(other)]
     Unknown,
 }
