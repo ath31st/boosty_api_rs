@@ -12,6 +12,15 @@ pub enum ContentItem {
         url: String,
         video_title: String,
     },
+    Text {
+        modificator: String,
+        content: String,
+    },
+    Link {
+        explicit: bool,
+        content: String,
+        url: String,
+    },
     Unknown,
 }
 
@@ -19,7 +28,7 @@ impl Post {
     pub fn not_available(&self) -> bool {
         !self.has_access || self.data.is_empty()
     }
-    
+
     pub fn extract_content(&self) -> Vec<ContentItem> {
         let mut result = Vec::new();
         let post_title = self.title.clone();
@@ -42,6 +51,15 @@ impl Post {
                         });
                     }
                 }
+                MediaData::Text(text) => result.push(ContentItem::Text {
+                    content: text.content.clone(),
+                    modificator: text.modificator.clone(),
+                }),
+                MediaData::Link(link) => result.push(ContentItem::Link {
+                    explicit: link.explicit,
+                    content: link.content.clone(),
+                    url: link.url.clone(),
+                }),
                 MediaData::Unknown => {
                     result.push(ContentItem::Unknown);
                 }
