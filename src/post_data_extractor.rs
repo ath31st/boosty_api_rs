@@ -8,6 +8,9 @@ pub enum ContentItem {
     },
     Video {
         url: String,
+    },
+    OkVideo {
+        url: String,
         video_title: String,
     },
     Audio {
@@ -43,9 +46,12 @@ impl Post {
                         id: img.id.clone(),
                     });
                 }
-                MediaData::Video(vd) | MediaData::OkVideo(vd) => {
+                MediaData::Video(vd) => result.push(ContentItem::Video {
+                    url: vd.url.clone(),
+                }),
+                MediaData::OkVideo(vd) => {
                     if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
-                        result.push(ContentItem::Video {
+                        result.push(ContentItem::OkVideo {
                             url: best_url,
                             video_title: vd.title.clone(),
                         });

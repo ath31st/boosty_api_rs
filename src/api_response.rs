@@ -55,6 +55,12 @@ pub struct Flags {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoData {
+    pub url: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct OkVideoData {
     pub upload_status: String,
     pub width: u32,
     pub status: String,
@@ -198,7 +204,7 @@ pub enum MediaData {
     #[serde(rename = "video", rename_all = "camelCase")]
     Video(VideoData),
     #[serde(rename = "ok_video", rename_all = "camelCase")]
-    OkVideo(VideoData),
+    OkVideo(OkVideoData),
     #[serde(rename = "audio_file", rename_all = "camelCase")]
     Audio(AudioData),
     #[serde(rename = "image", rename_all = "camelCase")]
