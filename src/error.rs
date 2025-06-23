@@ -41,10 +41,13 @@ pub enum ApiError {
         status: StatusCode,
         endpoint: String,
     },
-    
+
     #[error("Failed to parse response body into intermediate JSON: {0}")]
     JsonParse(reqwest::Error),
-
+    
+    #[error("Failed to parse response JSON: {error}")]
+    JsonParseDetailed { error: String },
+    
     #[error("Unauthorized (401): invalid or missing token")]
     Unauthorized,
 

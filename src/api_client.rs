@@ -1,9 +1,9 @@
 use crate::api_response::Post;
 use crate::auth_provider::AuthProvider;
 use crate::error::{ApiError, ResultApi, ResultAuth};
-use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, CACHE_CONTROL, USER_AGENT};
+use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response, StatusCode};
-use serde_json::{from_value, Value};
+use serde_json::{Value, from_value};
 
 pub struct ApiClient {
     base_url: String,
@@ -90,7 +90,13 @@ impl ApiClient {
             let endpoint = path.clone();
             return Err(ApiError::HttpStatus { status, endpoint });
         }
-        let parsed = response.json::<Post>().await.map_err(ApiError::JsonParse)?;
+
+        let body = response.text().await?;
+        let parsed =
+            serde_json::from_str::<Post>(&body).map_err(|e| ApiError::JsonParseDetailed {
+                error: e.to_string(),
+            })?;
+
         Ok(parsed)
     }
 
