@@ -36,6 +36,10 @@ Add this to your `Cargo.toml`:
 [dependencies]
 boosty_api = "0.8.0"
 ```
+or 
+```bash
+$ cargo add boosty_api
+```
 
 ## Example fetching single post
 
@@ -96,29 +100,29 @@ use boosty_api::post_data_extractor::ContentItem;
 
 let content_items = post.extract_content();
 for item in content_items {
-match item {
-ContentItem::Image { url, id } => {
-println ! ("Image URL: {}, ID: {}", url, id);
-}
-ContentItem::Video { url } => {
-println ! ("Video URL: {}", url);
-}
-ContentItem::OkVideo { url, video_title } => {
-println ! ("OK Video URL: {}, Title: {}", url, video_title);
-}
-ContentItem::Audio { url, audio_title, file_type } => {
-println ! ("Audio URL: {}, Title: {}, Type: {}", url, audio_title, file_type);
-}
-ContentItem::Text { modificator, content } => {
-println ! ("Text: {}, Modificator: {}", content, modificator);
-}
-ContentItem::Link { explicit, content, url } => {
-println ! ("Link: {}, Content: {}, Explicit: {}", url, content, explicit);
-}
-ContentItem::Unknown => {
-println ! ("Unknown content type");
-}
-}
+  match item {
+    ContentItem::Image { url, id } => {
+      println ! ("Image URL: {}, ID: {}", url, id);
+    }
+    ContentItem::Video { url } => {
+      println ! ("Video URL: {}", url);
+    }
+    ContentItem::OkVideo { url, video_title } => {
+      println ! ("OK Video URL: {}, Title: {}", url, video_title);
+    }
+    ContentItem::Audio { url, audio_title, file_type } => {
+      println ! ("Audio URL: {}, Title: {}, Type: {}", url, audio_title, file_type);
+    }
+    ContentItem::Text { modificator, content } => {
+      println ! ("Text: {}, Modificator: {}", content, modificator);
+    }
+    ContentItem::Link { explicit, content, url } => {
+      println ! ("Link: {}, Content: {}, Explicit: {}", url, content, explicit);
+    }
+    ContentItem::Unknown => {
+      println ! ("Unknown content type");
+    }
+  }
 }
 ```
 
