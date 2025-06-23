@@ -6,6 +6,7 @@ transparently handles token expiration and retries requests when needed.
 
 ## Table of Contents
 
+- [Disclaimer](#disclaimer)
 - [Features](#features)
 - [Installation](#installation)
 - [Example: Fetching a Single Post](#example-fetching-single-post)
@@ -19,6 +20,16 @@ transparently handles token expiration and retries requests when needed.
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Disclaimer
+
+This crate is intended for research and personal use only.
+By using it, you agree to:
+- Access only your own content from the Boosty platform.
+- Refrain from scraping, redistributing, or otherwise misusing content that you do not own.
+- Comply with Boosty's [Terms of Service](https://boosty.to/terms) and any applicable copyright laws.
+
+The author is not responsible for any misuse of this software.
 
 ## Features
 
@@ -127,6 +138,8 @@ for item in content_items {
 ```
 
 ## Authentication
+
+To get access token or refresh token and device_id, you need to log in to the service, then press F12 in the browser and go to the application tab, where you can select local storage. The required keys are _clentId and auth.
 
 There are two options:
 
