@@ -28,7 +28,10 @@
       "isPublished": true,
       "isLiked": false,
       "tags": [
-        "tag1"
+        {
+          "id": 12345,
+          "title": "test tag 1"
+        }
       ],
       "isCommentsDenied": false,
       "count": {
@@ -97,7 +100,10 @@
       "isPublished": true,
       "isLiked": false,
       "tags": [
-        "tag2"
+        {
+          "id": 12345,
+          "title": "test tag 2"
+        }
       ],
       "isCommentsDenied": false,
       "count": {

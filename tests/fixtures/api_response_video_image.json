@@ -98,8 +98,14 @@
   "isPublished": true,
   "isLiked": false,
   "tags": [
-    "test",
-    "video"
+    {
+      "id": 12345,
+      "title": "test tag 2"
+    },
+    {
+      "title": "automatic",
+      "id": 1367800
+    }
   ],
   "isCommentsDenied": false,
   "count": {
