@@ -3,14 +3,17 @@ use crate::api_response::{MediaData, PlayerUrl, Post};
 #[derive(Debug)]
 pub enum ContentItem {
     Image {
-        post_title: String,
         url: String,
         id: String,
     },
     Video {
-        post_title: String,
         url: String,
         video_title: String,
+    },
+    Audio {
+        url: String,
+        audio_title: String,
+        file_type: String,
     },
     Text {
         modificator: String,
@@ -31,13 +34,11 @@ impl Post {
 
     pub fn extract_content(&self) -> Vec<ContentItem> {
         let mut result = Vec::new();
-        let post_title = self.title.clone();
 
         for media in &self.data {
             match media {
                 MediaData::Image(img) => {
                     result.push(ContentItem::Image {
-                        post_title: post_title.clone(),
                         url: img.url.clone(),
                         id: img.id.clone(),
                     });
@@ -45,12 +46,16 @@ impl Post {
                 MediaData::Video(vd) | MediaData::OkVideo(vd) => {
                     if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
                         result.push(ContentItem::Video {
-                            post_title: post_title.clone(),
                             url: best_url,
                             video_title: vd.title.clone(),
                         });
                     }
                 }
+                MediaData::Audio(audio) => result.push(ContentItem::Audio {
+                    url: audio.url.clone(),
+                    audio_title: audio.track.clone(),
+                    file_type: audio.file_type.clone(),
+                }),
                 MediaData::Text(text) => result.push(ContentItem::Text {
                     content: text.content.clone(),
                     modificator: text.modificator.clone(),
