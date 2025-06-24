@@ -38,8 +38,8 @@ The author is not responsible for any misuse of this software.
 - Automatic token refreshing and retrying failed requests (when tokens are provided).
 - Deserialization into rich, typed Rust structs using `serde`.
 - Clean separation of concerns between authentication and API interaction.
-- Currently, supports content types: **video**, **image**, **text**, and **link**.  
-  **Audio** and **file** support is planned but not yet implemented.
+- Currently, supports content types: **video**, **audio**, **image**, **text**, and **link**.  
+  **File** support is planned but not yet implemented.
 
 ## Installation
 
