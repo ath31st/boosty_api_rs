@@ -8,7 +8,7 @@ repository = "https://github.com/ath31st/boosty_api_rs"
 readme = "README.md"
 keywords = ["api", "boosty", "client", "http", "async"]
 categories = ["api-bindings", "web-programming"]
-documentation = "https://docs.rs/boosty-api"
+documentation = "https://docs.rs/boosty_api"
 
 [dependencies]
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
