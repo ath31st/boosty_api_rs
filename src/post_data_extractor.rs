@@ -80,7 +80,7 @@ impl Post {
     }
 }
 
-fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option<String> {
+pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option<String> {
     const PRIORITY: &[&str] = &["ultra_hd", "full_hd", "high", "medium", "low"];
 
     for &pref in PRIORITY {
