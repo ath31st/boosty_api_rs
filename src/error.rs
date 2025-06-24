@@ -1,6 +1,7 @@
 use reqwest::StatusCode;
 use thiserror::Error;
 
+/// Error during authentication with the Boosty API (e.g., token refresh).
 #[derive(Error, Debug)]
 pub enum AuthError {
     #[error("Invalid token format")]
@@ -28,6 +29,7 @@ pub enum AuthError {
     ParseError(#[from] serde_json::Error),
 }
 
+/// Error when calling Boosty API endpoints (includes AuthError).
 #[derive(Error, Debug)]
 pub enum ApiError {
     #[error("Authentication error: {0}")]
@@ -44,10 +46,10 @@ pub enum ApiError {
 
     #[error("Failed to parse response body into intermediate JSON: {0}")]
     JsonParse(reqwest::Error),
-    
+
     #[error("Failed to parse response JSON: {error}")]
     JsonParseDetailed { error: String },
-    
+
     #[error("Unauthorized (401): invalid or missing token")]
     Unauthorized,
 
