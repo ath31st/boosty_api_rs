@@ -6,22 +6,33 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 
+/// Response body for token refresh endpoint.
 #[derive(Deserialize)]
 struct RefreshResponse {
+    /// New access token returned by server.
     access_token: String,
+    /// New refresh token returned by server.
     refresh_token: String,
+    /// Lifetime of access token in seconds.
     expires_in: i64,
 }
 
+/// Internal state for authentication.
 #[derive(Debug)]
 struct AuthState {
+    /// Static access token, if set via `set_access_token_only`.
     static_access_token: Option<String>,
+    /// Device ID for refresh flow.
     device_id: Option<String>,
+    /// Refresh token for refresh flow.
     refresh_token: Option<String>,
+    /// Current valid access token from refresh flow.
     access_token: Option<String>,
+    /// Expiration instant for `access_token`.
     expires_at: Option<Instant>,
 }
 
+/// Provider managing authentication: either static token or refresh-token flow.
 #[derive(Clone)]
 pub struct AuthProvider {
     client: Client,
@@ -30,6 +41,9 @@ pub struct AuthProvider {
 }
 
 impl AuthProvider {
+    /// Create a new AuthProvider with given reqwest `Client` and base URL.
+    ///
+    /// Initially no credentials are set.
     pub fn new(client: Client, base_url: impl Into<String>) -> Self {
         let state = AuthState {
             static_access_token: None,
@@ -45,7 +59,12 @@ impl AuthProvider {
         }
     }
 
+    /// Apply authorization header to given headers map.
+    ///
+    /// If a static access token is set, uses it. Otherwise, if refresh flow is configured,
+    /// obtains (or refreshes) the access token and applies it.
     pub async fn apply_auth_header(&self, headers: &mut HeaderMap) -> ResultAuth<()> {
+        // First check static token
         let static_tok_opt = {
             let st = self.state.lock().await;
             st.static_access_token.clone()
@@ -57,7 +76,8 @@ impl AuthProvider {
             headers.insert(AUTHORIZATION, hv);
             return Ok(());
         }
-
+        
+        // If static not set but refresh+device_id present, use refresh flow
         if self.has_refresh_and_device_id().await {
             let tok = self.get_access_token().await?;
             let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
@@ -67,6 +87,9 @@ impl AuthProvider {
         Ok(())
     }
 
+    /// Set only static access token, disabling refresh flow.
+    ///
+    /// If `access` is empty, returns `AuthError::EmptyAccessToken`.
     pub async fn set_access_token_only(&self, access: String) -> ResultAuth<()> {
         if access.is_empty() {
             return Err(AuthError::EmptyAccessToken);
@@ -80,6 +103,9 @@ impl AuthProvider {
         Ok(())
     }
 
+    /// Set refresh token and device ID for refresh flow, disabling static token.
+    ///
+    /// Returns error if either is empty.
     pub async fn set_refresh_token_and_device_id(
         &self,
         refresh: String,
@@ -100,6 +126,10 @@ impl AuthProvider {
         Ok(())
     }
 
+    /// Get a valid access token, refreshing if needed.
+    ///
+    /// If static token is set, returns it directly. Otherwise, uses refresh flow.
+    /// Returns `AuthError::MissingCredentials` if neither static nor refresh flow configured.
     pub async fn get_access_token(&self) -> ResultAuth<String> {
         let st = self.state.lock().await;
         if let Some(tok) = &st.static_access_token {
@@ -112,6 +142,7 @@ impl AuthProvider {
         match (refresh, device_id) {
             (Some(_), Some(_)) => {
                 let mut st2 = self.state.lock().await;
+                // Determine if need to refresh: if no expires_at or close to expiry (<=30s left)
                 let need_refresh = match st2.expires_at {
                     Some(exp) => Instant::now() + Duration::from_secs(30) >= exp,
                     None => true,
@@ -119,12 +150,16 @@ impl AuthProvider {
                 if need_refresh {
                     self.refresh_internal(&mut st2).await?;
                 }
+                // After refresh_internal, access_token must be Some
                 Ok(st2.access_token.clone().unwrap())
             }
             _ => Err(AuthError::MissingCredentials),
         }
     }
-
+    
+    /// Force token refresh regardless of current expiry.
+    ///
+    /// Returns new access token, or error if refresh flow is not configured.
     pub async fn force_refresh(&self) -> ResultAuth<String> {
         let mut st = self.state.lock().await;
 
@@ -139,6 +174,9 @@ impl AuthProvider {
         Ok(st.access_token.clone().unwrap())
     }
 
+    /// Internal method to perform token refresh via HTTP request.
+    ///
+    /// Updates `st.access_token`, `st.refresh_token`, and `st.expires_at`.
     async fn refresh_internal(&self, st: &mut AuthState) -> ResultAuth<()> {
         let refresh_token = st.refresh_token.clone().unwrap();
         let device_id = st.device_id.clone().unwrap();
@@ -173,7 +211,8 @@ impl AuthProvider {
         st.expires_at = Some(now + Duration::from_secs(data.expires_in as u64));
         Ok(())
     }
-
+    
+    /// Check if both refresh token and device ID are set.
     pub async fn has_refresh_and_device_id(&self) -> bool {
         let st = self.state.lock().await;
         st.refresh_token.is_some() && st.device_id.is_some()
