@@ -4,19 +4,11 @@ use crate::api_response::{MediaData, PlayerUrl, Post};
 #[derive(Debug)]
 pub enum ContentItem {
     /// Image with its URL and identifier.
-    Image {
-        url: String,
-        id: String,
-    },
+    Image { url: String, id: String },
     /// Simple video with direct URL.
-    Video {
-        url: String,
-    },
+    Video { url: String },
     /// OK.ru video: URL chosen by quality priority, plus title.
-    OkVideo {
-        url: String,
-        video_title: String,
-    },
+    OkVideo { url: String, video_title: String },
     /// Audio item with URL, title and file type.
     Audio {
         url: String,
@@ -33,6 +25,12 @@ pub enum ContentItem {
         explicit: bool,
         content: String,
         url: String,
+    },
+    /// File item with URL, title and size.
+    File {
+        url: String,
+        title: String,
+        size: u64,
     },
     /// Fallback for unknown or unsupported media type.
     Unknown,
@@ -94,6 +92,11 @@ impl Post {
                     explicit: link.explicit,
                     content: link.content.clone(),
                     url: link.url.clone(),
+                }),
+                MediaData::File(file) => result.push(ContentItem::File {
+                    url: file.url.clone(),
+                    title: file.title.clone(),
+                    size: file.size.clone(),
                 }),
                 MediaData::Unknown => {
                     result.push(ContentItem::Unknown);
@@ -332,6 +335,24 @@ mod tests {
         assert!(
             matches!(content[0], ContentItem::Link { explicit: true, ref content, ref url }
         if content == "Check this" && url == "https://test.com")
+        );
+    }
+
+    #[test]
+    fn test_extract_file() {
+        let file = FileData {
+            id: "".into(),
+            url: "file_url".into(),
+            title: "FileTitle".into(),
+            size: 123456,
+            complete: true,
+        };
+        let post = dummy_post(vec![MediaData::File(file)], true);
+        let content = post.extract_content();
+
+        assert!(
+            matches!(content[0], ContentItem::File { ref url, ref title, size }
+        if url == "file_url" && title == "FileTitle" && size == 123456)
         );
     }
 

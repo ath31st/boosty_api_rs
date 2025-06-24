@@ -212,6 +212,22 @@ pub struct LinkData {
     pub url: String,
 }
 
+/// File media data.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct FileData {
+    /// Unique file identifier.
+    pub id: String,
+    /// Title of the file.
+    pub title: String,
+    /// URL to the file.
+    pub url: String,
+    /// Is the file processing complete.
+    pub complete: bool,
+    /// File size in bytes.
+    pub size: u64,
+}
+
 /// Video player URL with type info.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -327,6 +343,8 @@ pub enum MediaData {
     Text(TextData),
     #[serde(rename = "link", rename_all = "camelCase")]
     Link(LinkData),
+    #[serde(rename = "file", rename_all = "camelCase")]
+    File(FileData),
     #[serde(other)]
     Unknown,
 }
