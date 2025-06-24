@@ -47,7 +47,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", branch = "main" }
+boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", tag = "0.8.0" }
 ```
 
 ## Example fetching single post
@@ -175,12 +175,12 @@ strongly typed and cover:
 
 ## API Documentation
 
-For detailed documentation, please refer to [docs.rs](https://docs.rs/boosty-api).
+For detailed documentation, please refer to [docs.rs](https://docs.rs/boosty_api).
 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request
-on [GitHub](https://github.com/ath31st/boosty-api).
+on [GitHub](https://github.com/ath31st/boosty_api_rs).
 
 ## License
 
