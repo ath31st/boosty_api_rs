@@ -35,9 +35,11 @@ The author is not responsible for any misuse of this software.
 
 - Simple, high-level API for fetching individual posts or batches of posts.
 - Built-in OAuth2-like token management (access + refresh tokens).
-- Automatic token refreshing and retrying failed requests.
+- Automatic token refreshing and retrying failed requests (when tokens are provided).
 - Deserialization into rich, typed Rust structs using `serde`.
 - Clean separation of concerns between authentication and API interaction.
+- Currently, supports content types: **video**, **image**, **text**, and **link**.  
+  **Audio** and **file** support is planned but not yet implemented.
 
 ## Installation
 
