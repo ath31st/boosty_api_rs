@@ -47,11 +47,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.8.0"
-```
-or 
-```bash
-$ cargo add boosty_api
+boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", branch = "main" }
 ```
 
 ## Example fetching single post
