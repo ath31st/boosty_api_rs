@@ -1,40 +1,64 @@
 use crate::api_response::{MediaData, PlayerUrl, Post};
 
+/// Represents a single content item extracted from a `Post`.
 #[derive(Debug)]
 pub enum ContentItem {
+    /// Image with its URL and identifier.
     Image {
         url: String,
         id: String,
     },
+    /// Simple video with direct URL.
     Video {
         url: String,
     },
+    /// OK.ru video: URL chosen by quality priority, plus title.
     OkVideo {
         url: String,
         video_title: String,
     },
+    /// Audio item with URL, title and file type.
     Audio {
         url: String,
         audio_title: String,
         file_type: String,
     },
+    /// Text item with formatting modifier and content.
     Text {
         modificator: String,
         content: String,
     },
+    /// Link item with explicit flag, display content and URL.
     Link {
         explicit: bool,
         content: String,
         url: String,
     },
+    /// Fallback for unknown or unsupported media type.
     Unknown,
 }
 
 impl Post {
+    /// Returns true if the post is not accessible or has no media data.
+    ///
+    /// # Returns
+    ///
+    /// - `true` if user has no access (`has_access == false`) OR `data` is empty.
+    /// - `false` otherwise.
     pub fn not_available(&self) -> bool {
         !self.has_access || self.data.is_empty()
     }
 
+    /// Extracts media items from post into a vector of `ContentItem`.
+    ///
+    /// Iterates over `self.data: Vec<MediaData>` and converts each variant:
+    /// - `Image` → `ContentItem::Image { url, id }`
+    /// - `Video` → `ContentItem::Video { url }`
+    /// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
+    /// - `Audio` → `ContentItem::Audio { url, audio_title: track, file_type }`
+    /// - `Text` → `ContentItem::Text { content, modificator }`
+    /// - `Link` → `ContentItem::Link { explicit, content, url }`
+    /// - Other/Unknown → `ContentItem::Unknown`
     pub fn extract_content(&self) -> Vec<ContentItem> {
         let mut result = Vec::new();
 
@@ -80,6 +104,18 @@ impl Post {
     }
 }
 
+/// Selects the highest-priority non-empty URL from a list of `PlayerUrl`.
+///
+/// Quality priority order: "ultra_hd", "full_hd", "high", "medium", "low".
+/// If none matches or all URLs empty for those types, returns the first non-empty URL found.
+///
+/// # Parameters
+///
+/// - `player_urls`: slice of `PlayerUrl` containing `type_` and `url` fields.
+///
+/// # Returns
+///
+/// - `Some(String)` with selected URL, or `None` if all URLs are empty or list is empty.
 pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option<String> {
     const PRIORITY: &[&str] = &["ultra_hd", "full_hd", "high", "medium", "low"];
 
@@ -205,7 +241,7 @@ mod tests {
     #[test]
     fn test_extract_ok_video_with_priority() {
         let ok_video = OkVideoData {
-            upload_status: "".into(),
+            upload_status: Some("".into()),
             width: 0,
             status: "".into(),
             title: "vid".into(),
