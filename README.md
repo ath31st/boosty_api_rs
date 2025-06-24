@@ -34,12 +34,11 @@ The author is not responsible for any misuse of this software.
 ## Features
 
 - Simple, high-level API for fetching individual posts or batches of posts.
-- Built-in OAuth2-like token management (access + refresh tokens).
+- Built-in token management using access and refresh tokens (similar in concept to OAuth2 flows).
 - Automatic token refreshing and retrying failed requests (when tokens are provided).
 - Deserialization into rich, typed Rust structs using `serde`.
 - Clean separation of concerns between authentication and API interaction.
-- Currently, supports content types: **video**, **audio**, **image**, **text**, and **link**.  
-  **File** support is planned but not yet implemented.
+- Currently, supports content types: **video**, **audio**, **image**, **text**, **link** and **file**.  
 
 ## Installation
 
@@ -47,7 +46,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", tag = "0.8.0" }
+boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", tag = "0.8.1" }
 ```
 
 ## Example fetching single post
@@ -127,6 +126,9 @@ for item in content_items {
     }
     ContentItem::Link { explicit, content, url } => {
       println ! ("Link: {}, Content: {}, Explicit: {}", url, content, explicit);
+    }
+    ContentItem::File { url, title, size } => {
+      println ! ("File: {}, URL: {}, Size: {}", title, url, size);
     }
     ContentItem::Unknown => {
       println ! ("Unknown content type");
