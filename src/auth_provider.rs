@@ -1,5 +1,5 @@
 use crate::error::{AuthError, ResultAuth};
-use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
+use reqwest::header::{AUTHORIZATION, HeaderMap, HeaderValue};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use std::sync::Arc;
@@ -50,14 +50,14 @@ impl AuthProvider {
             let st = self.state.lock().await;
             st.static_access_token.clone()
         };
-        
+
         if let Some(tok) = static_tok_opt {
             let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
                 .map_err(|_| AuthError::InvalidTokenFormat)?;
             headers.insert(AUTHORIZATION, hv);
             return Ok(());
         }
-        
+
         if self.has_refresh_and_device_id().await {
             let tok = self.get_access_token().await?;
             let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
@@ -177,5 +177,78 @@ impl AuthProvider {
     pub async fn has_refresh_and_device_id(&self) -> bool {
         let st = self.state.lock().await;
         st.refresh_token.is_some() && st.device_id.is_some()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockito::Server;
+    use reqwest::Client;
+    use reqwest::header::{AUTHORIZATION, HeaderMap};
+
+    fn make_provider(server_url: &str) -> AuthProvider {
+        AuthProvider::new(Client::new(), server_url)
+    }
+
+    #[tokio::test]
+    async fn test_set_access_token_only_and_apply_auth_header() {
+        let provider = make_provider("http://localhost");
+        provider
+            .set_access_token_only("my_token".into())
+            .await
+            .unwrap();
+
+        let mut headers = HeaderMap::new();
+        provider.apply_auth_header(&mut headers).await.unwrap();
+
+        assert_eq!(headers.get(AUTHORIZATION).unwrap(), "Bearer my_token");
+    }
+
+    #[tokio::test]
+    async fn test_apply_auth_header_with_refresh_token_flow() {
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/oauth/token/")
+            .match_body(mockito::Matcher::AllOf(vec![
+                mockito::Matcher::UrlEncoded("grant_type".into(), "refresh_token".into()),
+                mockito::Matcher::UrlEncoded("device_id".into(), "abc123".into()),
+                mockito::Matcher::UrlEncoded("refresh_token".into(), "ref123".into()),
+            ]))
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(
+                r#"{
+            "access_token": "new_access",
+            "refresh_token": "new_refresh",
+            "expires_in": 3600
+        }"#,
+            )
+            .create_async()
+            .await;
+
+        let provider = make_provider(&server.url());
+        provider
+            .set_refresh_token_and_device_id("ref123".into(), "abc123".into())
+            .await
+            .unwrap();
+
+        let mut headers = HeaderMap::new();
+        provider.apply_auth_header(&mut headers).await.unwrap();
+
+        assert_eq!(headers.get(AUTHORIZATION).unwrap(), "Bearer new_access");
+        mock.assert_async().await;
+    }
+
+    #[tokio::test]
+    async fn test_force_refresh_fails_with_missing_data() {
+        let provider = make_provider("http://localhost");
+        let err = provider.force_refresh().await.unwrap_err();
+        assert!(matches!(err, AuthError::EmptyRefreshToken));
+
+        provider
+            .set_refresh_token_and_device_id("ref".into(), "".into())
+            .await
+            .unwrap_err();
     }
 }
