@@ -155,7 +155,7 @@ pub struct AudioData {
     /// Timecode or length of the audio (seconds).
     pub time_code: u32,
     /// File size in bytes.
-    pub size: u32,
+    pub size: u64,
     /// Unique audio identifier.
     pub id: String,
     /// URL to the audio file.

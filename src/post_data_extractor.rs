@@ -8,12 +8,13 @@ pub enum ContentItem {
     /// Simple video with direct URL.
     Video { url: String },
     /// OK.ru video: URL chosen by quality priority, plus title.
-    OkVideo { url: String, video_title: String },
+    OkVideo { url: String, title: String },
     /// Audio item with URL, title and file type.
     Audio {
         url: String,
-        audio_title: String,
+        title: String,
         file_type: String,
+        size: u64,
     },
     /// Text item with formatting modifier and content.
     Text {
@@ -75,14 +76,15 @@ impl Post {
                     if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
                         result.push(ContentItem::OkVideo {
                             url: best_url,
-                            video_title: vd.title.clone(),
+                            title: vd.title.clone(),
                         });
                     }
                 }
                 MediaData::Audio(audio) => result.push(ContentItem::Audio {
                     url: audio.url.clone(),
-                    audio_title: audio.track.clone(),
+                    title: audio.title.clone(),
                     file_type: audio.file_type.clone(),
+                    size: audio.size.clone(),
                 }),
                 MediaData::Text(text) => result.push(ContentItem::Text {
                     content: text.content.clone(),
@@ -277,7 +279,7 @@ mod tests {
         let content = post.extract_content();
 
         assert!(
-            matches!(content[0], ContentItem::OkVideo { ref url, ref video_title } if url == "hd_url" && video_title == "vid")
+            matches!(content[0], ContentItem::OkVideo { ref url, ref title } if url == "hd_url" && title == "vid")
         );
     }
 
@@ -302,8 +304,8 @@ mod tests {
         let content = post.extract_content();
 
         assert!(
-            matches!(content[0], ContentItem::Audio { ref url, ref audio_title, ref file_type }
-        if url == "audio_url" && audio_title == "TrackTitle" && file_type == "mp3")
+            matches!(content[0], ContentItem::Audio { ref url, ref title, ref file_type, ref size }
+        if url == "audio_url" && title == "TrackTitle" && file_type == "mp3" && *size == 0)
         );
     }
 
