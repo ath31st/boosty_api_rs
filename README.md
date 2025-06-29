@@ -46,7 +46,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = { git = "https://github.com/ath31st/boosty_api_rs.git", tag = "0.8.2" }
+boosty_api = "0.8.2"
 ```
 
 ## Example fetching single post
