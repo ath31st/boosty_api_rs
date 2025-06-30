@@ -49,6 +49,12 @@ Add this to your `Cargo.toml`:
 boosty_api = "0.8.3"
 ```
 
+or
+
+```bash
+cargo add boosty_api
+```
+
 ## Example fetching single post
 
 ```rust
@@ -186,4 +192,4 @@ on [GitHub](https://github.com/ath31st/boosty_api_rs).
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
