@@ -159,7 +159,7 @@ impl ApiClient {
             .headers(headers)
             .send()
             .await
-            .map_err(|err| ApiError::HttpRequest(err))
+            .map_err(ApiError::HttpRequest)
     }
 
     /// Fetch a single post once, without automatic retry on "not available" or 401.
@@ -175,7 +175,7 @@ impl ApiClient {
     /// - `ApiError::HttpStatus` for other non-success statuses.
     /// - `ApiError::JsonParseDetailed` if response body cannot be parsed into `Post`.
     async fn fetch_post_once(&self, blog_name: &str, post_id: &str) -> ResultApi<Post> {
-        let path = format!("blog/{}/post/{}", blog_name, post_id);
+        let path = format!("blog/{blog_name}/post/{post_id}");
         let response = self.get_request(&path).await?;
         let status = response.status();
         if status == StatusCode::UNAUTHORIZED {
@@ -229,7 +229,7 @@ impl ApiClient {
     /// Returns `ApiError::JsonParse` on failure to parse intermediate JSON, or
     /// `ApiError::Deserialization` if converting `"data"` array to `Vec<Post>` fails.
     async fn fetch_posts_once(&self, blog_name: &str, limit: i32) -> ResultApi<Vec<Post>> {
-        let path = format!("blog/{}/post/?limit={}", blog_name, limit);
+        let path = format!("blog/{blog_name}/post/?limit={limit}");
         let response = self.get_request(&path).await?;
 
         let json: Value = response.json().await.map_err(ApiError::JsonParse)?;

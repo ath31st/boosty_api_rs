@@ -9,7 +9,7 @@ mod tests {
     use std::fs;
 
     fn api_path(path: &str) -> String {
-        format!("/v1/{}", path)
+        format!("/v1/{path}")
     }
 
     #[tokio::test]
@@ -20,7 +20,7 @@ mod tests {
 
         let blog = "blogx";
         let post_id = "pid";
-        let path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         server
             .mock("GET", path.as_str())
@@ -40,7 +40,7 @@ mod tests {
 
         let blog = "blog";
         let post_id = "p";
-        let path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         server
             .mock("GET", path.as_str())
@@ -62,7 +62,7 @@ mod tests {
 
         let blog = "blog";
         let post_id = "99";
-        let path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
         let mut value: Value = serde_json::from_str(&raw).unwrap();
@@ -91,13 +91,13 @@ mod tests {
         let client = ApiClient::new(req_client.clone(), &base);
 
         client
-            .set_refresh_token_and_device_id("old_refresh".into(), "device123".into())
+            .set_refresh_token_and_device_id("old_refresh", "device123")
             .await
             .unwrap();
 
         let blog = "blog";
         let post_id = "100";
-        let api_get_path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let api_get_path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
         let mut first_value: Value = serde_json::from_str(&raw).unwrap();
@@ -155,13 +155,13 @@ mod tests {
         let client = ApiClient::new(Client::new(), &base);
 
         client
-            .set_refresh_token_and_device_id("r".into(), "d".into())
+            .set_refresh_token_and_device_id("r", "d")
             .await
             .unwrap();
 
         let blog = "b";
         let post_id = "77";
-        let api_get_path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let api_get_path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
         let mut value: Value = serde_json::from_str(&raw).unwrap();
@@ -199,7 +199,7 @@ mod tests {
 
         let blog = "blog";
         let limit = 3;
-        let api_path = api_path(&format!("blog/{}/post/?limit={}", blog, limit));
+        let api_path = api_path(&format!("blog/{blog}/post/?limit={limit}"));
 
         server
             .mock("GET", api_path.as_str())
@@ -219,7 +219,7 @@ mod tests {
 
         let blog = "blog";
         let limit = 5;
-        let api_path = api_path(&format!("blog/{}/post/?limit={}", blog, limit));
+        let api_path = api_path(&format!("blog/{blog}/post/?limit={limit}"));
 
         server
             .mock("GET", api_path.as_str())
@@ -243,7 +243,7 @@ mod tests {
 
         let blog = "testblog";
         let limit = 2;
-        let api_path = api_path(&format!("blog/{}/post/?limit={}", blog, limit));
+        let api_path = api_path(&format!("blog/{blog}/post/?limit={limit}"));
 
         let raw = fs::read_to_string("tests/fixtures/api_response_posts.json").unwrap();
         let mut value: Value = serde_json::from_str(&raw).unwrap();
@@ -277,7 +277,7 @@ mod tests {
         let client = ApiClient::new(Client::new(), &base);
 
         client
-            .set_refresh_token_and_device_id("refA".into(), "devA".into())
+            .set_refresh_token_and_device_id("refA", "devA")
             .await
             .unwrap();
 
@@ -298,7 +298,7 @@ mod tests {
 
         let blog = "blog";
         let post_id = "55";
-        let api_get_path = api_path(&format!("blog/{}/post/{}", blog, post_id));
+        let api_get_path = api_path(&format!("blog/{blog}/post/{post_id}"));
 
         let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
         let mut value: Value = serde_json::from_str(&raw).unwrap();

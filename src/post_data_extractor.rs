@@ -84,7 +84,7 @@ impl Post {
                     url: audio.url.clone(),
                     title: audio.title.clone(),
                     file_type: audio.file_type.clone(),
-                    size: audio.size.clone(),
+                    size: audio.size,
                 }),
                 MediaData::Text(text) => result.push(ContentItem::Text {
                     content: text.content.clone(),
@@ -98,7 +98,7 @@ impl Post {
                 MediaData::File(file) => result.push(ContentItem::File {
                     url: file.url.clone(),
                     title: file.title.clone(),
-                    size: file.size.clone(),
+                    size: file.size,
                 }),
                 MediaData::Unknown => {
                     result.push(ContentItem::Unknown);

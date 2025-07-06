@@ -71,7 +71,7 @@ impl AuthProvider {
         };
 
         if let Some(tok) = static_tok_opt {
-            let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
+            let hv = HeaderValue::from_str(&format!("Bearer {tok}"))
                 .map_err(|_| AuthError::InvalidTokenFormat)?;
             headers.insert(AUTHORIZATION, hv);
             return Ok(());
@@ -80,7 +80,7 @@ impl AuthProvider {
         // If static not set but refresh+device_id present, use refresh flow
         if self.has_refresh_and_device_id().await {
             let tok = self.get_access_token().await?;
-            let hv = HeaderValue::from_str(&format!("Bearer {}", tok))
+            let hv = HeaderValue::from_str(&format!("Bearer {tok}"))
                 .map_err(|_| AuthError::InvalidTokenFormat)?;
             headers.insert(AUTHORIZATION, hv);
         }
