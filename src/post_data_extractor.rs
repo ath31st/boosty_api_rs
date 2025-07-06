@@ -305,7 +305,7 @@ mod tests {
 
         assert!(
             matches!(content[0], ContentItem::Audio { ref url, ref title, ref file_type, ref size }
-        if url == "audio_url" && title == "TrackTitle" && file_type == "mp3" && *size == 0)
+        if url == "audio_url" && title == "AudioTitle" && file_type == "mp3" && *size == 0)
         );
     }
 
