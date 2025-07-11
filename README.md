@@ -46,7 +46,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.8.4"
+boosty_api = "0.8.5"
 ```
 
 or
@@ -116,25 +116,25 @@ let content_items = post.extract_content();
 for item in content_items {
   match item {
     ContentItem::Image { url, id } => {
-      println ! ("Image URL: {}, ID: {}", url, id);
+      println ! ("Image URL: {url}, ID: {id}");
     }
     ContentItem::Video { url } => {
-      println ! ("Video URL: {}", url);
+      println ! ("Video URL: {url}");
     }
     ContentItem::OkVideo { url, video_title } => {
-      println ! ("OK Video URL: {}, Title: {}", url, video_title);
+      println ! ("OK Video URL: {url}, Title: {video_title}");
     }
     ContentItem::Audio { url, audio_title, file_type } => {
-      println ! ("Audio URL: {}, Title: {}, Type: {}", url, audio_title, file_type);
+      println ! ("Audio URL: {url}, Title: {audio_title}, Type: {file_type}");
     }
     ContentItem::Text { modificator, content } => {
-      println ! ("Text: {}, Modificator: {}", content, modificator);
+      println ! ("Text: {content}, Modificator: {modificator}");
     }
     ContentItem::Link { explicit, content, url } => {
-      println ! ("Link: {}, Content: {}, Explicit: {}", url, content, explicit);
+      println ! ("Link: {url}, Content: {content}, Explicit: {explicit}");
     }
     ContentItem::File { url, title, size } => {
-      println ! ("File: {}, URL: {}, Size: {}", title, url, size);
+      println ! ("File: {title}, URL: {url}, Size: {size}");
     }
     ContentItem::Unknown => {
       println ! ("Unknown content type");
@@ -167,9 +167,9 @@ If a post is unavailable and refresh credentials are present, the client will au
 
 - `api_client`: Main entry point; fetches post(s), manages headers, and authentication logic
 - `auth_provider`: Refresh-token and access-token management
-- `api_response`: Deserialization models for all content types (video, image, audio, etc.)
+- `api_response`: Deserialization models for all API content types (e.g. post, target); organized by domain
 - `error`: Uniform error types for API and auth operations
-- `post_data_extractor`: Utility module
+- `post_data_extractor`: Utility module for extracting structured data from post models
 
 ## Error Handling
 
