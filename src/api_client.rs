@@ -31,7 +31,7 @@ use serde_json::{Value, from_value};
 ///     let post = api_client.fetch_post("some-blog-name", "post-id").await?;
 ///     println!("{:#?}", post);
 /// 
-///     let targets = api_client.get_target("some-blog-name").await?;
+///     let targets = api_client.get_targets("some-blog-name").await?;
 ///     println!("{:#?}", targets);
 ///
 ///     Ok(())
@@ -278,7 +278,7 @@ impl ApiClient {
     ///
     /// Returns `ApiError::JsonParse` on failure to parse intermediate JSON, or
     /// `ApiError::Deserialization` if converting `"data"` array to `Vec<Target>` fails.
-    pub async fn get_target(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
+    pub async fn get_targets(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
         let path = format!("target/{blog_name}/");
         let response = self.get_request(&path).await?;
 

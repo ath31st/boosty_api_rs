@@ -333,4 +333,52 @@ mod tests {
             Some("application/json")
         );
     }
+
+    #[tokio::test]
+    async fn test_get_targets_success() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let blog = "blogx";
+        let api_path = api_path(&format!("target/{blog}/"));
+
+        let raw = fs::read_to_string("tests/fixtures/api_response_targets.json").unwrap();
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(raw)
+            .create_async()
+            .await;
+
+        let targets = client.get_targets(blog).await.unwrap();
+        assert!(!targets.is_empty());
+        let first = &targets[0];
+        assert_eq!(first.id, 600101);
+        assert_eq!(first.description, "🏠 Saving for a new family home");
+        assert_eq!(first.target_sum, 12000000);
+    }
+
+    #[tokio::test]
+    async fn test_get_targets_invalid_json() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let blog = "blogx";
+        let api_path = api_path(&format!("target/{blog}/"));
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body("not a valid json")
+            .create_async()
+            .await;
+
+        let res = client.get_targets(blog).await;
+        assert!(matches!(res, Err(ApiError::JsonParse(_))));
+    }
 }
