@@ -1,4 +1,4 @@
-use crate::api_response::Post;
+use crate::api_response::{Post, Target};
 use crate::auth_provider::AuthProvider;
 use crate::error::{ApiError, ResultApi, ResultAuth};
 use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
@@ -30,6 +30,9 @@ use serde_json::{Value, from_value};
 ///
 ///     let post = api_client.fetch_post("some-blog-name", "post-id").await?;
 ///     println!("{:#?}", post);
+/// 
+///     let targets = api_client.get_target("some-blog-name").await?;
+///     println!("{:#?}", targets);
 ///
 ///     Ok(())
 /// }
@@ -263,5 +266,26 @@ impl ApiClient {
             posts = self.fetch_posts_once(blog_name, limit).await?;
         }
         Ok(posts)
+    }
+
+    /// Fetch all targets for a blog, parsing JSON array under `"data"` key.
+    ///
+    /// # Parameters
+    ///
+    /// - `blog_name`: blog identifier/name.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ApiError::JsonParse` on failure to parse intermediate JSON, or
+    /// `ApiError::Deserialization` if converting `"data"` array to `Vec<Target>` fails.
+    pub async fn get_target(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
+        let path = format!("target/{blog_name}/");
+        let response = self.get_request(&path).await?;
+
+        let json: Value = response.json().await.map_err(ApiError::JsonParse)?;
+
+        let parsed = from_value(json["data"].clone()).map_err(ApiError::Deserialization)?;
+
+        Ok(parsed)
     }
 }
