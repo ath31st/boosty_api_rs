@@ -46,7 +46,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.9.0"
+boosty_api = "0.10.0"
 ```
 
 or
