@@ -1,4 +1,4 @@
-use crate::api_response::{Post, Target};
+use crate::api_response::{Post, SubscriptionLevel, Target};
 use crate::auth_provider::AuthProvider;
 use crate::error::{ApiError, ResultApi, ResultAuth};
 use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
@@ -30,7 +30,7 @@ use serde_json::{Value, from_value};
 ///
 ///     let post = api_client.fetch_post("some-blog-name", "post-id").await?;
 ///     println!("{:#?}", post);
-/// 
+///
 ///     let targets = api_client.get_targets("some-blog-name").await?;
 ///     println!("{:#?}", targets);
 ///
@@ -280,6 +280,42 @@ impl ApiClient {
     /// `ApiError::Deserialization` if converting `"data"` array to `Vec<Target>` fails.
     pub async fn get_targets(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
         let path = format!("target/{blog_name}/");
+        let response = self.get_request(&path).await?;
+
+        let json: Value = response.json().await.map_err(ApiError::JsonParse)?;
+
+        let parsed = from_value(json["data"].clone()).map_err(ApiError::Deserialization)?;
+
+        Ok(parsed)
+    }
+
+    /// Fetch subscription levels for a blog, with optional inclusion of the free level.
+    ///
+    /// Sends a GET request to `/v1/blog/{blog_name}/subscription_level/`.
+    /// If `show_free_level` is `Some(true)`, appends `?show_free_level=true` to the URL.
+    ///
+    /// # Parameters
+    ///
+    /// - `blog_name`: the identifier or name of the blog.
+    /// - `show_free_level`: when `Some(true)`, include the free subscription level in results.
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a `Vec<SubscriptionLevel>` parsed from the `"data"` array of the response.
+    ///
+    /// # Errors
+    ///
+    /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
+    /// - `ApiError::Deserialization` if the `"data"` field cannot be deserialized into subscription level items.
+    pub async fn get_subscription_levels(
+        &self,
+        blog_name: &str,
+        show_free_level: Option<bool>,
+    ) -> ResultApi<Vec<SubscriptionLevel>> {
+        let mut path = format!("blog/{blog_name}/subscription_level/");
+        if let Some(flag) = show_free_level {
+            path.push_str(&format!("?show_free_level={flag}"));
+        }
         let response = self.get_request(&path).await?;
 
         let json: Value = response.json().await.map_err(ApiError::JsonParse)?;
