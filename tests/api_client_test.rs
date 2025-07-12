@@ -353,7 +353,7 @@ mod tests {
             .create_async()
             .await;
 
-        let targets = client.get_targets(blog).await.unwrap();
+        let targets = client.get_blog_targets(blog).await.unwrap();
         assert!(!targets.is_empty());
         let first = &targets[0];
         assert_eq!(first.id, 600101);
@@ -378,7 +378,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.get_targets(blog).await;
+        let res = client.get_blog_targets(blog).await;
         assert!(matches!(res, Err(ApiError::JsonParse(_))));
     }
 
@@ -402,7 +402,7 @@ mod tests {
             .create_async()
             .await;
 
-        let levels = client.get_subscription_levels(blog, None).await.unwrap();
+        let levels = client.get_blog_subscription_levels(blog, None).await.unwrap();
         assert_eq!(levels.len(), 2);
         assert_eq!(levels[0].id, 1);
         assert_eq!(levels[0].name, "Basic");
@@ -431,7 +431,7 @@ mod tests {
             .await;
 
         let levels = client
-            .get_subscription_levels(blog, Some(true))
+            .get_blog_subscription_levels(blog, Some(true))
             .await
             .unwrap();
         assert_eq!(levels.len(), 2);
@@ -453,7 +453,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.get_subscriptions(Some(30), Some(true)).await;
+        let res = client.get_user_subscriptions(Some(30), Some(true)).await;
         assert!(matches!(res, Err(ApiError::Unauthorized)));
     }
 
@@ -475,7 +475,7 @@ mod tests {
             .await;
 
         let resp = client
-            .get_subscriptions(Some(30), Some(true))
+            .get_user_subscriptions(Some(30), Some(true))
             .await
             .unwrap();
         assert_eq!(resp.data.len(), 1);

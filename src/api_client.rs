@@ -31,7 +31,7 @@ use serde_json::{Value, from_value};
 ///     let post = api_client.fetch_post("some-blog-name", "post-id").await?;
 ///     println!("{:#?}", post);
 ///
-///     let targets = api_client.get_targets("some-blog-name").await?;
+///     let targets = api_client.get_blog_targets("some-blog-name").await?;
 ///     println!("{:#?}", targets);
 ///
 ///     Ok(())
@@ -311,7 +311,7 @@ impl ApiClient {
     /// - `ApiError::HttpRequest` if the network request fails.
     /// - `ApiError::JsonParse` if the HTTP response body cannot be parsed as JSON.
     /// - `ApiError::Deserialization` if the `"data"` array cannot be deserialized into `Target` structs.
-    pub async fn get_targets(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
+    pub async fn get_blog_targets(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
         let path = format!("target/{blog_name}/");
         let response = self.get_request(&path).await?;
 
@@ -340,7 +340,7 @@ impl ApiClient {
     /// - `ApiError::HttpRequest` if the network request fails.
     /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
     /// - `ApiError::Deserialization` if the `"data"` field cannot be deserialized into subscription level items.
-    pub async fn get_subscription_levels(
+    pub async fn get_blog_subscription_levels(
         &self,
         blog_name: &str,
         show_free_level: Option<bool>,
@@ -379,7 +379,7 @@ impl ApiClient {
     /// - `ApiError::HttpRequest` if the network request fails.
     /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
     /// - `ApiError::Deserialization` if the JSON cannot be deserialized into `SubscriptionsResponse`.
-    pub async fn get_subscriptions(
+    pub async fn get_user_subscriptions(
         &self,
         limit: Option<u32>,
         with_follow: Option<bool>,
