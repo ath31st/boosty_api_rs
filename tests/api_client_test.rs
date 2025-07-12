@@ -358,7 +358,7 @@ mod tests {
         let first = &targets[0];
         assert_eq!(first.id, 600101);
         assert_eq!(first.description, "🏠 Saving for a new family home");
-        assert_eq!(first.target_sum, 12000000);
+        assert_eq!(first.target_sum, 1200000.5);
     }
 
     #[tokio::test]

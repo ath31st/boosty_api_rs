@@ -22,9 +22,9 @@ pub struct Target {
     /// Unique identifier for the target.
     pub id: u64,
     /// Total sum required.
-    pub target_sum: u64,
+    pub target_sum: f64,
     /// Current collected sum.
-    pub current_sum: u64,
+    pub current_sum: f64,
     /// Optional finish timestamp.
     pub finish_time: Option<i64>,
     /// Blogger's username or URL.
