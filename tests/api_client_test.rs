@@ -381,4 +381,61 @@ mod tests {
         let res = client.get_targets(blog).await;
         assert!(matches!(res, Err(ApiError::JsonParse(_))));
     }
+
+    #[tokio::test]
+    async fn test_get_subscription_levels_default() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let blog = "blogx";
+        let api_path = api_path(&format!("blog/{blog}/subscription_level/"));
+
+        let raw =
+            fs::read_to_string("tests/fixtures/api_response_subscription_levels.json").unwrap();
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(raw.clone())
+            .create_async()
+            .await;
+
+        let levels = client.get_subscription_levels(blog, None).await.unwrap();
+        assert_eq!(levels.len(), 2);
+        assert_eq!(levels[0].id, 1);
+        assert_eq!(levels[0].name, "Basic");
+    }
+
+    #[tokio::test]
+    async fn test_get_subscription_levels_show_free() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let blog = "blogx";
+        let api_path = api_path(&format!(
+            "blog/{blog}/subscription_level/?show_free_level=true"
+        ));
+
+        let raw =
+            fs::read_to_string("tests/fixtures/api_response_subscription_levels.json").unwrap();
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(raw)
+            .create_async()
+            .await;
+
+        let levels = client
+            .get_subscription_levels(blog, Some(true))
+            .await
+            .unwrap();
+        assert_eq!(levels.len(), 2);
+        assert_eq!(levels[1].id, 2);
+        assert!(levels[1].is_limited);
+    }
 }

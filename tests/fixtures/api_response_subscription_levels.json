@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Basic",
+      "price": 0,
+      "currencyPrices": {
+        "USD": 0,
+        "RUB": 0
+      },
+      "isLimited": false,
+      "isArchived": false,
+      "deleted": false,
+      "isHidden": false,
+      "createdAt": 1700000000,
+      "ownerId": 123,
+      "promos": [],
+      "data": [],
+      "externalApps": {
+        "discord": {
+          "isConfigured": false,
+          "data": {
+            "role": {
+              "id": "",
+              "name": ""
+            }
+          }
+        },
+        "telegram": {
+          "isConfigured": false
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Pro",
+      "price": 5,
+      "currencyPrices": {
+        "USD": 5,
+        "RUB": 350
+      },
+      "isLimited": true,
+      "isArchived": false,
+      "deleted": false,
+      "isHidden": false,
+      "createdAt": 1700001000,
+      "ownerId": 123,
+      "promos": [],
+      "data": [],
+      "externalApps": {
+        "discord": {
+          "isConfigured": true,
+          "data": {
+            "role": {
+              "id": "1",
+              "name": "Member"
+            }
+          }
+        },
+        "telegram": {
+          "isConfigured": false
+        }
+      }
+    }
+  ]
+}
