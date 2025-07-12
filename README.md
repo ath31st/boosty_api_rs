@@ -7,6 +7,7 @@ transparently handles token expiration and retries requests when needed.
 ## Table of Contents
 
 - [Disclaimer](#disclaimer)
+- [Project Status](#project-status)
 - [Features](#features)
 - [Installation](#installation)
 - [Example: Fetching a Single Post](#example-fetching-single-post)
@@ -30,6 +31,12 @@ By using it, you agree to:
 - Comply with Boosty's [Terms of Service](https://boosty.to/terms) and any applicable copyright laws.
 
 The author is not responsible for any misuse of this software.
+
+## Project Status
+
+🚧 This library is under active development.  
+Breaking changes, refactoring, and architectural updates may occur frequently.  
+Use with caution in production environments and pin specific versions if needed.
 
 ## Features
 
