@@ -48,6 +48,9 @@ The author is not responsible for any misuse of this software.
 - Fetch targets via `get_targets(blog)`.
 - Fetch subscription levels via `get_subscription_levels(blog, show_free_level)`.
 
+### 📜 Subscriptions
+- Fetch current user subscriptions via `get_subscriptions(limit, with_follow)`, returning a paginated `SubscriptionsResponse`.
+
 ### ⚙️ Low-level Features
 - Async-ready `ApiClient` using `reqwest`.
 - Custom headers with real-world `User-Agent`, `DNT`, `Cache-Control`, etc.
@@ -59,7 +62,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.10.1"
+boosty_api = "0.11.0"
 ```
 
 or
