@@ -33,12 +33,25 @@ The author is not responsible for any misuse of this software.
 
 ## Features
 
-- Simple, high-level API for fetching individual posts or batches of posts.
-- Built-in token management using access and refresh tokens (similar in concept to OAuth2 flows).
-- Automatic token refreshing and retrying failed requests (when tokens are provided).
-- Deserialization into rich, typed Rust structs using `serde`.
-- Clean separation of concerns between authentication and API interaction.
-- Currently, supports content types: **video**, **audio**, **image**, **text**, **link** and **file**.  
+### 🔐 Authentication
+- Static bearer token or refresh-token + device ID (OAuth2-like).
+- Automatic token refresh and retry on expiration.
+- Clean separation of `AuthProvider` logic.
+
+### 📝 Post API
+- Fetch single post: `fetch_post(blog, id)`, with retry on `not_available`.
+- Fetch multiple posts: `fetch_posts(blog, limit)`, with structured retry logic.
+- Strongly typed `Post` struct with `serde` support.
+- Handles `"not available"` status gracefully.
+
+### 🎯 Blog Metadata
+- Fetch targets via `get_targets(blog)`.
+- Fetch subscription levels via `get_subscription_levels(blog, show_free_level)`.
+
+### ⚙️ Low-level Features
+- Async-ready `ApiClient` using `reqwest`.
+- Custom headers with real-world `User-Agent`, `DNT`, `Cache-Control`, etc.
+- Unified error types: `ApiError`, `AuthError` with detailed variants.
 
 ## Installation
 
@@ -46,7 +59,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.10.0"
+boosty_api = "0.10.1"
 ```
 
 or
