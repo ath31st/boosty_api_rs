@@ -1,4 +1,5 @@
 pub mod post;
+mod subscription_level;
 mod target;
 
 pub use post::{
@@ -8,3 +9,5 @@ pub use post::{
 };
 
 pub use target::{Target, TargetResponse};
+
+pub use subscription_level::{SubscriptionLevel, SubscriptionLevelResponse};
