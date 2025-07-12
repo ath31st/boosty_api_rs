@@ -438,4 +438,49 @@ mod tests {
         assert_eq!(levels[1].id, 2);
         assert!(levels[1].is_limited);
     }
+
+    #[tokio::test]
+    async fn test_get_subscriptions_unauthorized() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let api_path = api_path("user/subscriptions?limit=30&with_follow=true");
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(401)
+            .create_async()
+            .await;
+
+        let res = client.get_subscriptions(Some(30), Some(true)).await;
+        assert!(matches!(res, Err(ApiError::Unauthorized)));
+    }
+
+    #[tokio::test]
+    async fn test_get_subscriptions_success() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let api_path = api_path("user/subscriptions?limit=30&with_follow=true");
+        let raw = fs::read_to_string("tests/fixtures/api_response_subscriptions.json").unwrap();
+
+        server
+            .mock("GET", api_path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(raw)
+            .create_async()
+            .await;
+
+        let resp = client
+            .get_subscriptions(Some(30), Some(true))
+            .await
+            .unwrap();
+        assert_eq!(resp.data.len(), 1);
+        let sub = &resp.data[0];
+        assert_eq!(sub.id, 39989023);
+        assert_eq!(resp.limit, 30);
+    }
 }

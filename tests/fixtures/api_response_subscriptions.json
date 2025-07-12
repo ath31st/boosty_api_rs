@@ -1,0 +1,90 @@
+{
+  "data": [
+    {
+      "id": 39989023,
+      "levelId": 1848099,
+      "parentId": null,
+      "name": "Follower",
+      "price": 0,
+      "customPrice": 0,
+      "period": 1,
+      "onTime": 1752302777,
+      "offTime": null,
+      "nextPayTime": null,
+      "isPause": false,
+      "isSuspended": false,
+      "isArchived": false,
+      "isApplePayed": false,
+      "isFeePaid": false,
+      "ownerId": 144649,
+      "subscriptionLevel": {
+        "id": 1848099,
+        "name": "Follower",
+        "price": 0,
+        "currencyPrices": {
+          "USD": 0,
+          "RUB": 0
+        },
+        "isLimited": false,
+        "isArchived": false,
+        "isHidden": false,
+        "deleted": false,
+        "ownerId": 144649,
+        "createdAt": 1686397178,
+        "data": []
+      },
+      "blog": {
+        "blogUrl": "jove",
+        "title": "Всем привет",
+        "coverUrl": "https://images.boosty.to/blog/144649/cover",
+        "hasAdultContent": false,
+        "owner": {
+          "id": 144649,
+          "name": "Jove",
+          "hasAvatar": true,
+          "avatarUrl": "https://images.boosty.to/user/144649/avatar"
+        },
+        "flags": {
+          "showPostDonations": true,
+          "hasAdultContent": false,
+          "hasSubscriptionLevels": true,
+          "forbiddenChangeHasAdultContent": false,
+          "hasTargets": true,
+          "isAlien": false,
+          "allowIndex": true,
+          "allowGoogleIndex": true,
+          "acceptDonationMessages": true,
+          "isRssFeedEnabled": false
+        }
+      },
+      "recommendedPromo": {
+        "id": 27072,
+        "type": "discount",
+        "description": null,
+        "startTime": 1707568263,
+        "endTime": null,
+        "isFinished": false,
+        "access": {
+          "newSubscriber": true,
+          "oldPaidSubscriber": true,
+          "accessOtherLevelSubscriber": true
+        },
+        "count": {
+          "activation": 413,
+          "maxActivation": null
+        },
+        "discount": {
+          "price": 75,
+          "percent": 25,
+          "currencyPrices": {
+            "USD": 1,
+            "RUB": 75
+          }
+        }
+      }
+    }
+  ],
+  "total": 1,
+  "limit": 30,
+  "offset": 0
+}
