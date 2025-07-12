@@ -135,32 +135,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```rust
 use boosty_api::post_data_extractor::ContentItem;
 
-let content_items = post.extract_content();
-for item in content_items {
-  match item {
-    ContentItem::Image { url, id } => {
-      println ! ("Image URL: {url}, ID: {id}");
-    }
-    ContentItem::Video { url } => {
-      println ! ("Video URL: {url}");
-    }
-    ContentItem::OkVideo { url, video_title } => {
-      println ! ("OK Video URL: {url}, Title: {video_title}");
-    }
-    ContentItem::Audio { url, audio_title, file_type } => {
-      println ! ("Audio URL: {url}, Title: {audio_title}, Type: {file_type}");
-    }
-    ContentItem::Text { modificator, content } => {
-      println ! ("Text: {content}, Modificator: {modificator}");
-    }
-    ContentItem::Link { explicit, content, url } => {
-      println ! ("Link: {url}, Content: {content}, Explicit: {explicit}");
-    }
-    ContentItem::File { url, title, size } => {
-      println ! ("File: {title}, URL: {url}, Size: {size}");
-    }
-    ContentItem::Unknown => {
-      println ! ("Unknown content type");
+fn print_content(post: &boosty_api::Post) {
+    let content_items = post.extract_content();
+    for item in content_items {
+        match item {
+            ContentItem::Image { url, id } => {
+                println!("Image URL: {url}, ID: {id}");
+            }
+            ContentItem::Video { url } => {
+                println!("Video URL: {url}");
+            }
+            ContentItem::OkVideo { url, video_title } => {
+                println!("OK Video URL: {url}, Title: {video_title}");
+            }
+            ContentItem::Audio { url, audio_title, file_type } => {
+                println!("Audio URL: {url}, Title: {audio_title}, Type: {file_type}");
+            }
+            ContentItem::Text { modificator, content } => {
+                println!("Text: {content}, Modificator: {modificator}");
+            }
+            ContentItem::Link { explicit, content, url } => {
+                println!("Link: {url}, Content: {content}, Explicit: {explicit}");
+            }
+            ContentItem::File { url, title, size } => {
+                println!("File: {title}, URL: {url}, Size: {size}");
+            }
+            ContentItem::Unknown => {
+                println ! ("Unknown content type");
+      }
     }
   }
 }
