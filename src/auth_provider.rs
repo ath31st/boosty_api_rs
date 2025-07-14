@@ -76,7 +76,7 @@ impl AuthProvider {
             headers.insert(AUTHORIZATION, hv);
             return Ok(());
         }
-        
+
         // If static not set but refresh+device_id present, use refresh flow
         if self.has_refresh_and_device_id().await {
             let tok = self.get_access_token().await?;
@@ -156,23 +156,6 @@ impl AuthProvider {
             _ => Err(AuthError::MissingCredentials),
         }
     }
-    
-    /// Force token refresh regardless of current expiry.
-    ///
-    /// Returns new access token, or error if refresh flow is not configured.
-    pub async fn force_refresh(&self) -> ResultAuth<String> {
-        let mut st = self.state.lock().await;
-
-        if st.refresh_token.is_none() {
-            return Err(AuthError::EmptyRefreshToken);
-        }
-        if st.device_id.is_none() {
-            return Err(AuthError::EmptyDeviceId);
-        }
-
-        self.refresh_internal(&mut st).await?;
-        Ok(st.access_token.clone().unwrap())
-    }
 
     /// Internal method to perform token refresh via HTTP request.
     ///
@@ -211,7 +194,7 @@ impl AuthProvider {
         st.expires_at = Some(now + Duration::from_secs(data.expires_in as u64));
         Ok(())
     }
-    
+
     /// Check if both refresh token and device ID are set.
     pub async fn has_refresh_and_device_id(&self) -> bool {
         let st = self.state.lock().await;
@@ -277,17 +260,5 @@ mod tests {
 
         assert_eq!(headers.get(AUTHORIZATION).unwrap(), "Bearer new_access");
         mock.assert_async().await;
-    }
-
-    #[tokio::test]
-    async fn test_force_refresh_fails_with_missing_data() {
-        let provider = make_provider("http://localhost");
-        let err = provider.force_refresh().await.unwrap_err();
-        assert!(matches!(err, AuthError::EmptyRefreshToken));
-
-        provider
-            .set_refresh_token_and_device_id("ref".into(), "".into())
-            .await
-            .unwrap_err();
     }
 }
