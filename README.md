@@ -26,6 +26,7 @@ transparently handles token expiration and retries requests when needed.
 
 This crate is intended for research and personal use only.
 By using it, you agree to:
+
 - Access only your own content from the Boosty platform.
 - Refrain from scraping, redistributing, or otherwise misusing content that you do not own.
 - Comply with Boosty's [Terms of Service](https://boosty.to/terms) and any applicable copyright laws.
@@ -41,24 +42,38 @@ Use with caution in production environments and pin specific versions if needed.
 ## Features
 
 ### 🔐 Authentication
+
 - Static bearer token or refresh-token + device ID (OAuth2-like).
 - Automatic token refresh and retry on expiration.
 - Clean separation of `AuthProvider` logic.
 
+### 🔁 Retry Behavior
+
+The client automatically retries HTTP requests that fail due to transient network errors or expired access tokens.
+
+- Retry logic is centralized in the `get_request()` method.
+- On token expiration, the client performs a refresh (if refresh-token and device ID are set) and retries the request.
+- Other error types (like 4xx or business-logic errors) are not retried.
+
 ### 📝 Post API
-- Fetch single post: `fetch_post(blog, id)`, with retry on `not_available`.
-- Fetch multiple posts: `fetch_posts(blog, limit)`, with structured retry logic.
+
+- Get single post: `get_post(blog, id)`.
+- Get multiple posts: `get_posts(blog, limit)`.
 - Strongly typed `Post` struct with `serde` support.
 - Handles `"not available"` status gracefully.
 
 ### 🎯 Blog Metadata
-- Fetch targets via `get_targets(blog)`.
-- Fetch subscription levels via `get_subscription_levels(blog, show_free_level)`.
+
+- Get targets via `get_targets(blog)`.
+- Get subscription levels via `get_subscription_levels(blog, show_free_level)`.
 
 ### 📜 Subscriptions
-- Fetch current user subscriptions via `get_subscriptions(limit, with_follow)`, returning a paginated `SubscriptionsResponse`.
+
+- Get current user subscriptions via `get_subscriptions(limit, with_follow)`, returning a paginated
+  `SubscriptionsResponse`.
 
 ### ⚙️ Low-level Features
+
 - Async-ready `ApiClient` using `reqwest`.
 - Custom headers with real-world `User-Agent`, `DNT`, `Cache-Control`, etc.
 - Unified error types: `ApiError`, `AuthError` with detailed variants.
@@ -69,7 +84,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.11.3"
+boosty_api = "0.12.0"
 ```
 
 or
@@ -78,7 +93,7 @@ or
 cargo add boosty_api
 ```
 
-## Example fetching single post
+## Example getting single post
 
 ```rust
 use boosty_api::api_client::ApiClient;
@@ -97,7 +112,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Or use refresh token + device ID
     // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
 
-    let post = api_client.fetch_post("some-blog-name", "post-id").await?;
+    let post = api_client.get_post("some-blog-name", "post-id").await?;
     println!("{:#?}", post);
 
     Ok(())
@@ -123,7 +138,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Or use refresh token + device ID
     // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
     let limit = 5;
-    let posts = api_client.fetch_posts("blog_name", limit).await?;
+    let posts = api_client.get_posts("blog_name", limit).await?;
     println!("{:#?}", posts);
 
     Ok(())
@@ -161,16 +176,17 @@ fn print_content(post: &boosty_api::Post) {
                 println!("File: {title}, URL: {url}, Size: {size}");
             }
             ContentItem::Unknown => {
-                println ! ("Unknown content type");
-      }
+                println!("Unknown content type");
+            }
+        }
     }
-  }
 }
 ```
 
 ## Authentication
 
-To get access token or refresh token and device_id, you need to log in to the service, then press F12 in the browser and go to the application tab, where you can select local storage. The required keys are _clentId and auth.
+To get access token or refresh token and device_id, you need to log in to the service, then press F12 in the browser and
+go to the application tab, where you can select local storage. The required keys are _clentId and auth.
 
 There are two options:
 
