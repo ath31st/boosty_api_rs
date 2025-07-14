@@ -1,10 +1,9 @@
 use crate::api_client::ApiClient;
-use crate::api_response::Target;
+use crate::api_response::TargetResponse;
 use crate::error::{ApiError, ResultApi};
-use serde_json::{Value, from_value};
 
 impl ApiClient {
-    /// Fetch all targets for a blog, optionally handling HTTP errors and JSON parsing.
+    /// Get all targets for a blog.
     ///
     /// # Parameters
     ///
@@ -12,20 +11,21 @@ impl ApiClient {
     ///
     /// # Returns
     ///
-    /// A `Vec<Target>` decoded from the `"data"` field of the JSON response.
+    /// A `TargetResponse` decoded from the full JSON body.
     ///
     /// # Errors
     ///
     /// - `ApiError::HttpRequest` if the network request fails.
     /// - `ApiError::JsonParse` if the HTTP response body cannot be parsed as JSON.
-    /// - `ApiError::Deserialization` if the `"data"` array cannot be deserialized into `Target` structs.
-    pub async fn get_blog_targets(&self, blog_name: &str) -> ResultApi<Vec<Target>> {
+    /// - `ApiError::Deserialization` if the body cannot be deserialized into `TargetResponse`.
+    pub async fn get_blog_targets(&self, blog_name: &str) -> ResultApi<TargetResponse> {
         let path = format!("target/{blog_name}/");
         let response = self.get_request(&path).await?;
 
-        let json: Value = response.json().await.map_err(ApiError::JsonParse)?;
-
-        let parsed = from_value(json["data"].clone()).map_err(ApiError::Deserialization)?;
+        let parsed = response
+            .json::<TargetResponse>()
+            .await
+            .map_err(ApiError::JsonParse)?;
 
         Ok(parsed)
     }

@@ -354,8 +354,8 @@ mod tests {
             .await;
 
         let targets = client.get_blog_targets(blog).await.unwrap();
-        assert!(!targets.is_empty());
-        let first = &targets[0];
+        assert!(!targets.data.is_empty());
+        let first = &targets.data[0];
         assert_eq!(first.id, 600101);
         assert_eq!(first.description, "🏠 Saving for a new family home");
         assert_eq!(first.target_sum, 1200000.5);
@@ -402,7 +402,10 @@ mod tests {
             .create_async()
             .await;
 
-        let levels = client.get_blog_subscription_levels(blog, None).await.unwrap();
+        let levels = client
+            .get_blog_subscription_levels(blog, None)
+            .await
+            .unwrap();
         assert_eq!(levels.data.len(), 2);
         assert_eq!(levels.data[0].id, 1);
         assert_eq!(levels.data[0].name, "Basic");
