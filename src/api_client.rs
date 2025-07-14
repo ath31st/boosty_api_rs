@@ -11,7 +11,7 @@ use reqwest::{Client, Response};
 /// Client for interacting with Boosty API.
 ///
 /// Handles base URL, common headers, and delegates authentication to `AuthProvider`.
-/// Provides methods to fetch a single post or multiple posts.
+/// Provides methods to get a single post or multiple posts.
 ///
 /// # Examples
 ///
@@ -31,7 +31,7 @@ use reqwest::{Client, Response};
 ///     // Or use refresh token + device ID:
 ///     // api_client.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
 ///
-///     let post = api_client.fetch_post("some-blog-name", "post-id").await?;
+///     let post = api_client.get_post("some-blog-name", "post-id").await?;
 ///     println!("{:#?}", post);
 ///
 ///     let targets = api_client.get_blog_targets("some-blog-name").await?;
