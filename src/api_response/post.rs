@@ -1,5 +1,12 @@
 use serde::Deserialize;
 
+/// API response containing a list of posts.
+#[derive(Deserialize, Debug)]
+pub struct PostsResponse {
+    /// Array of post items.
+    pub data: Vec<Post>,
+}
+
 /// Represents a single post fetched from the Boosty API.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

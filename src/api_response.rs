@@ -5,8 +5,8 @@ mod target;
 
 pub use post::{
     AudioData, Comments, ContentCounter, Count, CurrencyPrices, Donators, ExtraFlag, FileData,
-    Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, Reactions, Tag, TextData,
-    User, VideoData,
+    Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, Reactions,
+    Tag, TextData, User, VideoData,
 };
 
 pub use target::{Target, TargetResponse};

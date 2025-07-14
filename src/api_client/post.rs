@@ -1,8 +1,7 @@
 use crate::api_client::ApiClient;
-use crate::api_response::Post;
+use crate::api_response::{Post, PostsResponse};
 use crate::error::{ApiError, ResultApi};
 use reqwest::StatusCode;
-use serde_json::{Value, from_value};
 
 impl ApiClient {
     /// Get a single post once, without automatic retry on "not available" or HTTP 401.
@@ -43,7 +42,7 @@ impl ApiClient {
         Ok(parsed)
     }
 
-    /// Get multiple posts once, parsing JSON array under `"data"` key.
+    /// Get multiple posts for a blog.
     ///
     /// # Parameters
     ///
@@ -52,21 +51,21 @@ impl ApiClient {
     ///
     /// # Returns
     ///
-    /// On success, returns a vector of `Post` objects.
+    /// On success, returns a `PostsResponse` containing the `data` field with `Post` items.
     ///
     /// # Errors
     ///
     /// - `ApiError::HttpRequest` if the HTTP request fails.
     /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
     /// - `ApiError::Deserialization` if the `"data"` field cannot be deserialized into a vector of `Post`.
-    pub async fn get_posts(&self, blog_name: &str, limit: i32) -> ResultApi<Vec<Post>> {
+    pub async fn get_posts(&self, blog_name: &str, limit: i32) -> ResultApi<PostsResponse> {
         let path = format!("blog/{blog_name}/post/?limit={limit}");
         let response = self.get_request(&path).await?;
 
-        let json: Value = response.json().await.map_err(ApiError::JsonParse)?;
-
-        let parsed = from_value(json["data"].clone()).map_err(ApiError::Deserialization)?;
-
-        Ok(parsed)
+        let posts_response = response
+            .json::<PostsResponse>()
+            .await
+            .map_err(ApiError::JsonParse)?;
+        Ok(posts_response)
     }
 }

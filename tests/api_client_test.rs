@@ -266,8 +266,8 @@ mod tests {
             .await;
 
         let result = client.get_posts(blog, limit).await.unwrap();
-        assert_eq!(result.len(), 2);
-        assert_eq!(result[0].id, "p1");
+        assert_eq!(result.data.len(), 2);
+        assert_eq!(result.data[0].id, "p1");
     }
 
     #[tokio::test]
