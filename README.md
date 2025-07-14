@@ -1,6 +1,6 @@
 # Boosty API
 
-A minimal, async-ready client for fetching post data from a remote blogging API that requires either a bearer token
+A minimal, async-ready client for getting post data from a remote blogging API that requires either a bearer token
 or a refresh token + device ID combo for authentication. This crate is designed with resiliency in mind: it
 transparently handles token expiration and retries requests when needed.
 
@@ -119,7 +119,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## Example fetching multiple posts
+## Example getting multiple posts
 
 ```rust
 use boosty_api::api_client::ApiClient;
@@ -206,7 +206,7 @@ If a post is unavailable and refresh credentials are present, the client will au
 
 ## Crate Structure
 
-- `api_client`: Main entry point; fetches post(s), manages headers, and authentication logic
+- `api_client`: Main entry point; gets post(s), manages headers, and authentication logic
 - `auth_provider`: Refresh-token and access-token management
 - `api_response`: Deserialization models for all API content types (e.g. post, target); organized by domain
 - `error`: Uniform error types for API and auth operations
