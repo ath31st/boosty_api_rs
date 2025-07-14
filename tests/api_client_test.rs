@@ -403,9 +403,9 @@ mod tests {
             .await;
 
         let levels = client.get_blog_subscription_levels(blog, None).await.unwrap();
-        assert_eq!(levels.len(), 2);
-        assert_eq!(levels[0].id, 1);
-        assert_eq!(levels[0].name, "Basic");
+        assert_eq!(levels.data.len(), 2);
+        assert_eq!(levels.data[0].id, 1);
+        assert_eq!(levels.data[0].name, "Basic");
     }
 
     #[tokio::test]
@@ -434,9 +434,9 @@ mod tests {
             .get_blog_subscription_levels(blog, Some(true))
             .await
             .unwrap();
-        assert_eq!(levels.len(), 2);
-        assert_eq!(levels[1].id, 2);
-        assert!(levels[1].is_limited);
+        assert_eq!(levels.data.len(), 2);
+        assert_eq!(levels.data[1].id, 2);
+        assert!(levels.data[1].is_limited);
     }
 
     #[tokio::test]
