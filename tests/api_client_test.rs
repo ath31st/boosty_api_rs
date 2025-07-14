@@ -28,7 +28,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.fetch_post(blog, post_id).await;
+        let res = client.get_post(blog, post_id).await;
         assert!(matches!(res, Err(ApiError::Unauthorized)));
     }
 
@@ -50,7 +50,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.fetch_post(blog, post_id).await;
+        let res = client.get_post(blog, post_id).await;
         assert!(matches!(res, Err(ApiError::JsonParseDetailed { .. })));
     }
 
@@ -78,7 +78,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = client.fetch_post(blog, post_id).await.unwrap();
+        let result = client.get_post(blog, post_id).await.unwrap();
         assert_eq!(result.id, "99");
         assert_eq!(result.title, "Unavailable but returned");
     }
@@ -143,7 +143,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = client.fetch_post(blog, post_id).await.unwrap();
+        let result = client.get_post(blog, post_id).await.unwrap();
         assert_eq!(result.id, "100");
         assert_eq!(result.title, "Old Title");
     }
@@ -187,7 +187,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.fetch_post(blog, post_id).await;
+        let res = client.get_post(blog, post_id).await;
         assert!(res.is_err());
     }
 
@@ -207,7 +207,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.fetch_posts(blog, limit).await;
+        let res = client.get_posts(blog, limit).await;
         assert!(res.is_err());
     }
 
@@ -229,7 +229,7 @@ mod tests {
             .create_async()
             .await;
 
-        let res = client.fetch_posts(blog, limit).await;
+        let res = client.get_posts(blog, limit).await;
         assert!(res.is_err());
     }
 
@@ -265,7 +265,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = client.fetch_posts(blog, limit).await.unwrap();
+        let result = client.get_posts(blog, limit).await.unwrap();
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].id, "p1");
     }
@@ -316,7 +316,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = client.fetch_post(blog, post_id).await.unwrap();
+        let result = client.get_post(blog, post_id).await.unwrap();
         assert_eq!(result.id, "55");
     }
 
