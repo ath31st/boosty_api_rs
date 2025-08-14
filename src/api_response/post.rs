@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use crate::api_response::Tag;
 
 /// API response containing a list of posts.
 #[derive(Deserialize, Debug)]
@@ -325,15 +326,7 @@ pub struct CurrencyPrices {
     pub usd: f32,
 }
 
-/// Post tag info.
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct Tag {
-    /// Tag title or name.
-    pub title: String,
-    /// Tag ID.
-    pub id: i64,
-}
+
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase", tag = "type")]

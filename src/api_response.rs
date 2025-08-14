@@ -1,13 +1,16 @@
-pub mod post;
+mod post;
 mod subscription;
 mod subscription_level;
+mod tag;
 mod target;
 
 pub use post::{
     AudioData, Comments, ContentCounter, Count, CurrencyPrices, Donators, ExtraFlag, FileData,
     Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, Reactions,
-    Tag, TextData, User, VideoData,
+    TextData, User, VideoData,
 };
+
+pub use tag::{SearchTag, SearchTagsData, SearchTagsFullResponse, Tag, TagsResponse};
 
 pub use target::{Target, TargetResponse};
 
