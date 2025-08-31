@@ -13,7 +13,7 @@ pub enum ContentItem {
     Audio {
         url: String,
         title: String,
-        file_type: String,
+        file_type: Option<String>,
         size: u64,
     },
     /// Text item with formatting modifier and content.
@@ -293,19 +293,19 @@ mod tests {
             size: 0,
             id: "".into(),
             url: "audio_url".into(),
-            artist: "".into(),
-            album: "".into(),
-            file_type: "mp3".into(),
+            artist: Some("".into()),
+            album: Some("".into()),
+            file_type: Some("mp3".into()),
             title: "AudioTitle".into(),
-            track: "TrackTitle".into(),
-            duration: 0,
+            track: Some("TrackTitle".into()),
+            duration: Some(0),
         };
         let post = dummy_post(vec![MediaData::Audio(audio)], true);
         let content = post.extract_content();
 
         assert!(
             matches!(content[0], ContentItem::Audio { ref url, ref title, ref file_type, ref size }
-        if url == "audio_url" && title == "AudioTitle" && file_type == "mp3" && *size == 0)
+        if url == "audio_url" && title == "AudioTitle" && file_type.clone().unwrap() == "mp3" && *size == 0)
         );
     }
 

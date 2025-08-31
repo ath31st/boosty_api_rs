@@ -169,17 +169,17 @@ pub struct AudioData {
     /// URL to the audio file.
     pub url: String,
     /// Artist name.
-    pub artist: String,
+    pub artist: Option<String>,
     /// Album name.
-    pub album: String,
+    pub album: Option<String>,
     /// File MIME type or extension.
-    pub file_type: String,
+    pub file_type: Option<String>,
     /// Title of the audio track.
     pub title: String,
     /// Track number in the album.
-    pub track: String,
+    pub track: Option<String>,
     /// Duration in seconds.
-    pub duration: u32,
+    pub duration: Option<u32>,
 }
 
 /// Image media data.
