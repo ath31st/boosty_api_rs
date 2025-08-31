@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use crate::api_response::Tag;
+use serde::Deserialize;
 
 /// API response containing a list of posts.
 #[derive(Deserialize, Debug)]
@@ -326,8 +326,6 @@ pub struct CurrencyPrices {
     pub usd: f32,
 }
 
-
-
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum MediaData {
@@ -347,4 +345,14 @@ pub enum MediaData {
     File(FileData),
     #[serde(other)]
     Unknown,
+}
+
+impl Post {
+    pub fn safe_title(&self) -> String {
+        if self.title.trim().is_empty() {
+            format!("untitled_{}", self.id)
+        } else {
+            self.title.clone()
+        }
+    }
 }

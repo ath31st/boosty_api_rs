@@ -25,9 +25,11 @@ impl ApiClient {
         let path = format!("blog/{blog_name}/post/{post_id}");
         let response = self.get_request(&path).await?;
         let status = response.status();
+        
         if status == StatusCode::UNAUTHORIZED {
             return Err(ApiError::Unauthorized);
         }
+        
         if !status.is_success() {
             let endpoint = path.clone();
             return Err(ApiError::HttpStatus { status, endpoint });
@@ -61,6 +63,11 @@ impl ApiClient {
     pub async fn get_posts(&self, blog_name: &str, limit: i32) -> ResultApi<PostsResponse> {
         let path = format!("blog/{blog_name}/post/?limit={limit}");
         let response = self.get_request(&path).await?;
+        let status = response.status();
+
+        if status == 401 {
+            return Err(ApiError::Unauthorized);
+        }
 
         let posts_response = response
             .json::<PostsResponse>()
