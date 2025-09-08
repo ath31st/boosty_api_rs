@@ -5,7 +5,7 @@ mod user;
 
 use crate::auth_provider::AuthProvider;
 use crate::error::{ApiError, ResultApi, ResultAuth};
-use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, CACHE_CONTROL, USER_AGENT};
+use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response};
 
 /// Client for interacting with Boosty API.
@@ -127,6 +127,16 @@ impl ApiClient {
         self.auth_provider
             .set_refresh_token_and_device_id(refresh_token.to_string(), device_id.to_string())
             .await
+    }
+
+    /// Clear refresh token and device ID (disables refresh flow).
+    pub async fn clear_refresh_and_device_id(&self) {
+        self.auth_provider.clear_refresh_and_device_id().await
+    }
+
+    /// Clear access token (disables static token).
+    pub async fn clear_access_token(&self) {
+        self.auth_provider.clear_access_token().await
     }
 
     /// Expose current default headers as a `HashMap<String, String>`.

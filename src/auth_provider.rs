@@ -200,6 +200,21 @@ impl AuthProvider {
         let st = self.state.lock().await;
         st.refresh_token.is_some() && st.device_id.is_some()
     }
+
+    /// Clear static access token (disables static token auth).
+    pub async fn clear_access_token(&self) {
+        let mut st = self.state.lock().await;
+        st.static_access_token = None;
+    }
+
+    /// Clear refresh token and device ID (disables refresh flow).
+    pub async fn clear_refresh_and_device_id(&self) {
+        let mut st = self.state.lock().await;
+        st.refresh_token = None;
+        st.device_id = None;
+        st.access_token = None;
+        st.expires_at = None;
+    }
 }
 
 #[cfg(test)]
