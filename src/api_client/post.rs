@@ -25,11 +25,11 @@ impl ApiClient {
         let path = format!("blog/{blog_name}/post/{post_id}");
         let response = self.get_request(&path).await?;
         let status = response.status();
-        
+
         if status == StatusCode::UNAUTHORIZED {
             return Err(ApiError::Unauthorized);
         }
-        
+
         if !status.is_success() {
             let endpoint = path.clone();
             return Err(ApiError::HttpStatus { status, endpoint });
@@ -60,7 +60,7 @@ impl ApiClient {
     /// - `ApiError::HttpRequest` if the HTTP request fails.
     /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
     /// - `ApiError::Deserialization` if the `"data"` field cannot be deserialized into a vector of `Post`.
-    pub async fn get_posts(&self, blog_name: &str, limit: i32) -> ResultApi<PostsResponse> {
+    pub async fn get_posts(&self, blog_name: &str, limit: usize) -> ResultApi<PostsResponse> {
         let path = format!("blog/{blog_name}/post/?limit={limit}");
         let response = self.get_request(&path).await?;
         let status = response.status();
