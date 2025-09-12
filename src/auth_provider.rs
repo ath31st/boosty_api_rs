@@ -276,4 +276,36 @@ mod tests {
         assert_eq!(headers.get(AUTHORIZATION).unwrap(), "Bearer new_access");
         mock.assert_async().await;
     }
+
+    #[tokio::test]
+    async fn test_clear_access_token() {
+        let provider = make_provider("http://localhost");
+        provider
+            .set_access_token_only("my_token".into())
+            .await
+            .unwrap();
+        provider.clear_access_token().await;
+
+        let mut headers = HeaderMap::new();
+
+        provider.apply_auth_header(&mut headers).await.unwrap();
+
+        assert!(headers.get(AUTHORIZATION).is_none());
+    }
+
+    #[tokio::test]
+    async fn test_clear_refresh_and_device_id() {
+        let provider = make_provider("http://localhost");
+        provider
+            .set_refresh_token_and_device_id("my_token".into(), "my_device_id".into())
+            .await
+            .unwrap();
+        provider.clear_refresh_and_device_id().await;
+
+        let mut headers = HeaderMap::new();
+
+        provider.apply_auth_header(&mut headers).await.unwrap();
+
+        assert!(headers.get(AUTHORIZATION).is_none());
+    }
 }
