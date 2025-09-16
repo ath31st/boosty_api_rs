@@ -7,8 +7,12 @@ pub enum ContentItem {
     Image { url: String, id: String },
     /// Simple video with direct URL.
     Video { url: String },
-    /// OK.ru video: URL chosen by quality priority, plus title.
-    OkVideo { url: String, title: String },
+    /// OK.ru video: URL chosen by quality priority, plus title and video ID.
+    OkVideo {
+        url: String,
+        title: String,
+        vid: String,
+    },
     /// Audio item with URL, title and file type.
     Audio {
         url: String,
@@ -77,6 +81,7 @@ impl Post {
                         result.push(ContentItem::OkVideo {
                             url: best_url,
                             title: vd.title.clone(),
+                            vid: vd.vid.clone(),
                         });
                     }
                 }
@@ -262,8 +267,8 @@ mod tests {
                     url: "hd_url".into(),
                 },
             ],
-            id: "".into(),
-            vid: "".into(),
+            id: "9876543210".into(),
+            vid: "0123456789".into(),
             preview: "".into(),
             height: 0,
             time_code: 0,
@@ -279,7 +284,7 @@ mod tests {
         let content = post.extract_content();
 
         assert!(
-            matches!(content[0], ContentItem::OkVideo { ref url, ref title } if url == "hd_url" && title == "vid")
+            matches!(content[0], ContentItem::OkVideo { ref url, ref title, ref vid } if url == "hd_url" && title == "vid" && vid == "0123456789")
         );
     }
 
