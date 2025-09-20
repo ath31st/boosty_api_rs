@@ -1,4 +1,4 @@
-use crate::api_response::Tag;
+use crate::api_response::{Reactions, Tag, User};
 use serde::Deserialize;
 
 /// API response containing a list of posts.
@@ -72,24 +72,6 @@ pub struct Post {
     pub advertiser_info: Option<serde_json::Value>,
     /// Price details in various currencies.
     pub currency_prices: CurrencyPrices,
-}
-
-/// Represents a user or author of a post.
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct User {
-    /// URL to the user's blog.
-    pub blog_url: String,
-    /// URL to the user's avatar image.
-    pub avatar_url: String,
-    /// User's display name.
-    pub name: String,
-    /// Whether the user has set an avatar.
-    pub has_avatar: bool,
-    /// Unique user identifier.
-    pub id: i64,
-    /// Various boolean flags for user settings.
-    pub flags: Flags,
 }
 
 /// User-specific flags.
@@ -298,20 +280,6 @@ pub struct Count {
     pub reactions: Reactions,
     /// Number of likes.
     pub likes: u32,
-}
-
-/// Reactions summary.
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct Reactions {
-    pub dislike: u32,
-    pub heart: u32,
-    pub fire: u32,
-    pub angry: u32,
-    pub wonder: u32,
-    pub laught: u32,
-    pub sad: u32,
-    pub like: u32,
 }
 
 /// Currency price info.
