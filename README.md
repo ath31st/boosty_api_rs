@@ -84,7 +84,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.14.0"
+boosty_api = "0.15.0"
 ```
 
 or
@@ -174,6 +174,9 @@ fn print_content(post: &boosty_api::Post) {
             }
             ContentItem::File { url, title, size } => {
                 println!("File: {title}, URL: {url}, Size: {size}");
+            }
+            ContentItem::List { style, items } => {
+                println!("List: {style}, Items: {items}");
             }
             ContentItem::Unknown => {
                 println!("Unknown content type");

@@ -326,6 +326,23 @@ pub struct CurrencyPrices {
     pub usd: f32,
 }
 
+/// List media data.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListData {
+    pub style: String,
+    pub items: Vec<ListItem>,
+}
+
+/// List item data.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListItem {
+    pub data: Vec<MediaData>,
+    pub items: Vec<ListItem>,
+}
+
+/// Media data container.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum MediaData {
@@ -343,6 +360,8 @@ pub enum MediaData {
     Link(LinkData),
     #[serde(rename = "file", rename_all = "camelCase")]
     File(FileData),
+    #[serde(rename = "list", rename_all = "camelCase")]
+    List(ListData),
     #[serde(other)]
     Unknown,
 }

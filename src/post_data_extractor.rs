@@ -1,7 +1,7 @@
 use crate::api_response::{MediaData, PlayerUrl, Post};
 
 /// Represents a single content item extracted from a `Post`.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ContentItem {
     /// Image with its URL and identifier.
     Image { url: String, id: String },
@@ -37,6 +37,11 @@ pub enum ContentItem {
         title: String,
         size: u64,
     },
+    /// List item with style and list of content items.
+    List {
+        style: String,
+        items: Vec<Vec<ContentItem>>,
+    },
     /// Fallback for unknown or unsupported media type.
     Unknown,
 }
@@ -52,65 +57,94 @@ impl Post {
         !self.has_access || self.data.is_empty()
     }
 
-    /// Extracts media items from post into a vector of `ContentItem`.
-    ///
-    /// Iterates over `self.data: Vec<MediaData>` and converts each variant:
-    /// - `Image` → `ContentItem::Image { url, id }`
-    /// - `Video` → `ContentItem::Video { url }`
-    /// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
-    /// - `Audio` → `ContentItem::Audio { url, audio_title: track, file_type }`
-    /// - `Text` → `ContentItem::Text { content, modificator }`
-    /// - `Link` → `ContentItem::Link { explicit, content, url }`
-    /// - Other/Unknown → `ContentItem::Unknown`
     pub fn extract_content(&self) -> Vec<ContentItem> {
         let mut result = Vec::new();
 
         for media in &self.data {
-            match media {
-                MediaData::Image(img) => {
-                    result.push(ContentItem::Image {
-                        url: img.url.clone(),
-                        id: img.id.clone(),
-                    });
+            extract_media(media, &mut result);
+        }
+
+        result
+    }
+}
+
+/// Extracts media items from post into a vector of `ContentItem`.
+///
+/// Iterates over `self.data: Vec<MediaData>` and converts each variant:
+/// - `Image` → `ContentItem::Image { url, id }`
+/// - `Video` → `ContentItem::Video { url }`
+/// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
+/// - `Audio` → `ContentItem::Audio { url, audio_title: track, file_type }`
+/// - `Text` → `ContentItem::Text { content, modificator }`
+/// - `Link` → `ContentItem::Link { explicit, content, url }`
+/// - `File` → `ContentItem::File { url, title, size }`
+/// - `List` → `ContentItem::List { style, items }`
+/// - Other/Unknown → `ContentItem::Unknown`
+fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
+    match media {
+        MediaData::Image(img) => out.push(ContentItem::Image {
+            url: img.url.clone(),
+            id: img.id.clone(),
+        }),
+        MediaData::Video(vd) => out.push(ContentItem::Video {
+            url: vd.url.clone(),
+        }),
+        MediaData::OkVideo(vd) => {
+            if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
+                out.push(ContentItem::OkVideo {
+                    url: best_url,
+                    title: vd.title.clone(),
+                    vid: vd.vid.clone(),
+                });
+            }
+        }
+        MediaData::Audio(audio) => out.push(ContentItem::Audio {
+            url: audio.url.clone(),
+            title: audio.title.clone(),
+            file_type: audio.file_type.clone(),
+            size: audio.size,
+        }),
+        MediaData::Text(text) => out.push(ContentItem::Text {
+            content: text.content.clone(),
+            modificator: text.modificator.clone(),
+        }),
+        MediaData::Link(link) => out.push(ContentItem::Link {
+            explicit: link.explicit,
+            content: link.content.clone(),
+            url: link.url.clone(),
+        }),
+        MediaData::File(file) => out.push(ContentItem::File {
+            url: file.url.clone(),
+            title: file.title.clone(),
+            size: file.size,
+        }),
+        MediaData::List(list) => {
+            let mut items = Vec::new();
+            for li in &list.items {
+                let mut sub_items = Vec::new();
+                for d in &li.data {
+                    extract_media(d, &mut sub_items);
                 }
-                MediaData::Video(vd) => result.push(ContentItem::Video {
-                    url: vd.url.clone(),
-                }),
-                MediaData::OkVideo(vd) => {
-                    if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
-                        result.push(ContentItem::OkVideo {
-                            url: best_url,
-                            title: vd.title.clone(),
-                            vid: vd.vid.clone(),
+                for nested in &li.items {
+                    let mut nested_items = Vec::new();
+                    for d in &nested.data {
+                        extract_media(d, &mut nested_items);
+                    }
+                    if !nested_items.is_empty() {
+                        sub_items.push(ContentItem::List {
+                            style: list.style.clone(),
+                            items: vec![nested_items],
                         });
                     }
                 }
-                MediaData::Audio(audio) => result.push(ContentItem::Audio {
-                    url: audio.url.clone(),
-                    title: audio.title.clone(),
-                    file_type: audio.file_type.clone(),
-                    size: audio.size,
-                }),
-                MediaData::Text(text) => result.push(ContentItem::Text {
-                    content: text.content.clone(),
-                    modificator: text.modificator.clone(),
-                }),
-                MediaData::Link(link) => result.push(ContentItem::Link {
-                    explicit: link.explicit,
-                    content: link.content.clone(),
-                    url: link.url.clone(),
-                }),
-                MediaData::File(file) => result.push(ContentItem::File {
-                    url: file.url.clone(),
-                    title: file.title.clone(),
-                    size: file.size,
-                }),
-                MediaData::Unknown => {
-                    result.push(ContentItem::Unknown);
-                }
+                items.push(sub_items);
             }
+            out.push(ContentItem::List {
+                style: list.style.clone(),
+                items,
+            });
         }
-        result
+        MediaData::Unknown => out.push(ContentItem::Unknown),
     }
 }
 
