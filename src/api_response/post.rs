@@ -1,4 +1,8 @@
-use crate::api_response::{Reactions, Tag, User};
+use crate::media_content;
+use crate::{
+    api_response::{Reactions, Tag, User},
+    media_content::ContentItem,
+};
 use serde::Deserialize;
 
 /// API response containing a list of posts.
@@ -258,8 +262,6 @@ pub struct Donators {
 pub struct ExtraFlag {
     /// Is this the last page or item.
     pub is_last: bool,
-    /// Is this the first page or item.
-    pub is_first: bool,
 }
 
 /// Comments wrapper.
@@ -337,11 +339,35 @@ pub enum MediaData {
 }
 
 impl Post {
+    /// Returns true if the post is not accessible or has no media data.
+    ///
+    /// # Returns
+    ///
+    /// - `true` if user has no access (`has_access == false`) OR `data` is empty.
+    /// - `false` otherwise.
+    pub fn not_available(&self) -> bool {
+        !self.has_access || self.data.is_empty()
+    }
+
+    /// Returns safe title for the post.
+    ///
+    /// # Returns
+    ///
+    /// Safe title for the post.
     pub fn safe_title(&self) -> String {
         if self.title.trim().is_empty() {
             format!("untitled_{}", self.id)
         } else {
             self.title.clone()
         }
+    }
+
+    /// Extracts media items from post into a vector of `ContentItem`.
+    ///
+    /// # Returns
+    ///
+    /// Vector of `ContentItem` items.
+    pub fn extract_content(&self) -> Vec<ContentItem> {
+        media_content::extract_content(&self.data)
     }
 }

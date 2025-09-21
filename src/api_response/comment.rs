@@ -1,6 +1,9 @@
 use serde::Deserialize;
 
-use crate::api_response::{MediaData, ReactionCounter, Reactions};
+use crate::{
+    api_response::{MediaData, ReactionCounter, Reactions},
+    media_content::{self, ContentItem},
+};
 
 /// Comments response.
 #[derive(Debug, Deserialize)]
@@ -65,4 +68,15 @@ pub struct Author {
 pub struct Replies {
     pub data: Vec<Comment>,
     pub extra: Extra,
+}
+
+impl Comment {
+    /// Extracts media content from comment data.
+    ///
+    /// # Returns
+    ///
+    /// Vector of `ContentItem` items.
+    pub fn extract_content(&self) -> Vec<ContentItem> {
+        media_content::extract_content(&self.data)
+    }
 }

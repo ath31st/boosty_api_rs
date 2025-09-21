@@ -1,4 +1,4 @@
-use crate::api_response::{MediaData, PlayerUrl, Post};
+use crate::api_response::{MediaData, PlayerUrl};
 
 /// Represents a single content item extracted from a `Post`.
 #[derive(Debug, Clone)]
@@ -46,26 +46,14 @@ pub enum ContentItem {
     Unknown,
 }
 
-impl Post {
-    /// Returns true if the post is not accessible or has no media data.
-    ///
-    /// # Returns
-    ///
-    /// - `true` if user has no access (`has_access == false`) OR `data` is empty.
-    /// - `false` otherwise.
-    pub fn not_available(&self) -> bool {
-        !self.has_access || self.data.is_empty()
+pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
+    let mut result = Vec::new();
+
+    for media in data {
+        extract_media(media, &mut result);
     }
 
-    pub fn extract_content(&self) -> Vec<ContentItem> {
-        let mut result = Vec::new();
-
-        for media in &self.data {
-            extract_media(media, &mut result);
-        }
-
-        result
-    }
+    result
 }
 
 /// Extracts media items from post into a vector of `ContentItem`.
@@ -202,10 +190,7 @@ mod tests {
             is_record: false,
             content_counters: vec![],
             donators: Donators {
-                extra: ExtraFlag {
-                    is_last: false,
-                    is_first: true,
-                },
+                extra: ExtraFlag { is_last: false },
                 data: vec![],
             },
             show_views_counter: false,
@@ -234,10 +219,7 @@ mod tests {
             price: 0,
             id: "".into(),
             comments: Comments {
-                extra: ExtraFlag {
-                    is_last: false,
-                    is_first: true,
-                },
+                extra: ExtraFlag { is_last: false },
                 data: vec![],
             },
             donations: 0,
