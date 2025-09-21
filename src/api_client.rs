@@ -1,3 +1,4 @@
+mod comment;
 mod post;
 mod subscription_level;
 mod target;
