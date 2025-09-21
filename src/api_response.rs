@@ -1,3 +1,4 @@
+mod comment;
 mod post;
 mod reaction;
 mod subscription;
@@ -12,9 +13,11 @@ pub use post::{
     VideoData,
 };
 
+pub use comment::{Comment, CommentsResponse};
+
 pub use user::User;
 
-pub use reaction::Reactions;
+pub use reaction::{ReactionCounter, Reactions};
 
 pub use tag::{SearchTag, SearchTagsData, SearchTagsFullResponse, Tag, TagsResponse};
 
