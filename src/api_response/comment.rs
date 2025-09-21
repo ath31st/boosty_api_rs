@@ -35,7 +35,7 @@ pub struct Comment {
     pub is_blocked: bool,
     pub is_updated: bool,
     pub reply_count: u32,
-    pub replies: Replies,
+    pub replies: Option<Replies>,
     pub data: Vec<MediaData>,
     pub reactions: Reactions,
     pub reaction_counters: Vec<ReactionCounter>,
