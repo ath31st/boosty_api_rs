@@ -202,7 +202,10 @@ mod tests {
             is_record: false,
             content_counters: vec![],
             donators: Donators {
-                extra: ExtraFlag { is_last: false },
+                extra: ExtraFlag {
+                    is_last: false,
+                    is_first: true,
+                },
                 data: vec![],
             },
             show_views_counter: false,
@@ -231,7 +234,10 @@ mod tests {
             price: 0,
             id: "".into(),
             comments: Comments {
-                extra: ExtraFlag { is_last: false },
+                extra: ExtraFlag {
+                    is_last: false,
+                    is_first: true,
+                },
                 data: vec![],
             },
             donations: 0,

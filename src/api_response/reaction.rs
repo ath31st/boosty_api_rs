@@ -13,3 +13,11 @@ pub struct Reactions {
     pub sad: u32,
     pub like: u32,
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReactionCounter {
+    #[serde(rename = "type")]
+    pub type_: String,
+    pub count: u32,
+}

@@ -258,6 +258,8 @@ pub struct Donators {
 pub struct ExtraFlag {
     /// Is this the last page or item.
     pub is_last: bool,
+    /// Is this the first page or item.
+    pub is_first: bool,
 }
 
 /// Comments wrapper.
