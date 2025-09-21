@@ -14,6 +14,7 @@ pub struct Reactions {
     pub like: u32,
 }
 
+/// Reaction counter.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ReactionCounter {

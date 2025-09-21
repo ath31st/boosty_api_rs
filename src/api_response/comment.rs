@@ -2,6 +2,7 @@ use serde::Deserialize;
 
 use crate::api_response::{MediaData, ReactionCounter, Reactions};
 
+/// Comments response.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CommentsResponse {
@@ -9,6 +10,7 @@ pub struct CommentsResponse {
     pub extra: Extra,
 }
 
+/// Extra flags container.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Extra {
@@ -16,6 +18,7 @@ pub struct Extra {
     pub is_last: bool,
 }
 
+/// Single comment.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {
@@ -39,12 +42,14 @@ pub struct Comment {
     pub reply_to_user: Option<Author>,
 }
 
+/// Post reference.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PostRef {
     pub id: String,
 }
 
+/// Comment author.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Author {
@@ -54,6 +59,7 @@ pub struct Author {
     pub avatar_url: String,
 }
 
+/// Comment replies.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Replies {

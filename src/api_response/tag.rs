@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+/// Search tags full response.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchTagsFullResponse {
@@ -7,6 +8,7 @@ pub struct SearchTagsFullResponse {
     pub data: SearchTagsData,
 }
 
+/// Search tags extra data.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Extra {
