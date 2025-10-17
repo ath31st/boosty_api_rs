@@ -71,17 +71,6 @@ pub struct Replies {
     pub extra: Extra,
 }
 
-impl Comment {
-    /// Extracts media content from comment data.
-    ///
-    /// # Returns
-    ///
-    /// Vector of `ContentItem` items.
-    pub fn extract_content(&self) -> Vec<ContentItem> {
-        media_content::extract_content(&self.data)
-    }
-}
-
 impl IsAvailable for Comment {
     /// Returns true if the comment is not accessible or has no media data.
     ///
