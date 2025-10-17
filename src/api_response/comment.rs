@@ -3,6 +3,7 @@ use serde::Deserialize;
 use crate::{
     api_response::{MediaData, ReactionCounter, Reactions},
     media_content::{self, ContentItem},
+    traits::{HasContent, IsAvailable},
 };
 
 /// Comments response.
@@ -77,6 +78,29 @@ impl Comment {
     ///
     /// Vector of `ContentItem` items.
     pub fn extract_content(&self) -> Vec<ContentItem> {
+        media_content::extract_content(&self.data)
+    }
+}
+
+impl IsAvailable for Comment {
+    /// Returns true if the comment is not accessible or has no media data.
+    ///
+    /// # Returns
+    ///
+    /// - `true` if user has no access (`has_access == false`) OR `data` is empty.
+    /// - `false` otherwise.
+    fn not_available(&self) -> bool {
+        self.data.is_empty()
+    }
+}
+
+impl HasContent for Comment {
+    /// Extracts media items from comment into a vector of `ContentItem`.
+    ///
+    /// # Returns
+    ///
+    /// Vector of `ContentItem` items.
+    fn extract_content(&self) -> Vec<ContentItem> {
         media_content::extract_content(&self.data)
     }
 }

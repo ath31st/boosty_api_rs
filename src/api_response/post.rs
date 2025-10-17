@@ -1,4 +1,5 @@
 use crate::media_content;
+use crate::traits::{HasContent, HasTitle, IsAvailable};
 use crate::{
     api_response::{Reactions, Tag, User},
     media_content::ContentItem,
@@ -338,36 +339,40 @@ pub enum MediaData {
     Unknown,
 }
 
-impl Post {
+impl IsAvailable for Post {
     /// Returns true if the post is not accessible or has no media data.
     ///
     /// # Returns
     ///
     /// - `true` if user has no access (`has_access == false`) OR `data` is empty.
     /// - `false` otherwise.
-    pub fn not_available(&self) -> bool {
+    fn not_available(&self) -> bool {
         !self.has_access || self.data.is_empty()
     }
+}
 
+impl HasTitle for Post {
     /// Returns safe title for the post.
     ///
     /// # Returns
     ///
     /// Safe title for the post.
-    pub fn safe_title(&self) -> String {
+    fn safe_title(&self) -> String {
         if self.title.trim().is_empty() {
             format!("untitled_{}", self.id)
         } else {
             self.title.clone()
         }
     }
+}
 
+impl HasContent for Post {
     /// Extracts media items from post into a vector of `ContentItem`.
     ///
     /// # Returns
     ///
     /// Vector of `ContentItem` items.
-    pub fn extract_content(&self) -> Vec<ContentItem> {
+    fn extract_content(&self) -> Vec<ContentItem> {
         media_content::extract_content(&self.data)
     }
 }

@@ -169,7 +169,10 @@ pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::api_response::*;
+    use crate::{
+        api_response::*,
+        traits::{HasContent, IsAvailable},
+    };
 
     fn dummy_post(data: Vec<MediaData>, has_access: bool) -> Post {
         Post {

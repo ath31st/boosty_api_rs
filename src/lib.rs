@@ -11,3 +11,4 @@ pub mod api_response;
 mod auth_provider;
 pub mod error;
 pub mod media_content;
+pub mod traits;
