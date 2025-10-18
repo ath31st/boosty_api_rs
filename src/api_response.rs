@@ -9,8 +9,8 @@ mod user;
 
 pub use post::{
     AudioData, Comments, ContentCounter, Count, CurrencyPrices, Donators, ExtraFlag, FileData,
-    Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, TextData,
-    VideoData,
+    Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, SmileData,
+    TextData, VideoData,
 };
 
 pub use comment::{Comment, CommentsResponse};

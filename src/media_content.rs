@@ -1,6 +1,6 @@
 use crate::api_response::{MediaData, PlayerUrl};
 
-/// Represents a single content item extracted from a `Post`.
+/// Represents a single content item extracted from a `Post` or `Comment`.
 #[derive(Debug, Clone)]
 pub enum ContentItem {
     /// Image with its URL and identifier.
@@ -24,6 +24,14 @@ pub enum ContentItem {
     Text {
         modificator: String,
         content: String,
+    },
+    /// Smile item with small, medium and large URLs, name and ID.
+    Smile {
+        small_url: String,
+        medium_url: String,
+        large_url: String,
+        name: String,
+        is_animated: bool,
     },
     /// Link item with explicit flag, display content and URL.
     Link {
@@ -64,6 +72,7 @@ pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
 /// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
 /// - `Audio` → `ContentItem::Audio { url, audio_title: track, file_type }`
 /// - `Text` → `ContentItem::Text { content, modificator }`
+/// - `Smile` → `ContentItem::Smile { small_url, medium_url, large_url, name, id, is_animated }`
 /// - `Link` → `ContentItem::Link { explicit, content, url }`
 /// - `File` → `ContentItem::File { url, title, size }`
 /// - `List` → `ContentItem::List { style, items }`
@@ -95,6 +104,13 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
         MediaData::Text(text) => out.push(ContentItem::Text {
             content: text.content.clone(),
             modificator: text.modificator.clone(),
+        }),
+        MediaData::Smile(smile) => out.push(ContentItem::Smile {
+            small_url: smile.small_url.clone(),
+            medium_url: smile.medium_url.clone(),
+            large_url: smile.large_url.clone(),
+            name: smile.name.clone(),
+            is_animated: smile.is_animated,
         }),
         MediaData::Link(link) => out.push(ContentItem::Link {
             explicit: link.explicit,
@@ -243,6 +259,27 @@ mod tests {
         assert!(dummy_post(vec![], false).not_available());
         assert!(dummy_post(vec![MediaData::Unknown], false).not_available());
         assert!(!dummy_post(vec![MediaData::Unknown], true).not_available());
+    }
+
+    #[test]
+    fn test_extract_smile() {
+        let smiley = SmileData {
+            id: "smile123".into(),
+            small_url: "smile_url".into(),
+            medium_url: "smile_url".into(),
+            large_url: "smile_url".into(),
+            name: "smile".into(),
+            is_animated: false,
+        };
+        let post = dummy_post(vec![MediaData::Smile(smiley)], true);
+        let content = post.extract_content();
+
+        assert!(
+            matches!(content[0], ContentItem::Smile { ref small_url, ref medium_url, 
+                ref large_url, ref name, is_animated } 
+                if small_url == "smile_url" && medium_url == "smile_url"
+                && large_url == "smile_url" && name == "smile" && !is_animated)
+        );
     }
 
     #[test]
