@@ -84,7 +84,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.17.1"
+boosty_api = "0.18.0"
 ```
 
 or
@@ -168,6 +168,9 @@ fn print_content(post: &boosty_api::Post) {
             }
             ContentItem::Text { modificator, content } => {
                 println!("Text: {content}, Modificator: {modificator}");
+            }
+            ContentItem::Smile { small_url, medium_url, large_url, name, is_animated } => {
+                println!("Smile: {name}, Small URL: {small_url}, Medium URL: {medium_url}, Large URL: {large_url}, Animated: {is_animated}");
             }
             ContentItem::Link { explicit, content, url } => {
                 println!("Link: {url}, Content: {content}, Explicit: {explicit}");
