@@ -195,6 +195,24 @@ pub struct TextData {
     pub content: String,
 }
 
+/// Smile media data.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SmileData {
+    /// URL to the small smile.
+    pub small_url: String,
+    /// URL to the medium smile.
+    pub medium_url: String,
+    /// URL to the large smile.
+    pub large_url: String,
+    /// Smile name.
+    pub name: String,
+    /// Unique smile identifier.
+    pub id: String,
+    /// Whether the smile is animated.
+    pub is_animated: bool,
+}
+
 /// Link media data.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -329,6 +347,8 @@ pub enum MediaData {
     Image(ImageData),
     #[serde(rename = "text", rename_all = "camelCase")]
     Text(TextData),
+    #[serde(rename = "smile", rename_all = "camelCase")]
+    Smile(SmileData),
     #[serde(rename = "link", rename_all = "camelCase")]
     Link(LinkData),
     #[serde(rename = "file", rename_all = "camelCase")]
