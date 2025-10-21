@@ -247,12 +247,12 @@ mod tests {
 
         let raw = fs::read_to_string("tests/fixtures/api_response_posts.json").unwrap();
         let mut value: Value = serde_json::from_str(&raw).unwrap();
-        if let Some(arr) = value.get_mut("data").and_then(|v| v.as_array_mut()) {
-            if let Some(first) = arr.get_mut(0) {
-                first["id"] = Value::String("p1".to_string());
-                first["title"] = Value::String("Title1".to_string());
-                first["hasAccess"] = Value::Bool(true);
-            }
+        if let Some(arr) = value.get_mut("data").and_then(|v| v.as_array_mut())
+            && let Some(first) = arr.get_mut(0)
+        {
+            first["id"] = Value::String("p1".to_string());
+            first["title"] = Value::String("Title1".to_string());
+            first["hasAccess"] = Value::Bool(true);
         }
         let list_body = value.to_string();
 
