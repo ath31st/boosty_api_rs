@@ -7,6 +7,27 @@ use crate::{
 };
 
 impl ApiClient {
+    /// Get comments response
+    ///
+    /// # Arguments
+    ///
+    /// * `blog_name` - Blog name (blog url)
+    /// * `post_id` - Post id (optional)
+    /// * `limit` - Limit comments per request (optional)
+    /// * `reply_limit` - Reply levels (optional)
+    /// * `order` - Top or bottom (optional)
+    /// * `offset` - Offset (intId comment) (optional)
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a `CommentsResponse` containing the `data` field with `Comment` items.
+    ///
+    /// # Errors
+    ///
+    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
+    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
+    /// - `ApiError::HttpRequest` if the HTTP request fails.
+    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `CommentsResponse`.
     pub async fn get_comments_response(
         &self,
         blog_name: &str,
@@ -59,6 +80,26 @@ impl ApiClient {
         Ok(parsed)
     }
 
+    /// Get all comments for a post.
+    ///
+    /// # Arguments
+    ///
+    /// * `blog_name` - Blog name (blog url)
+    /// * `post_id` - Post id (optional)
+    /// * `limit` - Limit comments per request (optional)
+    /// * `reply_limit` - Reply levels (optional)
+    /// * `order` - Top or bottom (optional)
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a vector of `Comment` items.
+    ///
+    /// # Errors
+    ///
+    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
+    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
+    /// - `ApiError::HttpRequest` if the HTTP request fails.
+    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Comment`.
     pub async fn get_all_comments(
         &self,
         blog_name: &str,
