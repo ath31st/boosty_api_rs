@@ -62,14 +62,21 @@ The client automatically retries HTTP requests that fail due to transient networ
 - Strongly typed `Post` struct with `serde` support.
 - Handles `"not available"` status gracefully.
 
+### 💬 Comments API
+
+- Get single comments response: `get_comments_response(blog_name, post_id, limit, reply_limit, order, offset)`.
+- Get multiple comments: `get_all_comments(blog_name, post_id, limit, reply_limit, order)`.
+- Strongly typed `Comment` and `CommentResponse` structs with `serde` support.
+- Handles `"not available"` status gracefully.
+
 ### 🎯 Blog Metadata
 
-- Get targets via `get_targets(blog)`.
-- Get subscription levels via `get_subscription_levels(blog, show_free_level)`.
+- Get targets via `get_blog_targets(blog_name)`.
+- Get subscription levels via `get_subscription_levels(blog_name, show_free_level)`.
 
 ### 📜 Subscriptions
 
-- Get current user subscriptions via `get_subscriptions(limit, with_follow)`, returning a paginated
+- Get current user subscriptions via `get_user_subscriptions(limit, with_follow)`, returning a paginated
   `SubscriptionsResponse`.
 
 ### ⚙️ Low-level Features
@@ -212,11 +219,12 @@ If a post is unavailable and refresh credentials are present, the client will au
 
 ## Crate Structure
 
-- `api_client`: Main entry point; gets post(s), manages headers, and authentication logic
-- `auth_provider`: Refresh-token and access-token management
-- `api_response`: Deserialization models for all API content types (e.g. post, target); organized by domain
-- `error`: Uniform error types for API and auth operations
-- `post_data_extractor`: Utility module for extracting structured data from post models
+- `api_client` — Main entry point. Handles API requests (e.g. fetching posts), manages HTTP headers, and authentication flow.
+- `auth_provider` — Internal module responsible for refresh-token and access-token lifecycle management.
+- `api_response` — Typed deserialization models for all Boosty API entities (e.g. posts, comments, users, media).
+- `error` — Unified error types covering API, network, and authorization layers.
+- `media_content` — Defines `ContentItem` and provides utilities for extracting structured media content from API responses.
+- `traits` — Common traits (`HasContent`, `HasTitle`, `IsAvailable`) shared across multiple Boosty entities.
 
 ## Error Handling
 
