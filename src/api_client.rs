@@ -41,6 +41,7 @@ use reqwest::{Client, Response};
 ///     Ok(())
 /// }
 /// ```
+#[derive(Debug, Clone)]
 pub struct ApiClient {
     base_url: String,
     client: Client,

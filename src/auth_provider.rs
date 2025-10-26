@@ -33,7 +33,7 @@ struct AuthState {
 }
 
 /// Provider managing authentication: either static token or refresh-token flow.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AuthProvider {
     client: Client,
     base_url: String,
