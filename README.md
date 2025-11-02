@@ -152,12 +152,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## Extracting content from a post
+## Extracting content from a post or comment
 
 ```rust
-use boosty_api::post_data_extractor::ContentItem;
+use boosty_api::{api_response::Post, media_content::ContentItem, traits::HasContent};
 
-fn print_content(post: &boosty_api::Post) {
+fn print_content(post: &Post) {
     let content_items = post.extract_content();
     for item in content_items {
         match item {
@@ -167,26 +167,55 @@ fn print_content(post: &boosty_api::Post) {
             ContentItem::Video { url } => {
                 println!("Video URL: {url}");
             }
-            ContentItem::OkVideo { url, video_title } => {
-                println!("OK Video URL: {url}, Title: {video_title}");
+            ContentItem::OkVideo { url, title, vid } => {
+                println!("OK Video URL: {url}, Title: {title}, ID: {vid}");
             }
-            ContentItem::Audio { url, audio_title, file_type } => {
-                println!("Audio URL: {url}, Title: {audio_title}, Type: {file_type}");
+            ContentItem::Audio {
+                url,
+                title,
+                file_type,
+                size,
+            } => {
+                println!(
+                    "Audio URL: {url}, Title: {title}, Type: {}, Size: {size}",
+                    file_type.as_deref().unwrap_or("unknown")
+                );
             }
-            ContentItem::Text { modificator, content } => {
+            ContentItem::Text {
+                modificator,
+                content,
+            } => {
                 println!("Text: {content}, Modificator: {modificator}");
             }
-            ContentItem::Smile { small_url, medium_url, large_url, name, is_animated } => {
-                println!("Smile: {name}, Small URL: {small_url}, Medium URL: {medium_url}, Large URL: {large_url}, Animated: {is_animated}");
+            ContentItem::Smile {
+                small_url,
+                medium_url,
+                large_url,
+                name,
+                is_animated,
+            } => {
+                println!(
+                    "Smile: {name}, Small URL: {small_url}, Medium URL: {medium_url}, Large URL: {large_url}, Animated: {is_animated}"
+                );
             }
-            ContentItem::Link { explicit, content, url } => {
+            ContentItem::Link {
+                explicit,
+                content,
+                url,
+            } => {
                 println!("Link: {url}, Content: {content}, Explicit: {explicit}");
             }
             ContentItem::File { url, title, size } => {
                 println!("File: {title}, URL: {url}, Size: {size}");
             }
             ContentItem::List { style, items } => {
-                println!("List: {style}, Items: {items}");
+                println!("List style: {style}");
+                for (i, group) in items.iter().enumerate() {
+                    println!("  Group {i}:");
+                    for (j, item) in group.iter().enumerate() {
+                        println!("    Item {j}: {item:?}");
+                    }
+                }
             }
             ContentItem::Unknown => {
                 println!("Unknown content type");
