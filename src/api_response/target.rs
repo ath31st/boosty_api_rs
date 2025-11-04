@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// API response containing a list of targets.
 #[derive(Deserialize, Debug)]
@@ -32,4 +32,15 @@ pub struct Target {
     /// Type of target (e.g., "money").
     #[serde(rename = "type")]
     pub type_: String,
+}
+
+/// Request form data struct for creating a new target.
+#[derive(Serialize, Debug)]
+pub struct NewTarget {
+    /// Slug of the blog.
+    pub blog_url: String,
+    /// Description of the goal.
+    pub description: String,
+    /// Target sum.
+    pub target_sum: u32,
 }
