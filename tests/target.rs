@@ -89,7 +89,7 @@ async fn test_create_target_money_success() {
         .await;
 
     let result = client
-        .create_target(blog_url, description, target_sum, TargetType::Money)
+        .create_blog_target(blog_url, description, target_sum, TargetType::Money)
         .await
         .unwrap();
 
@@ -135,7 +135,7 @@ async fn test_create_target_subscribers_success() {
         .await;
 
     let result = client
-        .create_target(blog_url, description, target_sum, TargetType::Subscribers)
+        .create_blog_target(blog_url, description, target_sum, TargetType::Subscribers)
         .await
         .unwrap();
 
@@ -162,7 +162,7 @@ async fn test_delete_target_success() {
         .create_async()
         .await;
 
-    let result = client.delete_target(target_id).await;
+    let result = client.delete_blog_target(target_id).await;
     assert!(result.is_ok());
 }
 
@@ -182,6 +182,6 @@ async fn test_delete_target_invalid_json() {
         .create_async()
         .await;
 
-    let result = client.delete_target(target_id).await;
+    let result = client.delete_blog_target(target_id).await;
     assert!(matches!(result, Err(ApiError::JsonParse(_))));
 }

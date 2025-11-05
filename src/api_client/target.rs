@@ -48,7 +48,7 @@ impl ApiClient {
     /// - [`ApiError::HttpRequest`] — if the network request fails.
     /// - [`ApiError::JsonParse`] — if the response body cannot be parsed as valid JSON.
     /// - [`ApiError::Deserialization`] — if the JSON does not match the [`Target`] structure.
-    pub async fn create_target(
+    pub async fn create_blog_target(
         &self,
         blog_url: &str,
         description: &str,
@@ -89,7 +89,7 @@ impl ApiClient {
     ///
     /// - [`ApiError::HttpRequest`] — if the network request fails.
     /// - [`ApiError::JsonParse`] — if the response body cannot be parsed as JSON (rare for DELETE).
-    pub async fn delete_target(&self, target_id: u64) -> ResultApi<()> {
+    pub async fn delete_blog_target(&self, target_id: u64) -> ResultApi<()> {
         let path = format!("target/{}", target_id);
 
         let response = self.delete_request(&path).await?;
