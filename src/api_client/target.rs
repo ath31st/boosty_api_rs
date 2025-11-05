@@ -1,6 +1,6 @@
 use crate::api_client::ApiClient;
 use crate::error::{ApiError, ResultApi};
-use crate::model::{NewTarget, Target, TargetResponse, TargetType};
+use crate::model::{NewTarget, Target, TargetResponse, TargetType, UpdateTarget};
 
 impl ApiClient {
     /// Get all targets for a blog.
@@ -100,5 +100,44 @@ impl ApiClient {
             .map_err(ApiError::JsonParse)?;
 
         Ok(())
+    }
+
+    /// Update an existing target by its ID.
+    ///
+    /// # Parameters
+    ///
+    /// - `target_id`: numerical ID of the target.
+    /// - `description`: new textual description of the target.
+    /// - `target_sum`: new target amount.
+    ///
+    /// # Returns
+    ///
+    /// Updated [`Target`] object.
+    ///
+    /// # Errors
+    ///
+    /// - [`ApiError::HttpRequest`] — if the network request fails.
+    /// - [`ApiError::JsonParse`] — if JSON parsing fails.
+    pub async fn update_blog_target(
+        &self,
+        target_id: u64,
+        description: &str,
+        target_sum: f64,
+    ) -> ResultApi<Target> {
+        let form = UpdateTarget {
+            target_id,
+            description: description.into(),
+            target_sum,
+        };
+
+        let path = format!("target/{}", target_id);
+        let response = self.put_request(&path, &form, true).await?;
+
+        let parsed = response
+            .json::<Target>()
+            .await
+            .map_err(ApiError::JsonParse)?;
+
+        Ok(parsed)
     }
 }

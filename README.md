@@ -73,6 +73,7 @@ The client automatically retries HTTP requests that fail due to transient networ
 
 - Get targets via `get_blog_targets(blog_name)`.
 - Create target via `create_blog_target(blog_name, description, target_sum, target_type)`.
+- Update target via `update_blog_target(target_id, description, target_sum)`.
 - Delete target via `delete_blog_target(target_id)`.
 
 ### 📜 Subscriptions
@@ -93,7 +94,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.21.0"
+boosty_api = "0.21.1"
 ```
 
 or

@@ -242,4 +242,40 @@ impl ApiClient {
             .await
             .map_err(ApiError::HttpRequest)
     }
+
+    /// Internal: perform a PUT request with optional form or JSON body.
+    ///
+    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: relative API path under `/v1/`.
+    /// - `body`: object to serialize either as JSON or `application/x-www-form-urlencoded`.
+    /// - `as_form`: if `true`, serialize body as `x-www-form-urlencoded`; otherwise, serialize as JSON.
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a `reqwest::Response`.  
+    /// On network failure, returns [`ApiError::HttpRequest`].
+    async fn put_request<T: serde::Serialize + ?Sized>(
+        &self,
+        path: &str,
+        body: &T,
+        as_form: bool,
+    ) -> ResultApi<Response> {
+        let mut headers = self.headers.clone();
+        self.auth_provider.apply_auth_header(&mut headers).await?;
+
+        let url = format!("{}/v1/{}", self.base_url, path);
+
+        let builder = self.client.put(&url).headers(headers);
+
+        let request = if as_form {
+            builder.form(body)
+        } else {
+            builder.json(body)
+        };
+
+        request.send().await.map_err(ApiError::HttpRequest)
+    }
 }

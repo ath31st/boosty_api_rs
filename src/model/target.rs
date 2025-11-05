@@ -45,6 +45,17 @@ pub struct NewTarget {
     pub target_sum: f64,
 }
 
+/// Request form data struct for updating an existing target.
+#[derive(Serialize, Debug)]
+pub struct UpdateTarget {
+    /// Unique identifier of the target to update.
+    pub target_id: u64,
+    /// New description of the goal.
+    pub description: String,
+    /// New target sum.
+    pub target_sum: f64,
+}
+
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum TargetType {

@@ -185,3 +185,87 @@ async fn test_delete_target_invalid_json() {
     let result = client.delete_blog_target(target_id).await;
     assert!(matches!(result, Err(ApiError::JsonParse(_))));
 }
+
+#[tokio::test]
+async fn test_update_target_success() {
+    let (mut server, base) = setup().await;
+    let client = ApiClient::new(Client::new(), &base);
+
+    let target_id = 756379;
+    let path = api_path(format!("target/{}", target_id).as_str());
+
+    let description = "Описание edit";
+    let target_sum = 10.0;
+    let blog_url = "blogx";
+
+    let response_body = json!({
+        "id": target_id,
+        "bloggerUrl": blog_url,
+        "description": description,
+        "bloggerId": 1,
+        "priority": 1,
+        "createdAt": 1_697_000_000,
+        "targetSum": target_sum,
+        "currentSum": 0,
+        "finishTime": null,
+        "type": "money"
+    })
+    .to_string();
+
+    server
+        .mock("PUT", path.as_str())
+        .match_header("content-type", "application/x-www-form-urlencoded")
+        .with_status(200)
+        .with_header(CONTENT_TYPE, "application/json")
+        .with_body(response_body)
+        .create_async()
+        .await;
+
+    let result = client
+        .update_blog_target(target_id, description, target_sum)
+        .await
+        .unwrap();
+
+    assert_eq!(result.id, target_id);
+    assert_eq!(result.description, description);
+    assert_eq!(result.target_sum, target_sum);
+    assert_eq!(result.current_sum as u32, 0);
+}
+
+#[tokio::test]
+async fn test_update_target_invalid_json() {
+    let (mut server, base) = setup().await;
+    let client = ApiClient::new(Client::new(), &base);
+
+    let target_id = 123;
+    let path = api_path(format!("target/{}", target_id).as_str());
+
+    server
+        .mock("PUT", path.as_str())
+        .with_status(200)
+        .with_header(CONTENT_TYPE, "application/json")
+        .with_body("invalid json")
+        .create_async()
+        .await;
+
+    let res = client.update_blog_target(target_id, "desc", 100.0).await;
+    assert!(matches!(res, Err(ApiError::JsonParse(_))));
+}
+
+#[tokio::test]
+async fn test_update_target_http_error() {
+    let (mut server, base) = setup().await;
+    let client = ApiClient::new(Client::new(), &base);
+
+    let target_id = 456;
+    let path = api_path(format!("target/{}", target_id).as_str());
+
+    server
+        .mock("PUT", path.as_str())
+        .with_status(500)
+        .create_async()
+        .await;
+
+    let res = client.update_blog_target(target_id, "desc", 100.0).await;
+    assert!(res.is_err());
+}
