@@ -58,7 +58,7 @@ The client automatically retries HTTP requests that fail due to transient networ
 ### 📝 Post API
 
 - Get single post: `get_post(blog, id)`.
-- Get multiple posts: `get_posts(blog, limit)`.
+- Get multiple posts: `get_posts(blog, limit, page_size, start_offset)`.
 - Strongly typed `Post` struct with `serde` support.
 - Handles `"not available"` status gracefully.
 
@@ -94,7 +94,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.21.1"
+boosty_api = "0.22.0"
 ```
 
 or
@@ -147,13 +147,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Or use refresh token + device ID
     // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
-    let limit = 5;
-    let posts = api_client.get_posts("blog_name", limit).await?;
+    let limit = 50;
+    let page_size = 10;
+    let posts = api_client.get_posts("blog_name", limit, page_size, None).await?;
     println!("{:#?}", posts);
 
     Ok(())
 }
 ```
+Offset can be used to skip already downloaded posts or to start from a specific post. It consists of fields `Post`: "sortOrder": 1762949608 + "int_id": 9555337 or PostsResponse: extra: {"offset": "1762949608:9555337"}.
 
 ## Extracting content from a post or comment
 

@@ -11,6 +11,16 @@ use serde::Deserialize;
 pub struct PostsResponse {
     /// Array of post items.
     pub data: Vec<Post>,
+    /// Extra.
+    pub extra: Extra,
+}
+
+/// Extra (offset, is_last).
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Extra {
+    pub offset: String,
+    pub is_last: bool,
 }
 
 /// Represents a single post fetched from the Boosty API.

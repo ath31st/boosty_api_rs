@@ -197,7 +197,7 @@ async fn test_get_posts_unauthorized() {
         .create_async()
         .await;
 
-    let res = client.get_posts(blog, limit).await;
+    let res = client.get_posts(blog, limit, None, None).await;
     assert!(res.is_err());
 }
 
@@ -218,7 +218,7 @@ async fn test_get_posts_invalid_json() {
         .create_async()
         .await;
 
-    let res = client.get_posts(blog, limit).await;
+    let res = client.get_posts(blog, limit, None, None).await;
     assert!(res.is_err());
 }
 
@@ -253,9 +253,9 @@ async fn test_set_bearer_token_in_get_posts() {
         .create_async()
         .await;
 
-    let result = client.get_posts(blog, limit).await.unwrap();
-    assert_eq!(result.data.len(), 2);
-    assert_eq!(result.data[0].id, "p1");
+    let result = client.get_posts(blog, limit, None, None).await.unwrap();
+    assert_eq!(result.len(), 2);
+    assert_eq!(result[0].id, "p1");
 }
 
 #[tokio::test]
