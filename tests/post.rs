@@ -9,7 +9,7 @@ use crate::helpers::{api_path, setup};
 mod helpers;
 
 #[tokio::test]
-async fn test_fetch_post_unauthorized() {
+async fn test_get_post_unauthorized() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -28,7 +28,7 @@ async fn test_fetch_post_unauthorized() {
 }
 
 #[tokio::test]
-async fn test_fetch_post_invalid_json() {
+async fn test_get_post_invalid_json() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -49,7 +49,7 @@ async fn test_fetch_post_invalid_json() {
 }
 
 #[tokio::test]
-async fn test_fetch_post_not_available_but_no_refresh() {
+async fn test_get_post_not_available_but_no_refresh() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -77,7 +77,7 @@ async fn test_fetch_post_not_available_but_no_refresh() {
 }
 
 #[tokio::test]
-async fn test_fetch_post_with_refresh() {
+async fn test_get_post_with_refresh() {
     let (mut server, base) = setup().await;
     let req_client = Client::new();
     let client = ApiClient::new(req_client.clone(), &base);
@@ -141,7 +141,7 @@ async fn test_fetch_post_with_refresh() {
 }
 
 #[tokio::test]
-async fn test_fetch_post_refresh_error() {
+async fn test_get_post_refresh_error() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -183,7 +183,7 @@ async fn test_fetch_post_refresh_error() {
 }
 
 #[tokio::test]
-async fn test_fetch_posts_unauthorized() {
+async fn test_get_posts_unauthorized() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -202,7 +202,7 @@ async fn test_fetch_posts_unauthorized() {
 }
 
 #[tokio::test]
-async fn test_fetch_posts_invalid_json() {
+async fn test_get_posts_invalid_json() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -223,7 +223,7 @@ async fn test_fetch_posts_invalid_json() {
 }
 
 #[tokio::test]
-async fn test_set_bearer_token_in_fetch_posts() {
+async fn test_set_bearer_token_in_get_posts() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -259,7 +259,7 @@ async fn test_set_bearer_token_in_fetch_posts() {
 }
 
 #[tokio::test]
-async fn test_set_refresh_and_fetch_post_header_and_flow() {
+async fn test_set_refresh_and_get_post_header_and_flow() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
