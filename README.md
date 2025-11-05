@@ -155,7 +155,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
-Offset can be used to skip already downloaded posts or to start from a specific post. It consists of fields `Post`: "sortOrder": 1762949608 + "int_id": 9555337 or PostsResponse: extra: {"offset": "1762949608:9555337"}.
+Offset can be used to skip already downloaded posts or to start from a specific post. It consists of fields `Post`: "sortOrder": 1762949608 + "int_id": 9555337 or `PostsResponse`: extra: {"offset": "1762949608:9555337"}.
 
 ## Extracting content from a post or comment
 
