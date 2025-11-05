@@ -2,8 +2,8 @@ use reqwest::StatusCode;
 
 use crate::{
     api_client::ApiClient,
-    api_response::{Comment, CommentsResponse},
     error::{ApiError, ResultApi},
+    model::{Comment, CommentsResponse},
 };
 
 impl ApiClient {

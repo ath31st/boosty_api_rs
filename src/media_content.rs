@@ -1,4 +1,4 @@
-use crate::api_response::{MediaData, PlayerUrl};
+use crate::model::{MediaData, PlayerUrl};
 
 /// Represents a single content item extracted from a `Post` or `Comment`.
 #[derive(Debug, Clone)]
@@ -186,7 +186,7 @@ pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option
 mod tests {
     use super::*;
     use crate::{
-        api_response::*,
+        model::*,
         traits::{HasContent, IsAvailable},
     };
 

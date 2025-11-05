@@ -2,7 +2,7 @@ mod helpers;
 
 use std::fs;
 
-use boosty_api::{api_client::ApiClient, api_response::TargetType, error::ApiError};
+use boosty_api::{api_client::ApiClient, error::ApiError, model::TargetType};
 use reqwest::{Client, header::CONTENT_TYPE};
 use serde_json::json;
 

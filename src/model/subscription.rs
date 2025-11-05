@@ -1,4 +1,4 @@
-use crate::api_response::subscription_level::Promo;
+use crate::model::subscription_level::Promo;
 use serde::Deserialize;
 use std::collections::HashMap;
 

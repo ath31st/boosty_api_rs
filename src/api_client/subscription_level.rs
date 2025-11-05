@@ -1,6 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::api_response::SubscriptionLevelResponse;
 use crate::error::{ApiError, ResultApi};
+use crate::model::SubscriptionLevelResponse;
 
 impl ApiClient {
     /// Fetch subscription levels for a blog, with optional inclusion of the free level.
@@ -32,7 +32,7 @@ impl ApiClient {
         }
 
         let response = self.get_request(&path).await?;
-        
+
         let parsed = response
             .json::<SubscriptionLevelResponse>()
             .await

@@ -1,6 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::api_response::{Post, PostsResponse};
 use crate::error::{ApiError, ResultApi};
+use crate::model::{Post, PostsResponse};
 use reqwest::StatusCode;
 
 impl ApiClient {

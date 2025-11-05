@@ -93,7 +93,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.20.0"
+boosty_api = "0.21.0"
 ```
 
 or
@@ -157,7 +157,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ## Extracting content from a post or comment
 
 ```rust
-use boosty_api::{api_response::Post, media_content::ContentItem, traits::HasContent};
+use boosty_api::{model::Post, media_content::ContentItem, traits::HasContent};
 
 fn print_content(post: &Post) {
     let content_items = post.extract_content();
@@ -252,7 +252,7 @@ If a post is unavailable and refresh credentials are present, the client will au
 
 - `api_client` — Main entry point. Handles API requests (e.g. fetching posts), manages HTTP headers, and authentication flow.
 - `auth_provider` — Internal module responsible for refresh-token and access-token lifecycle management.
-- `api_response` — Typed deserialization models for all Boosty API entities (e.g. posts, comments, users, media).
+- `model` — Typed deserialization models for all Boosty API entities (e.g. posts, comments, users, media).
 - `error` — Unified error types covering API, network, and authorization layers.
 - `media_content` — Defines `ContentItem` and provides utilities for extracting structured media content from API responses.
 - `traits` — Common traits (`HasContent`, `HasTitle`, `IsAvailable`) shared across multiple Boosty entities.

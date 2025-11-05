@@ -1,6 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::api_response::SubscriptionsResponse;
 use crate::error::{ApiError, ResultApi};
+use crate::model::SubscriptionsResponse;
 use reqwest::StatusCode;
 
 impl ApiClient {

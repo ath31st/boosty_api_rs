@@ -1,4 +1,4 @@
-use crate::api_response::Flags;
+use crate::model::Flags;
 use serde::Deserialize;
 
 /// Represents a user or author of a post.

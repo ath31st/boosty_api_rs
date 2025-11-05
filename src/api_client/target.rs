@@ -1,6 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::api_response::{NewTarget, Target, TargetResponse, TargetType};
 use crate::error::{ApiError, ResultApi};
+use crate::model::{NewTarget, Target, TargetResponse, TargetType};
 
 impl ApiClient {
     /// Get all targets for a blog.

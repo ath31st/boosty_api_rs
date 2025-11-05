@@ -1,8 +1,8 @@
 use crate::media_content;
 use crate::traits::{HasContent, HasTitle, IsAvailable};
 use crate::{
-    api_response::{Reactions, Tag, User},
     media_content::ContentItem,
+    model::{Reactions, Tag, User},
 };
 use serde::Deserialize;
 
