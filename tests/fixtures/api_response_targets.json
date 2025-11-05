@@ -34,7 +34,7 @@
       "currentSum": 10230.34,
       "finishTime": null,
       "bloggerUrl": "example_blogger",
-      "type": "equipment"
+      "type": "subscribers"
     },
     {
       "description": "🎓 Scholarship fund for students",
@@ -46,7 +46,7 @@
       "currentSum": 560.12,
       "finishTime": null,
       "bloggerUrl": "example_blogger",
-      "type": "education"
+      "type": "subscribers"
     },
     {
       "description": "🎨 Support for art project expenses",
@@ -58,7 +58,7 @@
       "currentSum": 2330.55,
       "finishTime": null,
       "bloggerUrl": "example_blogger",
-      "type": "arts"
+      "type": "subscribers"
     }
   ]
 }

@@ -1,5 +1,5 @@
 use crate::api_client::ApiClient;
-use crate::api_response::{NewTarget, Target, TargetResponse};
+use crate::api_response::{NewTarget, Target, TargetResponse, TargetType};
 use crate::error::{ApiError, ResultApi};
 
 impl ApiClient {
@@ -37,6 +37,7 @@ impl ApiClient {
     /// - `blog_url`: identifier or slug of the blog for which the target is created.
     /// - `description`: textual description of the target (e.g., purpose of the fundraising).
     /// - `target_sum`: numerical value of the target amount.
+    /// - `target_type`: one of [`TargetType::Money`] or [`TargetType::Subscribers`].
     ///
     /// # Returns
     ///
@@ -47,13 +48,17 @@ impl ApiClient {
     /// - [`ApiError::HttpRequest`] — if the network request fails.
     /// - [`ApiError::JsonParse`] — if the response body cannot be parsed as valid JSON.
     /// - [`ApiError::Deserialization`] — if the JSON does not match the [`Target`] structure.
-    pub async fn create_target_subscriber(
+    pub async fn create_target(
         &self,
         blog_url: &str,
         description: &str,
-        target_sum: u32,
+        target_sum: f64,
+        target_type: TargetType,
     ) -> ResultApi<Target> {
-        let path = "target/subscribers";
+        let path = match target_type {
+            TargetType::Money => "target/money",
+            TargetType::Subscribers => "target/subscribers",
+        };
 
         let form = NewTarget {
             blog_url: blog_url.into(),
@@ -62,7 +67,10 @@ impl ApiClient {
         };
 
         let response = self.post_request(path, &form, true).await?;
-        let parsed = response.json::<Target>().await?;
+        let parsed = response
+            .json::<Target>()
+            .await
+            .map_err(ApiError::JsonParse)?;
 
         Ok(parsed)
     }

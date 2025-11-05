@@ -21,7 +21,7 @@ pub use reaction::{ReactionCounter, Reactions};
 
 pub use tag::{SearchTag, SearchTagsData, SearchTagsFullResponse, Tag, TagsResponse};
 
-pub use target::{NewTarget, Target, TargetResponse};
+pub use target::{NewTarget, Target, TargetResponse, TargetType};
 
 pub use subscription_level::{SubscriptionLevel, SubscriptionLevelResponse};
 

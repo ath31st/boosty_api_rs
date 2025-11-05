@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use boosty_api::api_client::ApiClient;
     use boosty_api::error::ApiError;
+    use boosty_api::{api_client::ApiClient, api_response::TargetType};
     use mockito::Server;
     use reqwest::Client;
     use reqwest::header::CONTENT_TYPE;
@@ -485,5 +485,141 @@ mod tests {
         let sub = &resp.data[0];
         assert_eq!(sub.id, 39989023);
         assert_eq!(resp.limit, 30);
+    }
+
+    #[tokio::test]
+    async fn test_create_target_money_success() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let path = api_path("target/money");
+        let blog_url = "blogx";
+        let description = "New target";
+        let target_sum = 1000.4;
+        let id = 111;
+
+        let response_body = json!({
+            "id": id,
+            "bloggerUrl": blog_url,
+            "description": description,
+            "bloggerId": 1,
+            "priority": 1,
+            "createdAt": 1_697_000_000,
+            "targetSum": target_sum,
+            "currentSum": 0,
+            "finishTime": null,
+            "type": "money"
+        })
+        .to_string();
+
+        server
+            .mock("POST", path.as_str())
+            .match_header("content-type", "application/x-www-form-urlencoded")
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(response_body)
+            .create_async()
+            .await;
+
+        let result = client
+            .create_target(blog_url, description, target_sum, TargetType::Money)
+            .await
+            .unwrap();
+
+        assert_eq!(result.id, id);
+        assert_eq!(result.blogger_url, blog_url);
+        assert_eq!(result.description, description);
+        assert_eq!(result.target_sum, target_sum);
+        assert_eq!(result.current_sum as u32, 0);
+    }
+
+    #[tokio::test]
+    async fn test_create_target_subscribers_success() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let path = api_path("target/subscribers");
+        let blog_url = "blogx";
+        let description = "New target";
+        let target_sum = 1000.4;
+        let id = 111;
+
+        let response_body = json!({
+            "id": id,
+            "bloggerUrl": blog_url,
+            "description": description,
+            "bloggerId": 1,
+            "priority": 1,
+            "createdAt": 1_697_000_000,
+            "targetSum": target_sum,
+            "currentSum": 0,
+            "finishTime": null,
+            "type": "money"
+        })
+        .to_string();
+
+        server
+            .mock("POST", path.as_str())
+            .match_header("content-type", "application/x-www-form-urlencoded")
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(response_body)
+            .create_async()
+            .await;
+
+        let result = client
+            .create_target(blog_url, description, target_sum, TargetType::Subscribers)
+            .await
+            .unwrap();
+
+        assert_eq!(result.id, id);
+        assert_eq!(result.blogger_url, blog_url);
+        assert_eq!(result.description, description);
+        assert_eq!(result.target_sum, target_sum);
+        assert_eq!(result.current_sum as u32, 0);
+    }
+
+    #[tokio::test]
+    async fn test_delete_target_success() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let target_id = 456;
+        let path = api_path(format!("target/{}", target_id).as_str());
+
+        server
+            .mock("DELETE", path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body(r#"{}"#)
+            .create_async()
+            .await;
+
+        let result = client.delete_target(target_id).await;
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_delete_target_invalid_json() {
+        let mut server = Server::new_async().await;
+        let base = server.url();
+        let client = ApiClient::new(Client::new(), &base);
+
+        let target_id = 789;
+        let path = api_path(format!("target/{}", target_id).as_str());
+
+        server
+            .mock("DELETE", path.as_str())
+            .with_status(200)
+            .with_header(CONTENT_TYPE, "application/json")
+            .with_body("invalid json")
+            .create_async()
+            .await;
+
+        let result = client.delete_target(target_id).await;
+        assert!(matches!(result, Err(ApiError::JsonParse(_))));
     }
 }

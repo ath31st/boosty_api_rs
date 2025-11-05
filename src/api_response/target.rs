@@ -31,7 +31,7 @@ pub struct Target {
     pub blogger_url: String,
     /// Type of target (e.g., "money").
     #[serde(rename = "type")]
-    pub type_: String,
+    pub type_: TargetType,
 }
 
 /// Request form data struct for creating a new target.
@@ -42,5 +42,12 @@ pub struct NewTarget {
     /// Description of the goal.
     pub description: String,
     /// Target sum.
-    pub target_sum: u32,
+    pub target_sum: f64,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum TargetType {
+    Money,
+    Subscribers,
 }
