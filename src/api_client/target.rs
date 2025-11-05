@@ -50,7 +50,7 @@ impl ApiClient {
     /// - [`ApiError::Deserialization`] — if the JSON does not match the [`Target`] structure.
     pub async fn create_blog_target(
         &self,
-        blog_url: &str,
+        blog_name: &str,
         description: &str,
         target_sum: f64,
         target_type: TargetType,
@@ -61,7 +61,7 @@ impl ApiClient {
         };
 
         let form = NewTarget {
-            blog_url: blog_url.into(),
+            blog_url: blog_name.into(),
             description: description.into(),
             target_sum,
         };

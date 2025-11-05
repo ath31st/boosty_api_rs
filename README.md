@@ -69,13 +69,15 @@ The client automatically retries HTTP requests that fail due to transient networ
 - Strongly typed `Comment` and `CommentResponse` structs with `serde` support.
 - Handles `"not available"` status gracefully.
 
-### 🎯 Blog Metadata
+### 🎯 Blog Targets
 
 - Get targets via `get_blog_targets(blog_name)`.
-- Get subscription levels via `get_subscription_levels(blog_name, show_free_level)`.
+- Create target via `create_blog_target(blog_name, description, target_sum, target_type)`.
+- Delete target via `delete_blog_target(target_id)`.
 
 ### 📜 Subscriptions
 
+- Get subscription levels via `get_subscription_levels(blog_name, show_free_level)`.
 - Get current user subscriptions via `get_user_subscriptions(limit, with_follow)`, returning a paginated
   `SubscriptionsResponse`.
 
