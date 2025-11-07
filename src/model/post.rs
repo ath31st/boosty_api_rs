@@ -76,7 +76,8 @@ pub struct Post {
     /// Is the post waiting for video processing.
     pub is_waiting_video: bool,
     /// Optional internal numeric ID.
-    pub int_id: Option<i64>,
+    #[serde(rename = "int_id")]
+    pub int_id: i64,
     /// Is the post deleted.
     pub is_deleted: bool,
     /// Last updated timestamp (unix epoch).

@@ -244,7 +244,7 @@ mod tests {
             donations: 0,
             teaser: vec![],
             is_waiting_video: false,
-            int_id: None,
+            int_id: 0,
             is_deleted: false,
             updated_at: 0,
             signed_query: "".into(),

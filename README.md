@@ -94,7 +94,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.22.0"
+boosty_api = "0.23.0"
 ```
 
 or
