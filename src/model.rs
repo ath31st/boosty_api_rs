@@ -1,6 +1,7 @@
 mod comment;
 mod post;
 mod reaction;
+mod showcase;
 mod subscription;
 mod subscription_level;
 mod tag;
@@ -26,3 +27,5 @@ pub use target::{NewTarget, Target, TargetResponse, TargetType, UpdateTarget};
 pub use subscription_level::{SubscriptionLevel, SubscriptionLevelResponse};
 
 pub use subscription::{Subscription, SubscriptionsResponse};
+
+pub use showcase::{Showcase, ShowcaseData, ShowcaseResponse};
