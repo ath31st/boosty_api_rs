@@ -14,7 +14,7 @@ pub struct ShowcaseResponse {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ShowcaseData {
-    pub showcase_items: Vec<Showcase>,
+    pub showcase_items: Vec<ShowcaseItem>,
 }
 
 /// Showcase extra
@@ -43,7 +43,7 @@ pub struct Counters {
 /// Showcase item
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Showcase {
+pub struct ShowcaseItem {
     /// Showcase item id
     pub showcase_item_id: i64,
     /// Type can be "post", "bundle"

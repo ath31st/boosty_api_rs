@@ -28,4 +28,4 @@ pub use subscription_level::{SubscriptionLevel, SubscriptionLevelResponse};
 
 pub use subscription::{Subscription, SubscriptionsResponse};
 
-pub use showcase::{Showcase, ShowcaseData, ShowcaseResponse};
+pub use showcase::{ShowcaseData, ShowcaseItem, ShowcaseResponse};
