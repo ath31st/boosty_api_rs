@@ -23,6 +23,7 @@
 pub mod api_client;
 mod auth_provider;
 pub mod error;
+mod helper;
 pub mod media_content;
 pub mod model;
 pub mod traits;

@@ -1,10 +1,4 @@
-use reqwest::StatusCode;
-
-use crate::{
-    api_client::ApiClient,
-    error::{ApiError, ResultApi},
-    model::ShowcaseResponse,
-};
+use crate::{api_client::ApiClient, error::ResultApi, model::ShowcaseResponse};
 
 impl ApiClient {
     /// Get blog showcase
@@ -49,25 +43,9 @@ impl ApiClient {
         }
 
         let response = self.get_request(&path).await?;
-        let status = response.status();
+        let response = self.handle_response(&path, response).await?;
 
-        if status == StatusCode::UNAUTHORIZED {
-            return Err(ApiError::Unauthorized);
-        }
-
-        if !status.is_success() {
-            let endpoint = path.clone();
-            return Err(ApiError::HttpStatus { status, endpoint });
-        }
-
-        let body = response.text().await?;
-        let parsed = serde_json::from_str::<ShowcaseResponse>(&body).map_err(|e| {
-            ApiError::JsonParseDetailed {
-                error: e.to_string(),
-            }
-        })?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 
     /// Change blog showcase status
@@ -90,12 +68,7 @@ impl ApiClient {
             .put_request(&path, &serde_json::json!({"is_enabled": status}), true)
             .await?;
 
-        let status = response.status();
-
-        if !status.is_success() {
-            let endpoint = path.clone();
-            return Err(ApiError::HttpStatus { status, endpoint });
-        }
+        self.handle_response(&path, response).await?;
 
         Ok(())
     }
