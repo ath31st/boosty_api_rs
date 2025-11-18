@@ -1,5 +1,6 @@
 mod comment;
 mod post;
+mod showcase;
 mod subscription_level;
 mod target;
 mod user;
