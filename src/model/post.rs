@@ -88,6 +88,8 @@ pub struct Post {
     pub advertiser_info: Option<serde_json::Value>,
     /// Price details in various currencies.
     pub currency_prices: CurrencyPrices,
+    /// Should the post be shown in the showcase.
+    pub is_showcase_visible: bool,
 }
 
 /// User-specific flags.

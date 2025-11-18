@@ -250,6 +250,7 @@ mod tests {
             signed_query: "".into(),
             advertiser_info: None,
             currency_prices: CurrencyPrices { rub: 0.0, usd: 0.0 },
+            is_showcase_visible: false,
         }
     }
 
