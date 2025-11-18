@@ -69,4 +69,34 @@ impl ApiClient {
 
         Ok(parsed)
     }
+
+    /// Change blog showcase status
+    ///
+    /// # Arguments
+    /// * `blog_name` - Blog name
+    /// * `status` - Status (true to enable, false to disable)
+    ///
+    /// # Returns
+    /// * On success, returns `()`.
+    ///
+    /// # Errors
+    /// * `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
+    /// * `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
+    /// * `ApiError::HttpRequest` if the HTTP request fails.
+    pub async fn change_showcase_status(&self, blog_name: &str, status: bool) -> ResultApi<()> {
+        let path = format!("blog/{blog_name}/showcase/status/");
+
+        let response = self
+            .put_request(&path, &serde_json::json!({"is_enabled": status}), true)
+            .await?;
+
+        let status = response.status();
+
+        if !status.is_success() {
+            let endpoint = path.clone();
+            return Err(ApiError::HttpStatus { status, endpoint });
+        }
+
+        Ok(())
+    }
 }
