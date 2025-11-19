@@ -82,6 +82,11 @@ The client automatically retries HTTP requests that fail due to transient networ
 - Get current user subscriptions via `get_user_subscriptions(limit, with_follow)`, returning a paginated
   `SubscriptionsResponse`.
 
+### 📷 Showcase
+
+- Get showcase data via `get_showcase(blog_name, limit, only_visible, offset)`.
+- Change showcase status via `change_showcase_status(blog_name, status).
+
 ### ⚙️ Low-level Features
 
 - Async-ready `ApiClient` using `reqwest`.
@@ -94,7 +99,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.23.0"
+boosty_api = "0.24.0"
 ```
 
 or
