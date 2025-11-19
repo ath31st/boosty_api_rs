@@ -1,4 +1,8 @@
 {
+  "extra": {
+    "isLast": true,
+    "offset": ""
+  },
   "data": [
     {
       "user": {
@@ -62,7 +66,7 @@
       "donations": 0,
       "teaser": [],
       "isWaitingVideo": false,
-      "intId": 100,
+      "int_id": 100,
       "isDeleted": false,
       "updatedAt": 1710000002,
       "signedQuery": "",
@@ -70,7 +74,8 @@
       "currencyPrices": {
         "rub": 0,
         "usd": 0
-      }
+      },
+      "isShowcaseVisible": true
     },
     {
       "user": {
@@ -134,7 +139,7 @@
       "donations": 0,
       "teaser": [],
       "isWaitingVideo": false,
-      "intId": 101,
+      "int_id": 101,
       "isDeleted": false,
       "updatedAt": 1710001001,
       "signedQuery": "",
@@ -142,7 +147,8 @@
       "currencyPrices": {
         "rub": 0,
         "usd": 0
-      }
+      },
+      "isShowcaseVisible": true
     }
   ]
 }

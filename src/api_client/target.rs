@@ -20,14 +20,11 @@ impl ApiClient {
     /// - `ApiError::Deserialization` if the body cannot be deserialized into `TargetResponse`.
     pub async fn get_blog_targets(&self, blog_name: &str) -> ResultApi<TargetResponse> {
         let path = format!("target/{blog_name}/");
+
         let response = self.get_request(&path).await?;
+        let response = self.handle_response(&path, response).await?;
 
-        let parsed = response
-            .json::<TargetResponse>()
-            .await
-            .map_err(ApiError::JsonParse)?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 
     /// Create a new target for a blog.
@@ -67,12 +64,9 @@ impl ApiClient {
         };
 
         let response = self.post_request(path, &form, true).await?;
-        let parsed = response
-            .json::<Target>()
-            .await
-            .map_err(ApiError::JsonParse)?;
+        let response = self.handle_response(path, response).await?;
 
-        Ok(parsed)
+        self.parse_json(response).await
     }
 
     /// Delete a target by its ID.
@@ -131,13 +125,10 @@ impl ApiClient {
         };
 
         let path = format!("target/{}", target_id);
+
         let response = self.put_request(&path, &form, true).await?;
+        let response = self.handle_response(&path, response).await?;
 
-        let parsed = response
-            .json::<Target>()
-            .await
-            .map_err(ApiError::JsonParse)?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 }

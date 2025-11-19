@@ -1,7 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::error::{ApiError, ResultApi};
+use crate::error::ResultApi;
 use crate::model::SubscriptionsResponse;
-use reqwest::StatusCode;
 
 impl ApiClient {
     /// Fetch the current user's subscriptions, with optional pagination and follow filter.
@@ -44,16 +43,8 @@ impl ApiClient {
         }
 
         let response = self.get_request(&path).await?;
-        let status = response.status();
-        if status == StatusCode::UNAUTHORIZED {
-            return Err(ApiError::Unauthorized);
-        }
+        let response = self.handle_response(&path, response).await?;
 
-        let subs = response
-            .json::<SubscriptionsResponse>()
-            .await
-            .map_err(ApiError::JsonParse)?;
-
-        Ok(subs)
+        self.parse_json(response).await
     }
 }

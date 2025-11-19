@@ -1,8 +1,6 @@
-use reqwest::StatusCode;
-
 use crate::{
     api_client::ApiClient,
-    error::{ApiError, ResultApi},
+    error::ResultApi,
     model::{Comment, CommentsResponse},
 };
 
@@ -59,25 +57,9 @@ impl ApiClient {
         }
 
         let response = self.get_request(&path).await?;
-        let status = response.status();
+        let response = self.handle_response(&path, response).await?;
 
-        if status == StatusCode::UNAUTHORIZED {
-            return Err(ApiError::Unauthorized);
-        }
-
-        if !status.is_success() {
-            let endpoint = path.clone();
-            return Err(ApiError::HttpStatus { status, endpoint });
-        }
-
-        let body = response.text().await?;
-        let parsed = serde_json::from_str::<CommentsResponse>(&body).map_err(|e| {
-            ApiError::JsonParseDetailed {
-                error: e.to_string(),
-            }
-        })?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 
     /// Get all comments for a post.

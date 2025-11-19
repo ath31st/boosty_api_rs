@@ -1,5 +1,5 @@
 use crate::api_client::ApiClient;
-use crate::error::{ApiError, ResultApi};
+use crate::error::ResultApi;
 use crate::model::SubscriptionLevelResponse;
 
 impl ApiClient {
@@ -32,12 +32,8 @@ impl ApiClient {
         }
 
         let response = self.get_request(&path).await?;
+        let response = self.handle_response(&path, response).await?;
 
-        let parsed = response
-            .json::<SubscriptionLevelResponse>()
-            .await
-            .map_err(ApiError::JsonParse)?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 }

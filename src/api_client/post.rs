@@ -1,7 +1,6 @@
 use crate::api_client::ApiClient;
-use crate::error::{ApiError, ResultApi};
+use crate::error::ResultApi;
 use crate::model::{Post, PostsResponse};
-use reqwest::StatusCode;
 
 impl ApiClient {
     /// Get a single post once, without automatic retry on "not available" or HTTP 401.
@@ -23,25 +22,11 @@ impl ApiClient {
     /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Post`.
     pub async fn get_post(&self, blog_name: &str, post_id: &str) -> ResultApi<Post> {
         let path = format!("blog/{blog_name}/post/{post_id}");
+
         let response = self.get_request(&path).await?;
-        let status = response.status();
+        let response = self.handle_response(&path, response).await?;
 
-        if status == StatusCode::UNAUTHORIZED {
-            return Err(ApiError::Unauthorized);
-        }
-
-        if !status.is_success() {
-            let endpoint = path.clone();
-            return Err(ApiError::HttpStatus { status, endpoint });
-        }
-
-        let body = response.text().await?;
-        let parsed =
-            serde_json::from_str::<Post>(&body).map_err(|e| ApiError::JsonParseDetailed {
-                error: e.to_string(),
-            })?;
-
-        Ok(parsed)
+        self.parse_json(response).await
     }
 
     // pub async fn get_posts(&self, blog_name: &str, limit: usize) -> ResultApi<PostsResponse> {
@@ -99,23 +84,9 @@ impl ApiClient {
             }
 
             let response = self.get_request(&path).await?;
-            let status = response.status();
+            let response = self.handle_response(&path, response).await?;
 
-            if status == reqwest::StatusCode::UNAUTHORIZED {
-                return Err(ApiError::Unauthorized);
-            }
-
-            if !status.is_success() {
-                return Err(ApiError::HttpStatus {
-                    status,
-                    endpoint: path,
-                });
-            }
-
-            let posts_response = response
-                .json::<PostsResponse>()
-                .await
-                .map_err(ApiError::JsonParse)?;
+            let posts_response: PostsResponse = self.parse_json(response).await?;
 
             let data_len = posts_response.data.len();
             all_posts.extend(posts_response.data);

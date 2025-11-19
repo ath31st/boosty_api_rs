@@ -136,7 +136,7 @@
   "donations": 0,
   "teaser": [],
   "isWaitingVideo": false,
-  "intId": 777,
+  "int_id": 777,
   "isDeleted": false,
   "updatedAt": 1710004567,
   "signedQuery": "",
@@ -144,5 +144,6 @@
   "currencyPrices": {
     "rub": 0,
     "usd": 0
-  }
+  },
+  "isShowcaseVisible": true
 }

@@ -51,7 +51,7 @@ async fn test_get_targets_invalid_json() {
         .await;
 
     let res = client.get_blog_targets(blog).await;
-    assert!(matches!(res, Err(ApiError::JsonParse(_))));
+    assert!(matches!(res, Err(ApiError::JsonParseDetailed { error: _ })));
 }
 
 #[tokio::test]
@@ -249,7 +249,7 @@ async fn test_update_target_invalid_json() {
         .await;
 
     let res = client.update_blog_target(target_id, "desc", 100.0).await;
-    assert!(matches!(res, Err(ApiError::JsonParse(_))));
+    assert!(matches!(res, Err(ApiError::JsonParseDetailed { error: _ })));
 }
 
 #[tokio::test]
