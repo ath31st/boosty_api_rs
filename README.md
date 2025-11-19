@@ -85,7 +85,7 @@ The client automatically retries HTTP requests that fail due to transient networ
 ### 📷 Showcase
 
 - Get showcase data via `get_showcase(blog_name, limit, only_visible, offset)`.
-- Change showcase status via `change_showcase_status(blog_name, status).
+- Change showcase status via `change_showcase_status(blog_name, status)`.
 
 ### ⚙️ Low-level Features
 
