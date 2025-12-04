@@ -8,7 +8,7 @@ mod user;
 use crate::auth_provider::AuthProvider;
 use crate::error::{ApiError, ResultApi, ResultAuth};
 use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
-use reqwest::{Client, Response};
+use reqwest::{Client, Response, multipart};
 
 /// Client for interacting with Boosty API.
 ///
@@ -214,6 +214,32 @@ impl ApiClient {
         } else {
             builder.json(body)
         };
+
+        request.send().await.map_err(ApiError::HttpRequest)
+    }
+
+    /// Internal: perform a POST request with multipart form.
+    ///
+    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
+    ///
+    /// # Parameters
+    ///
+    /// - `path`: relative API path under `/v1/`.
+    /// - `form`: a multipart form.
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a `reqwest::Response`.  
+    /// On network failure, returns [`ApiError::HttpRequest`].
+    async fn post_multipart(&self, path: &str, form: multipart::Form) -> ResultApi<Response> {
+        let mut headers = self.headers.clone();
+        self.auth_provider.apply_auth_header(&mut headers).await?;
+
+        headers.remove("Content-Type");
+
+        let url = format!("{}/v1/{}", self.base_url, path);
+
+        let request = self.client.post(&url).headers(headers).multipart(form);
 
         request.send().await.map_err(ApiError::HttpRequest)
     }
