@@ -1,4 +1,5 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 use crate::{
     media_content::{self, ContentItem},
@@ -91,5 +92,51 @@ impl HasContent for Comment {
     /// Vector of `ContentItem` items.
     fn extract_content(&self) -> Vec<ContentItem> {
         media_content::extract_content(&self.data)
+    }
+}
+
+/// Comment block.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum CommentBlock {
+    /// Text block.
+    #[serde(rename = "text")]
+    Text(TextBlock),
+    /// Smile block.
+    #[serde(rename = "smile")]
+    Smile(SmileBlock),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextBlock {
+    pub content: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub modificator: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SmileBlock {
+    pub name: String,
+}
+
+impl CommentBlock {
+    pub fn text(text: &str) -> Self {
+        CommentBlock::Text(TextBlock {
+            content: json!([text, "unstyled", []]).to_string(),
+            modificator: "".into(),
+        })
+    }
+
+    pub fn text_end() -> Self {
+        CommentBlock::Text(TextBlock {
+            content: "".into(),
+            modificator: "BLOCK_END".into(),
+        })
+    }
+
+    pub fn smile(name: &str) -> Self {
+        CommentBlock::Smile(SmileBlock { name: name.into() })
     }
 }

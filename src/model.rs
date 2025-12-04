@@ -14,7 +14,7 @@ pub use post::{
     TextData, VideoData,
 };
 
-pub use comment::{Comment, CommentsResponse};
+pub use comment::{Comment, CommentBlock, CommentsResponse};
 
 pub use user::User;
 
