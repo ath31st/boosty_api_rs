@@ -66,6 +66,7 @@ The client automatically retries HTTP requests that fail due to transient networ
 
 - Get single comments response: `get_comments_response(blog_name, post_id, limit, reply_limit, order, offset)`.
 - Get multiple comments: `get_all_comments(blog_name, post_id, limit, reply_limit, order)`.
+- Create comment: `create_comment(blog_name, post_id, blocks, reply_id)`.
 - Strongly typed `Comment` and `CommentResponse` structs with `serde` support.
 - Handles `"not available"` status gracefully.
 
@@ -99,7 +100,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.24.0"
+boosty_api = "0.25.0"
 ```
 
 or
