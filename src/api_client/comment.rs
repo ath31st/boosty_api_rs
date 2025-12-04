@@ -1,7 +1,9 @@
+use reqwest::multipart::{Form, Part};
+
 use crate::{
     api_client::ApiClient,
-    error::ResultApi,
-    model::{Comment, CommentsResponse},
+    error::{ApiError, ResultApi},
+    model::{Comment, CommentBlock, CommentsResponse},
 };
 
 impl ApiClient {
@@ -118,5 +120,59 @@ impl ApiClient {
         }
 
         Ok(all_comments)
+    }
+
+    /// Create a new comment.
+    ///
+    /// # Arguments
+    ///
+    /// * `blog_name` - Blog name (blog url)
+    /// * `post_id` - Post id
+    /// * `blocks` - Vector of `CommentBlock` items with the comment content
+    /// * `reply_id` - Reply id (optional)
+    ///
+    /// # Returns
+    ///
+    /// On success, returns a `Comment` item.
+    ///
+    /// # Errors
+    ///
+    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
+    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
+    /// - `ApiError::HttpRequest` if the HTTP request fails.
+    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Comment`.
+    /// - `ApiError::Other` if form creation fails.
+    pub async fn create_comment(
+        &self,
+        blog_name: &str,
+        post_id: &str,
+        blocks: &[CommentBlock],
+        reply_id: Option<u64>,
+    ) -> ResultApi<Comment> {
+        let path = format!("blog/{blog_name}/post/{post_id}/comment/");
+
+        let mut form = Form::new().text("from_page", "blog");
+
+        for block in blocks {
+            form = form.part(
+                "data[]",
+                Part::text(serde_json::to_string(block).map_err(|e| {
+                    ApiError::JsonParseDetailed {
+                        error: e.to_string(),
+                    }
+                })?)
+                .mime_str("application/json")
+                .map_err(|e| ApiError::Other(e.to_string()))?,
+            );
+        }
+
+        if let Some(id) = reply_id {
+            form = form.text("reply_id", id.to_string());
+        }
+
+        let response = self.post_multipart(&path, form).await?;
+        let response = self.handle_response(&path, response).await?;
+
+        self.parse_json(response).await
     }
 }
