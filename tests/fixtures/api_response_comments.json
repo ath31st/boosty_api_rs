@@ -1,0 +1,180 @@
+{
+    "id": "0fbc94a3-6395-45a6-b869-aaa53022cc93",
+    "intId": 10091879,
+    "post": {
+        "id": "94f64d66-d219-4838-88aa-47b602a2ca3d"
+    },
+    "author": {
+        "id": 40118268,
+        "name": "user1",
+        "hasAvatar": true,
+        "avatarUrl": "https://images.boosty.to/user/40118268/avatar?change_time=1749557347"
+    },
+    "createdAt": 1764832755,
+    "updatedAt": null,
+    "isDeleted": false,
+    "isBlocked": false,
+    "isUpdated": false,
+    "replyCount": 0,
+    "replies": null,
+    "data": [
+        {
+            "type": "text",
+            "content": "[\"test comment\",\"unstyled\",[]]",
+            "modificator": ""
+        },
+        {
+            "type": "text",
+            "content": "",
+            "modificator": "BLOCK_END"
+        }
+    ],
+    "reactions": {
+        "sad": 0,
+        "laught": 0,
+        "like": 0,
+        "wonder": 0,
+        "angry": 0,
+        "fire": 0,
+        "dislike": 0,
+        "heart": 0
+    },
+    "reactionCounters": [
+        {
+            "type": "like",
+            "count": 0
+        },
+        {
+            "type": "dislike",
+            "count": 0
+        },
+        {
+            "type": "fire",
+            "count": 0
+        },
+        {
+            "type": "heart",
+            "count": 0
+        },
+        {
+            "type": "laught",
+            "count": 0
+        },
+        {
+            "type": "wonder",
+            "count": 0
+        },
+        {
+            "type": "sad",
+            "count": 0
+        },
+        {
+            "type": "angry",
+            "count": 0
+        },
+        {
+            "type": "funny",
+            "count": 0
+        },
+        {
+            "type": "check",
+            "count": 0
+        },
+        {
+            "type": "thinking",
+            "count": 0
+        },
+        {
+            "type": "clown",
+            "count": 0
+        },
+        {
+            "type": "swearing",
+            "count": 0
+        },
+        {
+            "type": "applause",
+            "count": 0
+        },
+        {
+            "type": "call-me",
+            "count": 0
+        },
+        {
+            "type": "cold",
+            "count": 0
+        },
+        {
+            "type": "eggplant",
+            "count": 0
+        },
+        {
+            "type": "blowing-up",
+            "count": 0
+        },
+        {
+            "type": "scream",
+            "count": 0
+        },
+        {
+            "type": "crown",
+            "count": 0
+        },
+        {
+            "type": "diamond",
+            "count": 0
+        },
+        {
+            "type": "melting",
+            "count": 0
+        },
+        {
+            "type": "money",
+            "count": 0
+        },
+        {
+            "type": "nausea",
+            "count": 0
+        },
+        {
+            "type": "confetti",
+            "count": 0
+        },
+        {
+            "type": "banana",
+            "count": 0
+        },
+        {
+            "type": "peach",
+            "count": 0
+        },
+        {
+            "type": "pizza",
+            "count": 0
+        },
+        {
+            "type": "love",
+            "count": 0
+        },
+        {
+            "type": "rocket",
+            "count": 0
+        },
+        {
+            "type": "splash",
+            "count": 0
+        },
+        {
+            "type": "lightning",
+            "count": 0
+        },
+        {
+            "type": "cry",
+            "count": 0
+        },
+        {
+            "type": "folded-hands",
+            "count": 0
+        }
+    ]
+}

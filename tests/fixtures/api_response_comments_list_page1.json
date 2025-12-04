@@ -1,0 +1,95 @@
+{
+    "data": [
+        {
+            "id": "c1-id",
+            "intId": 1000,
+            "post": {
+                "id": "post-list-1"
+            },
+            "author": {
+                "id": 101,
+                "name": "User_A",
+                "hasAvatar": true,
+                "avatarUrl": "url_a"
+            },
+            "createdAt": 1764832700,
+            "updatedAt": null,
+            "isDeleted": false,
+            "isBlocked": false,
+            "isUpdated": false,
+            "replyCount": 1,
+            "replies": null,
+            "data": [
+                {
+                    "type": "text",
+                    "content": "[\"Comment 1\",\"unstyled\",[]]",
+                    "modificator": ""
+                }
+            ],
+            "reactions": {
+                "sad": 0,
+                "laught": 0,
+                "like": 1,
+                "wonder": 0,
+                "angry": 0,
+                "fire": 0,
+                "dislike": 0,
+                "heart": 0
+            },
+            "reactionCounters": [
+                {
+                    "type": "like",
+                    "count": 1
+                }
+            ],
+            "parentId": null,
+            "replyId": null,
+            "replyToUser": null
+        },
+        {
+            "id": "c2-id",
+            "intId": 1001,
+            "post": {
+                "id": "post-list-1"
+            },
+            "author": {
+                "id": 102,
+                "name": "User_B",
+                "hasAvatar": false,
+                "avatarUrl": "url_b"
+            },
+            "createdAt": 1764832800,
+            "updatedAt": null,
+            "isDeleted": false,
+            "isBlocked": false,
+            "isUpdated": false,
+            "replyCount": 0,
+            "replies": null,
+            "data": [
+                {
+                    "type": "text",
+                    "content": "[\"Comment 2\",\"unstyled\",[]]",
+                    "modificator": ""
+                }
+            ],
+            "reactions": {
+                "sad": 0,
+                "laught": 0,
+                "like": 0,
+                "wonder": 0,
+                "angry": 0,
+                "fire": 0,
+                "dislike": 0,
+                "heart": 0
+            },
+            "reactionCounters": [],
+            "parentId": null,
+            "replyId": null,
+            "replyToUser": null
+        }
+    ],
+    "extra": {
+        "isFirst": true,
+        "isLast": false
+    }
+}
