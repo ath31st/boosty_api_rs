@@ -4,6 +4,7 @@ use crate::{
     media_content::ContentItem,
     model::{Reactions, Tag, User},
 };
+use rust_decimal::Decimal;
 use serde::Deserialize;
 
 /// API response containing a list of posts.
@@ -70,7 +71,7 @@ pub struct Post {
     /// Comments associated with the post.
     pub comments: Comments,
     /// Total amount of donations received for this post.
-    pub donations: i32,
+    pub donations: Decimal,
     /// Teaser media data shown before accessing full content.
     pub teaser: Vec<MediaData>,
     /// Is the post waiting for video processing.

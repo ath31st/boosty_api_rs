@@ -184,6 +184,8 @@ pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option
 
 #[cfg(test)]
 mod tests {
+    use rust_decimal::Decimal;
+
     use super::*;
     use crate::{
         model::*,
@@ -241,7 +243,7 @@ mod tests {
                 extra: ExtraFlag { is_last: false },
                 data: vec![],
             },
-            donations: 0,
+            donations: Decimal::ZERO,
             teaser: vec![],
             is_waiting_video: false,
             int_id: 0,

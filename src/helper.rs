@@ -52,8 +52,12 @@ impl ApiClient {
         response: Response,
     ) -> ResultApi<T> {
         let body = response.text().await?;
-        serde_json::from_str(&body).map_err(|e| ApiError::JsonParseDetailed {
-            error: e.to_string(),
+
+        let mut deserializer = serde_json::Deserializer::from_str(&body);
+        serde_path_to_error::deserialize::<_, T>(&mut deserializer).map_err(|err| {
+            ApiError::JsonParseDetailed {
+                error: format!("path: {}, error: {}", err.path(), err.inner()),
+            }
         })
     }
 }
