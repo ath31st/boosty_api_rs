@@ -289,9 +289,10 @@ mod tests {
     fn test_extract_image() {
         let img = ImageData {
             url: "image_url".into(),
-            width: 100,
-            height: 100,
+            width: Some(100),
+            height: Some(100),
             preview: None,
+            rendition: None,
             id: "img123".into(),
         };
         let post = dummy_post(vec![MediaData::Image(img)], true);

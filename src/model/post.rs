@@ -190,11 +190,13 @@ pub struct ImageData {
     /// URL to the image.
     pub url: String,
     /// Width in pixels.
-    pub width: u32,
+    pub width: Option<u32>,
     /// Height in pixels.
-    pub height: u32,
+    pub height: Option<u32>,
     /// Optional URL to preview image.
     pub preview: Option<String>,
+    /// Optional image rendition.
+    pub rendition: Option<String>,
     /// Unique image identifier.
     pub id: String,
 }
