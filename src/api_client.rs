@@ -33,10 +33,10 @@ use reqwest::{Client, Response, multipart};
 ///     // Or use refresh token + device ID:
 ///     // api_client.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
 ///
-///     let post = api_client.get_post("some-blog-name", "post-id").await?;
+///     let post = api_client.get_post("blog_name", "post_id").await?;
 ///     println!("{:#?}", post);
 ///
-///     let targets = api_client.get_blog_targets("some-blog-name").await?;
+///     let targets = api_client.get_blog_targets("blog_name").await?;
 ///     println!("{:#?}", targets);
 ///
 ///     Ok(())

@@ -109,7 +109,7 @@ or
 cargo add boosty_api
 ```
 
-## Example getting single post
+## Example: Fetching a Single Post
 
 ```rust
 use boosty_api::api_client::ApiClient;
@@ -128,14 +128,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Or use refresh token + device ID
     // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
 
-    let post = api_client.get_post("some-blog-name", "post-id").await?;
+    let post = api_client.get_post("blog_name", "post_id").await?;
     println!("{:#?}", post);
 
     Ok(())
 }
 ```
 
-## Example getting multiple posts
+## Example: Fetching Multiple Posts
 
 ```rust
 use boosty_api::api_client::ApiClient;
