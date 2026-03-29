@@ -46,6 +46,10 @@ pub enum ContentItem {
         size: u64,
     },
     /// List item with style and list of content items.
+    ///
+    /// `items` is a vector of groups, where each group represents content
+    /// from a single list item in the original post. Nested lists are
+    /// represented as `ContentItem::List` elements within their parent group.
     List {
         style: String,
         items: Vec<Vec<ContentItem>>,
