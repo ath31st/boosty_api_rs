@@ -1,4 +1,4 @@
-use crate::api_client::ApiClient;
+use crate::api_client::{ApiClient, DEFAULT_PAGE_SIZE};
 use crate::error::ResultApi;
 use crate::model::{Post, PostsResponse};
 
@@ -70,7 +70,6 @@ impl ApiClient {
         page_size: Option<usize>,
         start_offset: Option<String>,
     ) -> ResultApi<Vec<Post>> {
-        const DEFAULT_PAGE_SIZE: usize = 20;
         let page_size = page_size.unwrap_or(DEFAULT_PAGE_SIZE);
 
         let mut all_posts = Vec::new();

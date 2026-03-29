@@ -10,6 +10,9 @@ use crate::error::{ApiError, ResultApi, ResultAuth};
 use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response, multipart};
 
+/// Default number of posts to fetch per page.
+const DEFAULT_PAGE_SIZE: usize = 20;
+
 /// Client for interacting with Boosty API.
 ///
 /// Handles base URL, common headers, and delegates authentication to `AuthProvider`.
