@@ -255,7 +255,7 @@ mod tests {
             updated_at: 0,
             signed_query: "".into(),
             advertiser_info: None,
-            currency_prices: CurrencyPrices { rub: 0.0, usd: 0.0 },
+            currency_prices: CurrencyPrices { eur: 0.0, rub: 0.0, usd: 0.0 },
             is_showcase_visible: false,
         }
     }

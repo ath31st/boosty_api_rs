@@ -1,4 +1,5 @@
 use crate::media_content;
+use crate::model::{ContentCounter, CurrencyPrices};
 use crate::traits::{HasContent, HasTitle, IsAvailable};
 use crate::{
     media_content::ContentItem,
@@ -268,19 +269,6 @@ pub struct PlayerUrl {
     pub url: String,
 }
 
-/// Counter for specific content type inside a post.
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct ContentCounter {
-    /// Content type name.
-    #[serde(rename = "type")]
-    pub type_: String,
-    /// Count of items.
-    pub count: u32,
-    /// Total size in bytes.
-    pub size: u64,
-}
-
 /// Donators info wrapper.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -319,18 +307,6 @@ pub struct Count {
     pub reactions: Reactions,
     /// Number of likes.
     pub likes: u32,
-}
-
-/// Currency price info.
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct CurrencyPrices {
-    /// Price in Russian Rubles.
-    #[serde(alias = "RUB")]
-    pub rub: f32,
-    /// Price in US Dollars.
-    #[serde(alias = "USD")]
-    pub usd: f32,
 }
 
 /// List media data.
