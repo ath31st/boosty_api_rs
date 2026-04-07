@@ -1,11 +1,15 @@
 use serde::Deserialize;
 
-use crate::model::{ContentCounter, CurrencyPrices, Thumbnail};
+use crate::model::{ContentCounter, CurrencyPrices, Post, ReactionCounter, Thumbnail};
 
 /// API response containing a list of bundles.
 #[derive(Deserialize, Debug)]
 pub struct BundlesResponse {
-    /// Array of bundle items.
+    pub data: BundlesData,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct BundlesData {
     pub bundles: Vec<Bundle>,
 }
 
@@ -47,4 +51,57 @@ pub struct Bundle {
     pub content_counters: Vec<ContentCounter>,
     /// Thumbnail image for the bundle.
     pub thumbnail: Thumbnail,
+}
+
+/// API response containing bundle items (posts within a bundle).
+#[derive(Deserialize, Debug)]
+pub struct BundleItemsResponse {
+    /// Data wrapper with bundle items.
+    pub data: BundleItemsData,
+    /// Extra pagination info.
+    pub extra: BundleExtra,
+}
+
+/// Data wrapper for bundle items.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct BundleItemsData {
+    /// Array of bundle item posts.
+    pub bundle_items: Vec<BundleItem>,
+}
+
+/// Extra pagination data for bundle items.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct BundleExtra {
+    /// Whether this is the last page.
+    pub is_last: bool,
+    /// Current offset.
+    pub offset: usize,
+}
+
+/// Represents a single post within a bundle.
+/// This is a `Post` with additional bundle-specific fields.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct BundleItem {
+    /// The underlying post.
+    #[serde(flatten)]
+    pub post: Post,
+    /// Position in the bundle.
+    pub position: u32,
+    /// Bundle ID this post belongs to.
+    pub bundle_id: String,
+    /// Array of bundle IDs.
+    pub bundle_ids: Vec<String>,
+    /// Post ID (duplicate of `id`, but present in JSON).
+    pub post_id: String,
+    /// Change marker.
+    pub change: String,
+    /// Whether the post is a draft.
+    pub is_draft: bool,
+    /// Reaction counters (alternative format).
+    pub reaction_counters: Vec<ReactionCounter>,
+    /// Bundles this post belongs to.
+    pub bundles: Vec<Bundle>,
 }

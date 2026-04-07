@@ -10,7 +10,9 @@ mod tag;
 mod target;
 mod user;
 
-pub use bundle::{Bundle, BundlesResponse};
+pub use bundle::{
+    Bundle, BundleExtra, BundleItem, BundleItemsData, BundleItemsResponse, BundlesResponse,
+};
 
 pub use common::{ContentCounter, CurrencyPrices, Thumbnail};
 
