@@ -93,6 +93,8 @@ pub struct Post {
     pub currency_prices: CurrencyPrices,
     /// Should the post be shown in the showcase.
     pub is_showcase_visible: bool,
+    /// Reactions enabled/disabled for the post.
+    pub reactions_disabled: bool,
 }
 
 /// User-specific flags.

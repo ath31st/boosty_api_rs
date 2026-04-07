@@ -257,6 +257,7 @@ mod tests {
             advertiser_info: None,
             currency_prices: CurrencyPrices { eur: 0.0, rub: 0.0, usd: 0.0 },
             is_showcase_visible: false,
+            reactions_disabled: false,
         }
     }
 
