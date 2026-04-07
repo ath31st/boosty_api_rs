@@ -77,7 +77,8 @@ pub struct Post {
     pub teaser: Vec<MediaData>,
     /// Is the post waiting for video processing.
     pub is_waiting_video: bool,
-    /// Optional internal numeric ID.
+    /// Internal numeric ID.
+    #[serde(alias = "intId")]
     #[serde(rename = "int_id")]
     pub int_id: i64,
     /// Is the post deleted.
