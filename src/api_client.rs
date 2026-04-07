@@ -1,3 +1,4 @@
+mod bundle;
 mod comment;
 mod post;
 mod showcase;
