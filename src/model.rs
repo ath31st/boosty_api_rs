@@ -1,4 +1,6 @@
+mod bundle;
 mod comment;
+mod common;
 mod post;
 mod reaction;
 mod showcase;
@@ -8,10 +10,13 @@ mod tag;
 mod target;
 mod user;
 
+pub use bundle::{Bundle, BundlesResponse, Thumbnail};
+
+pub use common::{ContentCounter, CurrencyPrices};
+
 pub use post::{
-    AudioData, Comments, ContentCounter, Count, CurrencyPrices, Donators, ExtraFlag, FileData,
-    Flags, ImageData, LinkData, MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, SmileData,
-    TextData, VideoData,
+    AudioData, Comments, Count, Donators, ExtraFlag, FileData, Flags, ImageData, LinkData,
+    MediaData, OkVideoData, PlayerUrl, Post, PostsResponse, SmileData, TextData, VideoData,
 };
 
 pub use comment::{Comment, CommentBlock, CommentsResponse};
