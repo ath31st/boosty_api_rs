@@ -10,9 +10,9 @@ mod tag;
 mod target;
 mod user;
 
-pub use bundle::{Bundle, BundlesResponse, Thumbnail};
+pub use bundle::{Bundle, BundlesResponse};
 
-pub use common::{ContentCounter, CurrencyPrices};
+pub use common::{ContentCounter, CurrencyPrices, Thumbnail};
 
 pub use post::{
     AudioData, Comments, Count, Donators, ExtraFlag, FileData, Flags, ImageData, LinkData,

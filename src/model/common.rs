@@ -27,3 +27,26 @@ pub struct ContentCounter {
     /// Total size in bytes.
     pub size: u64,
 }
+
+/// Thumbnail image data.
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Thumbnail {
+    /// Unique image identifier.
+    pub id: String,
+    /// Image title.
+    pub title: String,
+    /// URL to the image.
+    pub url: String,
+    /// Image rendition type.
+    pub rendition: String,
+    /// Image type (e.g., "image").
+    #[serde(rename = "type")]
+    pub type_: String,
+    /// Width in pixels.
+    pub width: u32,
+    /// Height in pixels.
+    pub height: u32,
+    /// File size in bytes.
+    pub size: u64,
+}
