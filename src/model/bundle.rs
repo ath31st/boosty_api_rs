@@ -8,6 +8,7 @@ pub struct BundlesResponse {
     pub data: BundlesData,
 }
 
+/// Bundles data from the Boosty API.
 #[derive(Deserialize, Debug)]
 pub struct BundlesData {
     pub bundles: Vec<Bundle>,
