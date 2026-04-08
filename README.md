@@ -88,6 +88,11 @@ The client automatically retries HTTP requests that fail due to transient networ
 - Get showcase data via `get_showcase(blog_name, limit, only_visible, offset)`.
 - Change showcase status via `change_showcase_status(blog_name, status)`.
 
+### 📂 Bundles
+
+- Get bundles via `get_bundles(blog_name)`.
+- Get bundle via `get_bundle(blog_name, bundle_id, query)`.
+
 ### ⚙️ Low-level Features
 
 - Async-ready `ApiClient` using `reqwest`.
@@ -100,7 +105,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.26.1"
+boosty_api = "0.27.0"
 ```
 
 or
