@@ -11,7 +11,8 @@ mod target;
 mod user;
 
 pub use bundle::{
-    Bundle, BundleExtra, BundleItem, BundleItemsData, BundleItemsResponse, BundlesResponse,
+    Bundle, BundleExtra, BundleItem, BundleItemsData, BundleItemsResponse, BundleQuery,
+    BundlesResponse,
 };
 
 pub use common::{ContentCounter, CurrencyPrices, Thumbnail};

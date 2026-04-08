@@ -1,7 +1,7 @@
 use crate::{
     api_client::ApiClient,
-    error::ResultApi,
-    model::{BundleItemsResponse, BundlesResponse},
+    error::{ApiError, ResultApi},
+    model::{BundleItemsResponse, BundleQuery, BundlesResponse},
 };
 
 impl ApiClient {
@@ -32,11 +32,7 @@ impl ApiClient {
     /// # Arguments
     /// * `blog_name` - Blog name
     /// * `bundle_id` - Bundle UUID
-    /// * `full_data` - Whether to fetch full data
-    /// * `limit` - Number of posts to fetch
-    /// * `for_owner` - Whether to fetch as owner
-    /// * `comments_limit` - Comments limit
-    /// * `reply_limit` - Reply limit
+    /// * `query` - Bundle query
     ///
     /// # Returns
     /// * On success, returns a `BundleItemsResponse` containing the `bundleItems` field with `BundleItem` items.
@@ -45,20 +41,17 @@ impl ApiClient {
     /// * `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
     /// * `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
     /// * `ApiError::HttpRequest` if the HTTP request fails.
+    /// * `ApiError::Serialization` if the query cannot be serialized.
     /// * `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `BundleItemsResponse`.
     pub async fn get_bundle(
         &self,
         blog_name: &str,
         bundle_id: &str,
-        full_data: bool,
-        limit: u32,
-        for_owner: bool,
-        comments_limit: u32,
-        reply_limit: u32,
+        query: &BundleQuery,
     ) -> ResultApi<BundleItemsResponse> {
-        let path = format!(
-            "blog/{blog_name}/bundle/{bundle_id}/post/?full_data={full_data}&limit={limit}&for_owner={for_owner}&comments_limit={comments_limit}&reply_limit={reply_limit}"
-        );
+        let query_string = serde_urlencoded::to_string(query).map_err(ApiError::Serialization)?;
+
+        let path = format!("blog/{blog_name}/bundle/{bundle_id}/post/?{query_string}");
 
         let response = self.get_request(&path).await?;
         let response = self.handle_response(&path, response).await?;

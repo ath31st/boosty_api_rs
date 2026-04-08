@@ -1,6 +1,30 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::model::{ContentCounter, CurrencyPrices, Post, ReactionCounter, Thumbnail};
+
+/// Query parameters for bundle requests.
+#[derive(Debug, Clone, Serialize)]
+pub struct BundleQuery {
+    pub full_data: Option<bool>,
+    pub limit: Option<u32>,
+    pub for_owner: Option<bool>,
+    pub comments_limit: Option<u32>,
+    pub reply_limit: Option<u32>,
+}
+
+/// Default implementation for BundleQuery.
+/// Defaults parameters like a Boosty platform.
+impl Default for BundleQuery {
+    fn default() -> Self {
+        Self {
+            full_data: Some(true),
+            limit: Some(12),
+            for_owner: Some(true),
+            comments_limit: Some(2),
+            reply_limit: Some(1),
+        }
+    }
+}
 
 /// API response containing a list of bundles.
 #[derive(Deserialize, Debug)]
