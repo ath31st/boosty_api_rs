@@ -1,0 +1,242 @@
+{
+    "data": {
+        "bundleItems": [
+            {
+                "user": {
+                    "blogUrl": "testblog",
+                    "avatarUrl": "https://example.com/avatar.jpg",
+                    "name": "TestUser",
+                    "hasAvatar": true,
+                    "id": 111,
+                    "flags": {
+                        "showPostDonations": true
+                    }
+                },
+                "isPinned": false,
+                "isBlocked": false,
+                "hasAccess": true,
+                "data": [],
+                "isRecord": false,
+                "contentCounters": [],
+                "donators": {
+                    "extra": {
+                        "isLast": true
+                    },
+                    "data": []
+                },
+                "showViewsCounter": true,
+                "createdAt": 1710000001,
+                "isPublished": true,
+                "isLiked": false,
+                "tags": [
+                    {
+                        "id": 12345,
+                        "title": "test tag"
+                    }
+                ],
+                "isCommentsDenied": false,
+                "count": {
+                    "comments": 2,
+                    "reactions": {
+                        "dislike": 0,
+                        "heart": 1,
+                        "fire": 0,
+                        "angry": 0,
+                        "wonder": 0,
+                        "laught": 0,
+                        "sad": 0,
+                        "like": 3
+                    },
+                    "likes": 3
+                },
+                "publishTime": 1710000001,
+                "title": "Bundle Post One",
+                "sortOrder": 1710000001,
+                "price": 0,
+                "id": "post-bundle-001",
+                "comments": {
+                    "extra": {
+                        "isLast": true
+                    },
+                    "data": []
+                },
+                "donations": 0,
+                "teaser": [],
+                "isWaitingVideo": false,
+                "int_id": 100,
+                "isDeleted": false,
+                "updatedAt": 1710000002,
+                "signedQuery": "",
+                "advertiserInfo": null,
+                "currencyPrices": {
+                    "rub": 0,
+                    "usd": 0
+                },
+                "isShowcaseVisible": true,
+                "reactionsDisabled": false,
+                "position": 1,
+                "bundleId": "bundle-001",
+                "bundleIds": [
+                    "bundle-001"
+                ],
+                "postId": "post-bundle-001",
+                "change": "",
+                "isDraft": false,
+                "reactionCounters": [
+                    {
+                        "type": "like",
+                        "count": 3
+                    }
+                ],
+                "bundles": [
+                    {
+                        "id": "bundle-001",
+                        "title": "Test Bundle One",
+                        "description": "Test bundle",
+                        "price": 500,
+                        "currencyPrices": {
+                            "rub": 500,
+                            "usd": 5
+                        },
+                        "hidden": false,
+                        "hasAccess": true,
+                        "createdAt": 1710000000,
+                        "updatedAt": 1710001000,
+                        "publishedAt": 1710000500,
+                        "deletedAt": null,
+                        "blogId": 12345,
+                        "publishedPostsCounter": 10,
+                        "accessiblePostsCounter": 8,
+                        "sorting": "date_desc",
+                        "contentCounters": [],
+                        "thumbnail": {
+                            "id": "thumb-001",
+                            "title": "Bundle Thumbnail",
+                            "url": "https://example.com/thumb.jpg",
+                            "rendition": "original",
+                            "type": "image",
+                            "width": 800,
+                            "height": 600,
+                            "size": 524288
+                        }
+                    }
+                ]
+            },
+            {
+                "user": {
+                    "blogUrl": "testblog",
+                    "avatarUrl": "https://example.com/avatar2.jpg",
+                    "name": "TestUser2",
+                    "hasAvatar": true,
+                    "id": 222,
+                    "flags": {
+                        "showPostDonations": false
+                    }
+                },
+                "isPinned": false,
+                "isBlocked": false,
+                "hasAccess": true,
+                "data": [],
+                "isRecord": false,
+                "contentCounters": [],
+                "donators": {
+                    "extra": {
+                        "isLast": true
+                    },
+                    "data": []
+                },
+                "showViewsCounter": true,
+                "createdAt": 1710001000,
+                "isPublished": true,
+                "isLiked": false,
+                "tags": [],
+                "isCommentsDenied": false,
+                "count": {
+                    "comments": 0,
+                    "reactions": {
+                        "dislike": 0,
+                        "heart": 0,
+                        "fire": 0,
+                        "angry": 0,
+                        "wonder": 0,
+                        "laught": 0,
+                        "sad": 0,
+                        "like": 0
+                    },
+                    "likes": 0
+                },
+                "publishTime": 1710001000,
+                "title": "Bundle Post Two",
+                "sortOrder": 1710001000,
+                "price": 100,
+                "id": "post-bundle-002",
+                "comments": {
+                    "extra": {
+                        "isLast": true
+                    },
+                    "data": []
+                },
+                "donations": 0,
+                "teaser": [],
+                "isWaitingVideo": false,
+                "int_id": 101,
+                "isDeleted": false,
+                "updatedAt": 1710001001,
+                "signedQuery": "",
+                "advertiserInfo": null,
+                "currencyPrices": {
+                    "rub": 100,
+                    "usd": 1
+                },
+                "isShowcaseVisible": true,
+                "reactionsDisabled": false,
+                "position": 2,
+                "bundleId": "bundle-001",
+                "bundleIds": [
+                    "bundle-001"
+                ],
+                "postId": "post-bundle-002",
+                "change": "",
+                "isDraft": false,
+                "reactionCounters": [],
+                "bundles": [
+                    {
+                        "id": "bundle-001",
+                        "title": "Test Bundle One",
+                        "description": "Test bundle",
+                        "price": 500,
+                        "currencyPrices": {
+                            "rub": 500,
+                            "usd": 5
+                        },
+                        "hidden": false,
+                        "hasAccess": true,
+                        "createdAt": 1710000000,
+                        "updatedAt": 1710001000,
+                        "publishedAt": 1710000500,
+                        "deletedAt": null,
+                        "blogId": 12345,
+                        "publishedPostsCounter": 10,
+                        "accessiblePostsCounter": 8,
+                        "sorting": "date_desc",
+                        "contentCounters": [],
+                        "thumbnail": {
+                            "id": "thumb-001",
+                            "title": "Bundle Thumbnail",
+                            "url": "https://example.com/thumb.jpg",
+                            "rendition": "original",
+                            "type": "image",
+                            "width": 800,
+                            "height": 600,
+                            "size": 524288
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "extra": {
+        "isLast": true,
+        "offset": 0
+    }
+}
