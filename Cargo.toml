@@ -18,6 +18,7 @@ serde_json = "1.0.145"
 serde_path_to_error = "0.1.20"
 rust_decimal = { version = "1.40.0", features = ["macros"] }
 thiserror = "2.0.12"
+serde_urlencoded = "0.7.1"
 
 [dev-dependencies]
 mockito = "1.7.0"

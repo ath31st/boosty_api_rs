@@ -59,6 +59,9 @@ pub enum ApiError {
     #[error("Failed to deserialize JSON into target type: {0}")]
     Deserialization(#[from] serde_json::Error),
 
+    #[error("Failed to serialize JSON: {0}")]
+    Serialization(#[from] serde_urlencoded::ser::Error),
+
     #[error("Other error: {0}")]
     Other(String),
 }
