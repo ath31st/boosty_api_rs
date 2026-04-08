@@ -77,7 +77,8 @@
                         "rub": 0,
                         "usd": 0
                     },
-                    "isShowcaseVisible": true
+                    "isShowcaseVisible": true,
+                    "reactionsDisabled": false
                 },
                 "position": 1
             }

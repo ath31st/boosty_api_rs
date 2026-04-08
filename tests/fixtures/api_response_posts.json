@@ -75,7 +75,8 @@
         "rub": 0,
         "usd": 0
       },
-      "isShowcaseVisible": true
+      "isShowcaseVisible": true,
+      "reactionsDisabled": false
     },
     {
       "user": {
@@ -148,7 +149,8 @@
         "rub": 0,
         "usd": 0
       },
-      "isShowcaseVisible": true
+      "isShowcaseVisible": true,
+      "reactionsDisabled": false
     }
   ]
 }
