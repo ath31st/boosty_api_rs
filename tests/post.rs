@@ -73,7 +73,7 @@ async fn test_get_post_not_available_but_no_refresh() {
 
     let result = client.get_post(blog, post_id).await.unwrap();
     assert_eq!(result.id, "99");
-    assert_eq!(result.title, "Unavailable but returned");
+    assert_eq!(result.title, Some(String::from("Unavailable but returned")));
 }
 
 #[tokio::test]
@@ -137,7 +137,7 @@ async fn test_get_post_with_refresh() {
 
     let result = client.get_post(blog, post_id).await.unwrap();
     assert_eq!(result.id, "100");
-    assert_eq!(result.title, "Old Title");
+    assert_eq!(result.title, Some(String::from("Old Title")));
 }
 
 #[tokio::test]

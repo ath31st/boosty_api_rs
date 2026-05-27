@@ -239,7 +239,7 @@ mod tests {
                 },
             },
             publish_time: 0,
-            title: "".into(),
+            title: Some(String::new()),
             sort_order: 0,
             price: 0,
             id: "".into(),

@@ -62,7 +62,7 @@ pub struct Post {
     /// Publish timestamp (unix epoch).
     pub publish_time: i64,
     /// Title of the post.
-    pub title: String,
+    pub title: Option<String>,
     /// Sorting order index.
     pub sort_order: i64,
     /// Price to access the post (if any).
@@ -366,16 +366,19 @@ impl IsAvailable for Post {
 }
 
 impl HasTitle for Post {
-    /// Returns safe title for the post.
+    /// Returns a safe title for the post.
+    ///
+    /// If the post has a non-empty title, it is returned as-is.
+    /// Otherwise, generates a fallback title using the post's unique ID
+    /// in the format: `untitled_{id}`.
     ///
     /// # Returns
     ///
-    /// Safe title for the post.
+    /// A safe, non-empty string representing the post's title.
     fn safe_title(&self) -> String {
-        if self.title.trim().is_empty() {
-            format!("untitled_{}", self.id)
-        } else {
-            self.title.clone()
+        match self.title.as_ref() {
+            Some(title) if !title.trim().is_empty() => title.clone(),
+            _ => format!("untitled_{}", self.id),
         }
     }
 }

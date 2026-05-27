@@ -147,7 +147,10 @@ async fn test_get_bundle_success() {
     let result = client.get_bundle(blog, bundle_id, &query).await.unwrap();
     assert_eq!(result.data.bundle_items.len(), 2);
     assert_eq!(result.data.bundle_items[0].post.id, "post-bundle-001");
-    assert_eq!(result.data.bundle_items[0].post.title, "Bundle Post One");
+    assert_eq!(
+        result.data.bundle_items[0].post.title,
+        Some(String::from("Bundle Post One"))
+    );
     assert_eq!(result.data.bundle_items[0].position, 1);
     assert_eq!(result.data.bundle_items[0].bundle_id, "bundle-001");
     assert!(!result.data.bundle_items[0].is_draft);
