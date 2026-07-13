@@ -1,5 +1,6 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+
+use crate::model::CurrencyPrices;
 
 /// API response containing a list of subscription levels.
 #[derive(Deserialize, Debug)]
@@ -19,7 +20,7 @@ pub struct SubscriptionLevel {
     /// Base price in default currency.
     pub price: f64,
     /// Price in different currencies.
-    pub currency_prices: HashMap<String, f64>,
+    pub currency_prices: CurrencyPrices,
     /// Whether the subscription is limited.
     pub is_limited: bool,
     /// Whether the subscription is archived.
@@ -91,12 +92,12 @@ pub struct Count {
 #[serde(rename_all = "camelCase")]
 pub struct Discount {
     /// Discounted price.
-    pub price: u64,
+    pub price: f64,
     /// Discount percentage.
     pub percent: u32,
     /// Price equivalents in various currencies.
     #[serde(rename = "currencyPrices")]
-    pub currency_prices: HashMap<String, f64>,
+    pub currency_prices: CurrencyPrices,
 }
 
 /// Represents a content block (text or image).

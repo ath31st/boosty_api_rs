@@ -6,13 +6,13 @@ use serde::Deserialize;
 pub struct CurrencyPrices {
     /// Price in Euro.
     #[serde(alias = "EUR", default)]
-    pub eur: f32,
+    pub eur: f64,
     /// Price in Russian Rubles.
     #[serde(alias = "RUB")]
-    pub rub: f32,
+    pub rub: f64,
     /// Price in US Dollars.
     #[serde(alias = "USD")]
-    pub usd: f32,
+    pub usd: f64,
 }
 
 /// Counter for a specific content type inside a bundle.

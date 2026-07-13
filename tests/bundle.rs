@@ -30,7 +30,7 @@ async fn test_get_bundles_success() {
     assert_eq!(result.data.bundles.len(), 2);
     assert_eq!(result.data.bundles[0].id, "bundle-001");
     assert_eq!(result.data.bundles[0].title, "Test Bundle One");
-    assert_eq!(result.data.bundles[0].price, 500);
+    assert_eq!(result.data.bundles[0].price, 500.0);
     assert!(result.data.bundles[0].has_access);
     assert!(!result.data.bundles[0].hidden);
     assert_eq!(result.data.bundles[0].published_posts_counter, 10);

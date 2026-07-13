@@ -66,7 +66,7 @@ pub struct Post {
     /// Sorting order index.
     pub sort_order: i64,
     /// Price to access the post (if any).
-    pub price: i32,
+    pub price: f64,
     /// Unique post identifier.
     pub id: String,
     /// Comments associated with the post.

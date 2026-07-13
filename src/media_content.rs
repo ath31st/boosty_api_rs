@@ -241,7 +241,7 @@ mod tests {
             publish_time: 0,
             title: Some(String::new()),
             sort_order: 0,
-            price: 0,
+            price: 0.0,
             id: "".into(),
             comments: Comments {
                 extra: ExtraFlag { is_last: false },

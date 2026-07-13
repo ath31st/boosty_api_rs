@@ -1,6 +1,5 @@
-use crate::model::subscription_level::Promo;
+use crate::model::{CurrencyPrices, subscription_level::Promo};
 use serde::Deserialize;
-use std::collections::HashMap;
 
 /// API response containing a paginated list of subscriptions.
 #[derive(Deserialize, Debug)]
@@ -28,9 +27,9 @@ pub struct Subscription {
     /// Display name of the subscription.
     pub name: String,
     /// Standard price (in base currency units).
-    pub price: u64,
+    pub price: f64,
     /// Custom price, if applied.
-    pub custom_price: u64,
+    pub custom_price: f64,
     /// Billing period in months.
     pub period: u8,
     /// Start timestamp (Unix epoch).
@@ -70,9 +69,9 @@ pub struct SubscriptionLevelInfo {
     /// Name of the level.
     pub name: String,
     /// Base price in main currency.
-    pub price: u64,
+    pub price: f64,
     /// Price per currency (e.g., USD, EUR).
-    pub currency_prices: HashMap<String, f64>,
+    pub currency_prices: CurrencyPrices,
     /// Whether the level has limited availability.
     pub is_limited: bool,
     /// Whether the level is archived.
