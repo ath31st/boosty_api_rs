@@ -167,7 +167,7 @@ async fn test_delete_target_success() {
 }
 
 #[tokio::test]
-async fn test_delete_target_invalid_json() {
+async fn test_delete_target_invalid_json_body_ignored() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -183,7 +183,7 @@ async fn test_delete_target_invalid_json() {
         .await;
 
     let result = client.delete_blog_target(target_id).await;
-    assert!(matches!(result, Err(ApiError::JsonParse(_))));
+    assert!(result.is_ok());
 }
 
 #[tokio::test]

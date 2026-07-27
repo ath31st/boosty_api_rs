@@ -79,8 +79,7 @@ async fn test_get_post_not_available_but_no_refresh() {
 #[tokio::test]
 async fn test_get_post_with_refresh() {
     let (mut server, base) = setup().await;
-    let req_client = Client::new();
-    let client = ApiClient::new(req_client.clone(), &base);
+    let client = ApiClient::new(Client::new(), &base);
 
     client
         .set_refresh_token_and_device_id("old_refresh", "device123")
@@ -90,21 +89,6 @@ async fn test_get_post_with_refresh() {
     let blog = "blog";
     let post_id = "100";
     let api_get_path = api_path(&format!("blog/{blog}/post/{post_id}"));
-
-    let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
-    let mut first_value: Value = serde_json::from_str(&raw).unwrap();
-    first_value["id"] = Value::String(post_id.to_string());
-    first_value["title"] = Value::String("Old Title".to_string());
-    let first_body = first_value.to_string();
-
-    server
-        .mock("GET", api_get_path.as_str())
-        .with_status(200)
-        .with_header(CONTENT_TYPE, "application/json")
-        .with_body(first_body)
-        .expect(1)
-        .create_async()
-        .await;
 
     let oauth_resp = json!({
         "access_token": "new_access_token",
@@ -121,27 +105,32 @@ async fn test_get_post_with_refresh() {
         .create_async()
         .await;
 
-    let mut second_value: Value = serde_json::from_str(&raw).unwrap();
-    second_value["id"] = Value::String(post_id.to_string());
-    second_value["title"] = Value::String("New Title".to_string());
-    let second_body = second_value.to_string();
+    let pair = client.refresh_tokens().await.unwrap();
+    assert_eq!(pair.access_token, "new_access_token");
+
+    let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
+    let mut value: Value = serde_json::from_str(&raw).unwrap();
+    value["id"] = Value::String(post_id.to_string());
+    value["title"] = Value::String("Post Title".to_string());
+    let body = value.to_string();
 
     server
         .mock("GET", api_get_path.as_str())
+        .match_header("authorization", "Bearer new_access_token")
         .with_status(200)
         .with_header(CONTENT_TYPE, "application/json")
-        .with_body(second_body)
+        .with_body(body)
         .expect(1)
         .create_async()
         .await;
 
     let result = client.get_post(blog, post_id).await.unwrap();
     assert_eq!(result.id, "100");
-    assert_eq!(result.title, Some(String::from("Old Title")));
+    assert_eq!(result.title, Some(String::from("Post Title")));
 }
 
 #[tokio::test]
-async fn test_get_post_refresh_error() {
+async fn test_refresh_tokens_error() {
     let (mut server, base) = setup().await;
     let client = ApiClient::new(Client::new(), &base);
 
@@ -149,25 +138,6 @@ async fn test_get_post_refresh_error() {
         .set_refresh_token_and_device_id("r", "d")
         .await
         .unwrap();
-
-    let blog = "b";
-    let post_id = "77";
-    let api_get_path = api_path(&format!("blog/{blog}/post/{post_id}"));
-
-    let raw = fs::read_to_string("tests/fixtures/api_response_video_image.json").unwrap();
-    let mut value: Value = serde_json::from_str(&raw).unwrap();
-    value["id"] = Value::String(post_id.to_string());
-    value["title"] = Value::String("Will fail refresh".to_string());
-    let body = value.to_string();
-
-    server
-        .mock("GET", api_get_path.as_str())
-        .with_status(200)
-        .with_header(CONTENT_TYPE, "application/json")
-        .with_body(body)
-        .expect(1)
-        .create_async()
-        .await;
 
     server
         .mock("POST", "/oauth/token/")
@@ -178,7 +148,7 @@ async fn test_get_post_refresh_error() {
         .create_async()
         .await;
 
-    let res = client.get_post(blog, post_id).await;
+    let res = client.refresh_tokens().await;
     assert!(res.is_err());
 }
 
@@ -282,6 +252,8 @@ async fn test_set_refresh_and_get_post_header_and_flow() {
         .expect(1)
         .create_async()
         .await;
+
+    client.refresh_tokens().await.unwrap();
 
     let blog = "blog";
     let post_id = "55";

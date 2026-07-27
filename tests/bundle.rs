@@ -350,6 +350,8 @@ async fn test_get_bundle_with_refresh_token_flow() {
         .create_async()
         .await;
 
+    client.refresh_tokens().await.unwrap();
+
     server
         .mock(
             "GET",
