@@ -1,8 +1,7 @@
 # Boosty API
 
 A minimal, async-ready client for getting post data from a remote blogging API that requires either a bearer token
-or a refresh token + device ID combo for authentication. This crate is designed with resiliency in mind: it
-transparently handles token expiration and retries requests when needed.
+or a refresh token + device ID combo for authentication.
 
 ## Table of Contents
 
@@ -44,16 +43,9 @@ Use with caution in production environments and pin specific versions if needed.
 ### 🔐 Authentication
 
 - Static bearer token or refresh-token + device ID (OAuth2-like).
-- Automatic token refresh and retry on expiration.
+- Explicit `refresh_tokens()` method — no automatic refresh during requests.
+- Returns `TokenPair` after refresh so the caller can persist new credentials.
 - Clean separation of `AuthProvider` logic.
-
-### 🔁 Retry Behavior
-
-The client automatically retries HTTP requests that fail due to transient network errors or expired access tokens.
-
-- Retry logic is centralized in the `get_request()` method.
-- On token expiration, the client performs a refresh (if refresh-token and device ID are set) and retries the request.
-- Other error types (like 4xx or business-logic errors) are not retried.
 
 ### 📝 Post API
 
@@ -79,7 +71,7 @@ The client automatically retries HTTP requests that fail due to transient networ
 
 ### 📜 Subscriptions
 
-- Get subscription levels via `get_subscription_levels(blog_name, show_free_level)`.
+- Get subscription levels via `get_blog_subscription_levels(blog_name, show_free_level)`.
 - Get current user subscriptions via `get_user_subscriptions(limit, with_follow)`, returning a paginated
   `SubscriptionsResponse`.
 
@@ -105,7 +97,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.29.0"
+boosty_api = "0.30.0"
 ```
 
 or
@@ -130,8 +122,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Use static bearer token (optional)
     api_client.set_bearer_token("your-access-token").await?;
 
-    // Or use refresh token + device ID
-    // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
+    // Or use refresh token + device ID, then explicitly refresh:
+    // api_client.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
+    // let tokens = api_client.refresh_tokens().await?;
 
     let post = api_client.get_post("blog_name", "post_id").await?;
     println!("{:#?}", post);
@@ -156,11 +149,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Use static bearer token (optional)
     api_client.set_bearer_token("your-access-token").await?;
 
-    // Or use refresh token + device ID
-    // api.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
+    // Or use refresh token + device ID, then explicitly refresh:
+    // api_client.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
+    // let tokens = api_client.refresh_tokens().await?;
+
     let limit = 50;
     let page_size = 10;
-    let posts = api_client.get_posts("blog_name", limit, page_size, None).await?;
+    let posts = api_client
+        .get_posts("blog_name", limit, Some(page_size), None)
+        .await?;
     println!("{:#?}", posts);
 
     Ok(())
@@ -244,7 +241,7 @@ fn print_content(post: &Post) {
 ## Authentication
 
 To get access token or refresh token and device_id, you need to log in to the service, then press F12 in the browser and
-go to the application tab, where you can select local storage. The required keys are _clentId and auth.
+go to the application tab, where you can select local storage. The required keys are _clientId and auth.
 
 There are two options:
 
@@ -258,14 +255,25 @@ api_client.set_bearer_token("access-token").await?;
 
 ```rust
 api_client.set_refresh_token_and_device_id("refresh-token", "device-id").await?;
+let tokens = api_client.refresh_tokens().await?;
+// tokens.access_token, tokens.refresh_token, tokens.expires_in
+// Persist tokens.refresh_token for next session.
 ```
 
-If a post is unavailable and refresh credentials are present, the client will automatically attempt a refresh.
+Important: `set_refresh_token_and_device_id(...)` only stores refresh credentials.
+The client adds `Authorization` header from refresh flow only after an explicit
+`refresh_tokens()` call. No automatic token refresh is performed during requests.
+
+### Migration Note
+
+From this version, token refresh is explicit. If you previously relied on implicit
+refresh behavior, call `refresh_tokens()` before API requests (and when you decide
+the token should be renewed).
 
 ## Crate Structure
 
 - `api_client` — Main entry point. Handles API requests (e.g. fetching posts), manages HTTP headers, and authentication flow.
-- `auth_provider` — Internal module responsible for refresh-token and access-token lifecycle management.
+- `auth_provider` — Internal module responsible for token storage and explicit refresh.
 - `model` — Typed deserialization models for all Boosty API entities (e.g. posts, comments, users, media).
 - `error` — Unified error types covering API, network, and authorization layers.
 - `media_content` — Defines `ContentItem` and provides utilities for extracting structured media content from API responses.
