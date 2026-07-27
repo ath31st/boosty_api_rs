@@ -6,10 +6,37 @@ mod subscription_level;
 mod target;
 mod user;
 
-use crate::auth_provider::AuthProvider;
+use std::fmt::Display;
+
+use crate::auth_provider::{AuthProvider, TokenPair};
 use crate::error::{ApiError, ResultApi, ResultAuth};
 use reqwest::header::{ACCEPT, CACHE_CONTROL, HeaderMap, HeaderValue, USER_AGENT};
 use reqwest::{Client, Response, multipart};
+
+/// Builder for optional query parameters that owns its string values.
+#[derive(Default)]
+pub(crate) struct QueryParams(Vec<(String, String)>);
+
+impl QueryParams {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Append a parameter. If `value` is `None`, the parameter is skipped.
+    pub fn push(mut self, key: &str, value: Option<impl Display>) -> Self {
+        if let Some(v) = value {
+            self.0.push((key.to_string(), v.to_string()));
+        }
+        self
+    }
+
+    pub fn as_slice(&self) -> Vec<(&str, &str)> {
+        self.0
+            .iter()
+            .map(|(k, v)| (k.as_str(), v.as_str()))
+            .collect()
+    }
+}
 
 /// Default number of posts to fetch per page.
 const DEFAULT_PAGE_SIZE: usize = 20;
@@ -34,8 +61,9 @@ const DEFAULT_PAGE_SIZE: usize = 20;
 ///     // Use static bearer token:
 ///     api_client.set_bearer_token("your-access-token").await?;
 ///
-///     // Or use refresh token + device ID:
+///     // Or use refresh token + device ID, then explicitly refresh:
 ///     // api_client.set_refresh_token_and_device_id("your-refresh-token", "your-device-id").await?;
+///     // let tokens = api_client.refresh_tokens().await?;
 ///
 ///     let post = api_client.get_post("blog_name", "post_id").await?;
 ///     println!("{:#?}", post);
@@ -146,6 +174,20 @@ impl ApiClient {
         self.auth_provider.clear_access_token().await
     }
 
+    /// Explicitly refresh the access token using the previously configured
+    /// refresh token and device ID.
+    ///
+    /// Returns a [`TokenPair`] with the new access/refresh tokens so the caller
+    /// can persist them. The internal state is also updated, so subsequent API
+    /// requests will use the new access token.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AuthError::MissingCredentials` if refresh token or device ID are not set.
+    pub async fn refresh_tokens(&self) -> ResultAuth<TokenPair> {
+        self.auth_provider.refresh_tokens().await
+    }
+
     /// Expose current default headers as a `HashMap<String, String>`.
     ///
     /// Useful for inspecting what headers will be sent without authentication.
@@ -164,149 +206,124 @@ impl ApiClient {
             .collect()
     }
 
-    /// Internal: perform a GET request to given API path, applying auth header.
-    ///
-    /// # Parameters
-    ///
-    /// - `path`: relative path under `/v1/`, e.g. `"blog/{}/post/{}"`.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns `reqwest::Response`. On network error, returns `ApiError::HttpRequest`.
-    async fn get_request(&self, path: &str) -> ResultApi<Response> {
+    // ── Low-level request helpers ───────────────────────────────────
+
+    async fn auth_headers(&self) -> ResultApi<HeaderMap> {
         let mut headers = self.headers.clone();
         self.auth_provider.apply_auth_header(&mut headers).await?;
-
-        let url = format!("{}/v1/{}", self.base_url, path);
-        self.client
-            .get(&url)
-            .headers(headers)
-            .send()
-            .await
-            .map_err(ApiError::HttpRequest)
+        Ok(headers)
     }
 
-    /// Internal: perform a POST request with optional form or JSON body.
-    ///
-    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
-    ///
-    /// # Parameters
-    ///
-    /// - `path`: relative API path under `/v1/`.
-    /// - `body`: an object that can be serialized either as JSON or `application/x-www-form-urlencoded`.
-    /// - `as_form`: if `true`, serialize body as `x-www-form-urlencoded`; otherwise, serialize as JSON.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `reqwest::Response`.  
-    /// On network failure, returns [`ApiError::HttpRequest`].
-    async fn post_request<T: serde::Serialize + ?Sized>(
+    fn url(&self, path: &str) -> String {
+        format!("{}/v1/{}", self.base_url, path)
+    }
+
+    async fn send_request(
         &self,
         path: &str,
-        body: &T,
-        as_form: bool,
+        builder: reqwest::RequestBuilder,
     ) -> ResultApi<Response> {
-        let mut headers = self.headers.clone();
-        self.auth_provider.apply_auth_header(&mut headers).await?;
-
-        let url = format!("{}/v1/{}", self.base_url, path);
-
-        let builder = self.client.post(&url).headers(headers);
-
-        let request = if as_form {
-            builder.form(body)
-        } else {
-            builder.json(body)
-        };
-
-        request.send().await.map_err(ApiError::HttpRequest)
+        let response = builder.send().await.map_err(ApiError::HttpRequest)?;
+        self.handle_response(path, response).await
     }
 
-    /// Internal: perform a POST request with multipart form.
-    ///
-    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
-    ///
-    /// # Parameters
-    ///
-    /// - `path`: relative API path under `/v1/`.
-    /// - `form`: a multipart form.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `reqwest::Response`.  
-    /// On network failure, returns [`ApiError::HttpRequest`].
-    async fn post_multipart(&self, path: &str, form: multipart::Form) -> ResultApi<Response> {
-        let mut headers = self.headers.clone();
-        self.auth_provider.apply_auth_header(&mut headers).await?;
+    // ── High-level pipeline helpers ──────────────────────────────
 
+    /// GET `path` → check status → deserialize JSON.
+    pub(crate) async fn get_json<T: serde::de::DeserializeOwned>(
+        &self,
+        path: &str,
+        query: &[(&str, &str)],
+    ) -> ResultApi<T> {
+        let headers = self.auth_headers().await?;
+        let mut builder = self.client.get(self.url(path)).headers(headers);
+        if !query.is_empty() {
+            builder = builder.query(query);
+        }
+        let response = self.send_request(path, builder).await?;
+        self.parse_json(response).await
+    }
+
+    /// POST form `path` → check status → deserialize JSON.
+    pub(crate) async fn post_form_json<
+        B: serde::Serialize + ?Sized,
+        T: serde::de::DeserializeOwned,
+    >(
+        &self,
+        path: &str,
+        body: &B,
+    ) -> ResultApi<T> {
+        let headers = self.auth_headers().await?;
+        let builder = self.client.post(self.url(path)).headers(headers).form(body);
+        let response = self.send_request(path, builder).await?;
+        self.parse_json(response).await
+    }
+
+    /// POST JSON `path` → check status → deserialize JSON.
+    #[allow(dead_code)]
+    pub(crate) async fn post_json_json<
+        B: serde::Serialize + ?Sized,
+        T: serde::de::DeserializeOwned,
+    >(
+        &self,
+        path: &str,
+        body: &B,
+    ) -> ResultApi<T> {
+        let headers = self.auth_headers().await?;
+        let builder = self.client.post(self.url(path)).headers(headers).json(body);
+        let response = self.send_request(path, builder).await?;
+        self.parse_json(response).await
+    }
+
+    /// POST multipart `path` → check status → deserialize JSON.
+    pub(crate) async fn post_multipart_json<T: serde::de::DeserializeOwned>(
+        &self,
+        path: &str,
+        form: multipart::Form,
+    ) -> ResultApi<T> {
+        let mut headers = self.auth_headers().await?;
         headers.remove("Content-Type");
-
-        let url = format!("{}/v1/{}", self.base_url, path);
-
-        let request = self.client.post(&url).headers(headers).multipart(form);
-
-        request.send().await.map_err(ApiError::HttpRequest)
-    }
-
-    /// Internal: perform a DELETE request to the given API path.
-    ///
-    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
-    ///
-    /// # Parameters
-    ///
-    /// - `path`: relative API path under `/v1/`.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `reqwest::Response`.  
-    /// On network failure, returns [`ApiError::HttpRequest`].
-    async fn delete_request(&self, path: &str) -> ResultApi<Response> {
-        let mut headers = self.headers.clone();
-        self.auth_provider.apply_auth_header(&mut headers).await?;
-
-        let url = format!("{}/v1/{}", self.base_url, path);
-
-        self.client
-            .delete(&url)
+        let builder = self
+            .client
+            .post(self.url(path))
             .headers(headers)
-            .send()
-            .await
-            .map_err(ApiError::HttpRequest)
+            .multipart(form);
+        let response = self.send_request(path, builder).await?;
+        self.parse_json(response).await
     }
 
-    /// Internal: perform a PUT request with optional form or JSON body.
-    ///
-    /// Automatically applies authentication headers and prepends the base URL (`/v1/` prefix).
-    ///
-    /// # Parameters
-    ///
-    /// - `path`: relative API path under `/v1/`.
-    /// - `body`: object to serialize either as JSON or `application/x-www-form-urlencoded`.
-    /// - `as_form`: if `true`, serialize body as `x-www-form-urlencoded`; otherwise, serialize as JSON.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `reqwest::Response`.  
-    /// On network failure, returns [`ApiError::HttpRequest`].
-    async fn put_request<T: serde::Serialize + ?Sized>(
+    /// PUT form `path` → check status → deserialize JSON.
+    pub(crate) async fn put_form_json<
+        B: serde::Serialize + ?Sized,
+        T: serde::de::DeserializeOwned,
+    >(
         &self,
         path: &str,
-        body: &T,
-        as_form: bool,
-    ) -> ResultApi<Response> {
-        let mut headers = self.headers.clone();
-        self.auth_provider.apply_auth_header(&mut headers).await?;
+        body: &B,
+    ) -> ResultApi<T> {
+        let headers = self.auth_headers().await?;
+        let builder = self.client.put(self.url(path)).headers(headers).form(body);
+        let response = self.send_request(path, builder).await?;
+        self.parse_json(response).await
+    }
 
-        let url = format!("{}/v1/{}", self.base_url, path);
+    /// PUT form `path` → check status (ignore body).
+    pub(crate) async fn put_form_ok<B: serde::Serialize + ?Sized>(
+        &self,
+        path: &str,
+        body: &B,
+    ) -> ResultApi<()> {
+        let headers = self.auth_headers().await?;
+        let builder = self.client.put(self.url(path)).headers(headers).form(body);
+        self.send_request(path, builder).await?;
+        Ok(())
+    }
 
-        let builder = self.client.put(&url).headers(headers);
-
-        let request = if as_form {
-            builder.form(body)
-        } else {
-            builder.json(body)
-        };
-
-        request.send().await.map_err(ApiError::HttpRequest)
+    /// DELETE `path` → check status (ignore body).
+    pub(crate) async fn delete_ok(&self, path: &str) -> ResultApi<()> {
+        let headers = self.auth_headers().await?;
+        let builder = self.client.delete(self.url(path)).headers(headers);
+        self.send_request(path, builder).await?;
+        Ok(())
     }
 }
