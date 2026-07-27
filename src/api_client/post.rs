@@ -1,68 +1,29 @@
-use crate::api_client::{ApiClient, DEFAULT_PAGE_SIZE};
+use crate::api_client::{ApiClient, DEFAULT_PAGE_SIZE, QueryParams};
 use crate::error::ResultApi;
 use crate::model::{Post, PostsResponse};
 
 impl ApiClient {
-    /// Get a single post once, without automatic retry on "not available" or HTTP 401.
-    ///
-    /// # Parameters
-    ///
-    /// - `blog_name`: identifier or name of the blog.
-    /// - `post_id`: identifier of the post.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns the `Post` object.
+    /// Get a single post.
     ///
     /// # Errors
     ///
-    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
-    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
+    /// - `ApiError::Unauthorized` if the HTTP status is 401.
+    /// - `ApiError::HttpStatus` for other non-success statuses.
     /// - `ApiError::HttpRequest` if the HTTP request fails.
-    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Post`.
+    /// - `ApiError::JsonParseDetailed` if JSON deserialization fails.
     pub async fn get_post(&self, blog_name: &str, post_id: &str) -> ResultApi<Post> {
         let path = format!("blog/{blog_name}/post/{post_id}");
-
-        let response = self.get_request(&path).await?;
-        let response = self.handle_response(&path, response).await?;
-
-        self.parse_json(response).await
+        self.get_json(&path, &[]).await
     }
 
-    // pub async fn get_posts(&self, blog_name: &str, limit: usize) -> ResultApi<PostsResponse> {
-    //     let path = format!("blog/{blog_name}/post/?limit={limit}");
-    //     let response = self.get_request(&path).await?;
-    //     let status = response.status();
-
-    //     if status == 401 {
-    //         return Err(ApiError::Unauthorized);
-    //     }
-
-    //     let posts_response = response
-    //         .json::<PostsResponse>()
-    //         .await
-    //         .map_err(ApiError::JsonParse)?;
-    //     Ok(posts_response)
-    // }
-
-    /// Get multiple posts for a blog.
+    /// Get multiple posts for a blog with client-side pagination.
     ///
     /// # Parameters
     ///
     /// - `blog_name`: blog identifier/name.
-    /// - `limit`: number of posts to fetch.
-    /// - `page_size`: number of posts to fetch per page. Defaults to 20.
-    /// - `start_offset`: offset to start fetching posts from. Defaults from first post.
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `PostsResponse` containing the `data` field with `Post` items.
-    ///
-    /// # Errors
-    ///
-    /// - `ApiError::HttpRequest` if the HTTP request fails.
-    /// - `ApiError::JsonParse` if the HTTP response cannot be parsed as JSON.
-    /// - `ApiError::Deserialization` if the `"data"` field cannot be deserialized into a vector of `Post`
+    /// - `limit`: total number of posts to fetch.
+    /// - `page_size`: posts per page (defaults to 20).
+    /// - `start_offset`: optional offset to start from.
     pub async fn get_posts(
         &self,
         blog_name: &str,
@@ -77,15 +38,13 @@ impl ApiClient {
 
         loop {
             let current_limit = page_size.min(limit - all_posts.len());
-            let mut path = format!("blog/{blog_name}/post/?limit={current_limit}");
-            if let Some(ref off) = offset {
-                path.push_str(&format!("&offset={off}"));
-            }
+            let path = format!("blog/{blog_name}/post/");
 
-            let response = self.get_request(&path).await?;
-            let response = self.handle_response(&path, response).await?;
+            let query = QueryParams::new()
+                .push("limit", Some(current_limit))
+                .push("offset", offset.as_deref());
 
-            let posts_response: PostsResponse = self.parse_json(response).await?;
+            let posts_response: PostsResponse = self.get_json(&path, &query.as_slice()).await?;
 
             let data_len = posts_response.data.len();
             all_posts.extend(posts_response.data);

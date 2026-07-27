@@ -8,7 +8,7 @@
 //!
 //! ## Features
 //! - **Async API client** (`api_client`) for fetching posts and related data.
-//! - **OAuth-like token management** (`auth_provider`) supporting both static and refreshable tokens.
+//! - **OAuth-like token management** (`auth_provider`) supporting static and explicit refresh-token flows.
 //! - **Strongly typed API models** (`model`).
 //! - **Unified error handling** (`error`).
 //! - **Content extraction utilities** (`media_content`, `traits`).
@@ -16,12 +16,13 @@
 //! ## Module Summary
 //! - [`api_client`] — Boosty API HTTP client built on top of `reqwest`.
 //! - [`model`] — Typed models that represent API JSON responses/requests.
-//! - [`auth_provider`] — Internal authorization provider (token refresh / static bearer).
+//! - [`auth_provider`] — Internal authorization provider (static bearer / explicit refresh).
 //! - [`error`] — Error definitions covering network, parsing, and domain errors.
 //! - [`media_content`] — Defines [`ContentItem`] and helpers for extracting typed content.
 //! - [`traits`] — Common traits for entities that expose content, title, or availability.
 pub mod api_client;
 mod auth_provider;
+pub use auth_provider::TokenPair;
 pub mod error;
 mod helper;
 pub mod media_content;

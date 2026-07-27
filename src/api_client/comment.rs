@@ -1,33 +1,22 @@
 use reqwest::multipart::{Form, Part};
 
 use crate::{
-    api_client::ApiClient,
+    api_client::{ApiClient, QueryParams},
     error::{ApiError, ResultApi},
     model::{Comment, CommentBlock, CommentsResponse},
 };
 
 impl ApiClient {
-    /// Get comments response
+    /// Get comments response for a post.
     ///
     /// # Arguments
     ///
     /// * `blog_name` - Blog name (blog url)
-    /// * `post_id` - Post id (optional)
+    /// * `post_id` - Post id
     /// * `limit` - Limit comments per request (optional)
     /// * `reply_limit` - Reply levels (optional)
     /// * `order` - Top or bottom (optional)
     /// * `offset` - Offset (intId comment) (optional)
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `CommentsResponse` containing the `data` field with `Comment` items.
-    ///
-    /// # Errors
-    ///
-    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
-    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
-    /// - `ApiError::HttpRequest` if the HTTP request fails.
-    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `CommentsResponse`.
     pub async fn get_comments_response(
         &self,
         blog_name: &str,
@@ -37,53 +26,18 @@ impl ApiClient {
         order: Option<&str>,
         offset: Option<u64>,
     ) -> ResultApi<CommentsResponse> {
-        let mut path = format!("blog/{blog_name}/post/{post_id}/comment/");
+        let path = format!("blog/{blog_name}/post/{post_id}/comment/");
 
-        let mut params = Vec::new();
-        if let Some(o) = offset {
-            params.push(format!("offset={o}"));
-        }
-        if let Some(l) = limit {
-            params.push(format!("limit={l}"));
-        }
-        if let Some(rl) = reply_limit {
-            params.push(format!("reply_limit={rl}"));
-        }
-        if let Some(ord) = order {
-            params.push(format!("order={ord}"));
-        }
+        let query = QueryParams::new()
+            .push("offset", offset)
+            .push("limit", limit)
+            .push("reply_limit", reply_limit)
+            .push("order", order);
 
-        if !params.is_empty() {
-            path.push('?');
-            path.push_str(&params.join("&"));
-        }
-
-        let response = self.get_request(&path).await?;
-        let response = self.handle_response(&path, response).await?;
-
-        self.parse_json(response).await
+        self.get_json(&path, &query.as_slice()).await
     }
 
-    /// Get all comments for a post.
-    ///
-    /// # Arguments
-    ///
-    /// * `blog_name` - Blog name (blog url)
-    /// * `post_id` - Post id (optional)
-    /// * `limit` - Limit comments per request (optional)
-    /// * `reply_limit` - Reply levels (optional)
-    /// * `order` - Top or bottom (optional)
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a vector of `Comment` items.
-    ///
-    /// # Errors
-    ///
-    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
-    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
-    /// - `ApiError::HttpRequest` if the HTTP request fails.
-    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Comment`.
+    /// Get all comments for a post (paginated automatically).
     pub async fn get_all_comments(
         &self,
         blog_name: &str,
@@ -123,25 +77,6 @@ impl ApiClient {
     }
 
     /// Create a new comment.
-    ///
-    /// # Arguments
-    ///
-    /// * `blog_name` - Blog name (blog url)
-    /// * `post_id` - Post id
-    /// * `blocks` - Vector of `CommentBlock` items with the comment content
-    /// * `reply_id` - Reply id (optional)
-    ///
-    /// # Returns
-    ///
-    /// On success, returns a `Comment` item.
-    ///
-    /// # Errors
-    ///
-    /// - `ApiError::Unauthorized` if the HTTP status is 401 Unauthorized.
-    /// - `ApiError::HttpStatus` for other non-success HTTP statuses, with status and endpoint info.
-    /// - `ApiError::HttpRequest` if the HTTP request fails.
-    /// - `ApiError::JsonParseDetailed` if the response body cannot be parsed into a `Comment`.
-    /// - `ApiError::Other` if form creation fails.
     pub async fn create_comment(
         &self,
         blog_name: &str,
@@ -170,9 +105,6 @@ impl ApiClient {
             form = form.text("reply_id", id.to_string());
         }
 
-        let response = self.post_multipart(&path, form).await?;
-        let response = self.handle_response(&path, response).await?;
-
-        self.parse_json(response).await
+        self.post_multipart_json(&path, form).await
     }
 }
