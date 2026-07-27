@@ -53,9 +53,6 @@ pub enum ApiError {
     #[error("Unauthorized (401): invalid or missing token")]
     Unauthorized,
 
-    #[error("Resource not available")]
-    NotAvailable,
-
     #[error("Failed to deserialize JSON into target type: {0}")]
     Deserialization(#[from] serde_json::Error),
 
