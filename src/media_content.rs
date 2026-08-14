@@ -13,10 +13,11 @@ pub enum ContentItem {
         title: String,
         vid: String,
     },
-    /// Audio item with URL, title and file type.
+    /// Audio item with URL, title, identifier and file type.
     Audio {
         url: String,
         title: String,
+        id: String,
         file_type: Option<String>,
         size: u64,
     },
@@ -39,10 +40,11 @@ pub enum ContentItem {
         content: String,
         url: String,
     },
-    /// File item with URL, title and size.
+    /// File item with URL, title, identifier and size.
     File {
         url: String,
         title: String,
+        id: String,
         size: u64,
     },
     /// List item with style and list of content items.
@@ -74,11 +76,11 @@ pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
 /// - `Image` → `ContentItem::Image { url, id }`
 /// - `Video` → `ContentItem::Video { url }`
 /// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
-/// - `Audio` → `ContentItem::Audio { url, audio_title: track, file_type }`
+/// - `Audio` → `ContentItem::Audio { url, title, id, file_type, size }`
 /// - `Text` → `ContentItem::Text { content, modificator }`
 /// - `Smile` → `ContentItem::Smile { small_url, medium_url, large_url, name, id, is_animated }`
 /// - `Link` → `ContentItem::Link { explicit, content, url }`
-/// - `File` → `ContentItem::File { url, title, size }`
+/// - `File` → `ContentItem::File { url, title, id, size }`
 /// - `List` → `ContentItem::List { style, items }`
 /// - Other/Unknown → `ContentItem::Unknown`
 fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
@@ -102,6 +104,7 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
         MediaData::Audio(audio) => out.push(ContentItem::Audio {
             url: audio.url.clone(),
             title: audio.title.clone(),
+            id: audio.id.clone(),
             file_type: audio.file_type.clone(),
             size: audio.size,
         }),
@@ -124,6 +127,7 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
         MediaData::File(file) => out.push(ContentItem::File {
             url: file.url.clone(),
             title: file.title.clone(),
+            id: file.id.clone(),
             size: file.size,
         }),
         MediaData::List(list) => {
@@ -255,7 +259,11 @@ mod tests {
             updated_at: 0,
             signed_query: "".into(),
             advertiser_info: None,
-            currency_prices: CurrencyPrices { eur: 0.0, rub: 0.0, usd: 0.0 },
+            currency_prices: CurrencyPrices {
+                eur: 0.0,
+                rub: 0.0,
+                usd: 0.0,
+            },
             is_showcase_visible: false,
             reactions_disabled: false,
         }
@@ -367,7 +375,7 @@ mod tests {
             complete: true,
             time_code: 0,
             size: 0,
-            id: "".into(),
+            id: "audio123".into(),
             url: "audio_url".into(),
             artist: Some("".into()),
             album: Some("".into()),
@@ -380,8 +388,8 @@ mod tests {
         let content = post.extract_content();
 
         assert!(
-            matches!(content[0], ContentItem::Audio { ref url, ref title, ref file_type, ref size }
-        if url == "audio_url" && title == "AudioTitle" && file_type.clone().unwrap() == "mp3" && *size == 0)
+            matches!(content[0], ContentItem::Audio { ref url, ref title, ref id, ref file_type, ref size }
+        if url == "audio_url" && title == "AudioTitle" && id == "audio123" && file_type.clone().unwrap() == "mp3" && *size == 0)
         );
     }
 
@@ -419,7 +427,7 @@ mod tests {
     #[test]
     fn test_extract_file() {
         let file = FileData {
-            id: "".into(),
+            id: "file123".into(),
             url: "file_url".into(),
             title: "FileTitle".into(),
             size: 123456,
@@ -429,8 +437,8 @@ mod tests {
         let content = post.extract_content();
 
         assert!(
-            matches!(content[0], ContentItem::File { ref url, ref title, size }
-        if url == "file_url" && title == "FileTitle" && size == 123456)
+            matches!(content[0], ContentItem::File { ref url, ref title, ref id, size }
+        if url == "file_url" && title == "FileTitle" && id == "file123" && size == 123456)
         );
     }
 
