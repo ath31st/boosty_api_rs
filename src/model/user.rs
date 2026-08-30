@@ -17,4 +17,8 @@ pub struct User {
     pub id: i64,
     /// Various boolean flags for user settings.
     pub flags: Flags,
+    /// User's preferred currency.
+    pub currency: Option<String>,
+    /// Whether the user is an official Boosty account.
+    pub is_official: Option<bool>,
 }

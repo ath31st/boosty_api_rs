@@ -213,6 +213,8 @@ mod tests {
                 flags: Flags {
                     show_post_donations: false,
                 },
+                currency: None,
+                is_official: None,
             },
             is_pinned: false,
             is_blocked: false,
