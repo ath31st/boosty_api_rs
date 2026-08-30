@@ -87,39 +87,6 @@
                         "type": "like",
                         "count": 3
                     }
-                ],
-                "bundles": [
-                    {
-                        "id": "bundle-001",
-                        "title": "Test Bundle One",
-                        "description": "Test bundle",
-                        "price": 500,
-                        "currencyPrices": {
-                            "rub": 500,
-                            "usd": 5
-                        },
-                        "hidden": false,
-                        "hasAccess": true,
-                        "createdAt": 1710000000,
-                        "updatedAt": 1710001000,
-                        "publishedAt": 1710000500,
-                        "deletedAt": null,
-                        "blogId": 12345,
-                        "publishedPostsCounter": 10,
-                        "accessiblePostsCounter": 8,
-                        "sorting": "date_desc",
-                        "contentCounters": [],
-                        "thumbnail": {
-                            "id": "thumb-001",
-                            "title": "Bundle Thumbnail",
-                            "url": "https://example.com/thumb.jpg",
-                            "rendition": "original",
-                            "type": "image",
-                            "width": 800,
-                            "height": 600,
-                            "size": 524288
-                        }
-                    }
                 ]
             },
             {
@@ -198,40 +165,7 @@
                 "postId": "post-bundle-002",
                 "change": "",
                 "isDraft": false,
-                "reactionCounters": [],
-                "bundles": [
-                    {
-                        "id": "bundle-001",
-                        "title": "Test Bundle One",
-                        "description": "Test bundle",
-                        "price": 500,
-                        "currencyPrices": {
-                            "rub": 500,
-                            "usd": 5
-                        },
-                        "hidden": false,
-                        "hasAccess": true,
-                        "createdAt": 1710000000,
-                        "updatedAt": 1710001000,
-                        "publishedAt": 1710000500,
-                        "deletedAt": null,
-                        "blogId": 12345,
-                        "publishedPostsCounter": 10,
-                        "accessiblePostsCounter": 8,
-                        "sorting": "date_desc",
-                        "contentCounters": [],
-                        "thumbnail": {
-                            "id": "thumb-001",
-                            "title": "Bundle Thumbnail",
-                            "url": "https://example.com/thumb.jpg",
-                            "rendition": "original",
-                            "type": "image",
-                            "width": 800,
-                            "height": 600,
-                            "size": 524288
-                        }
-                    }
-                ]
+                "reactionCounters": []
             }
         ]
     },

@@ -10,6 +10,8 @@ pub struct BundleQuery {
     pub for_owner: Option<bool>,
     pub comments_limit: Option<u32>,
     pub reply_limit: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub offset: Option<usize>,
 }
 
 /// Default implementation for BundleQuery.
@@ -22,6 +24,7 @@ impl Default for BundleQuery {
             for_owner: Some(true),
             comments_limit: Some(2),
             reply_limit: Some(1),
+            offset: None,
         }
     }
 }
@@ -127,6 +130,4 @@ pub struct BundleItem {
     pub is_draft: bool,
     /// Reaction counters (alternative format).
     pub reaction_counters: Vec<ReactionCounter>,
-    /// Bundles this post belongs to.
-    pub bundles: Vec<Bundle>,
 }
