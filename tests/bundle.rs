@@ -239,6 +239,7 @@ async fn test_get_bundle_with_custom_query() {
         for_owner: Some(false),
         comments_limit: Some(1),
         reply_limit: Some(1),
+        offset: None,
     };
 
     let raw = fs::read_to_string("tests/fixtures/api_response_bundle_items.json").unwrap();
@@ -367,4 +368,80 @@ async fn test_get_bundle_with_refresh_token_flow() {
 
     let result = client.get_bundle(blog, bundle_id, &query).await.unwrap();
     assert_eq!(result.data.bundle_items.len(), 2);
+}
+
+#[tokio::test]
+async fn test_get_bundle_posts_success() {
+    let (mut server, base) = setup().await;
+    let client = ApiClient::new(Client::new(), &base);
+
+    let blog = "testblog";
+    let bundle_id = "bundle-001";
+    let raw = fs::read_to_string("tests/fixtures/api_response_bundle_items.json").unwrap();
+
+    server
+        .mock(
+            "GET",
+            Matcher::Regex(format!("^/v1/blog/{blog}/bundle/{bundle_id}/post/\\?.*$")),
+        )
+        .with_status(200)
+        .with_header(CONTENT_TYPE, "application/json")
+        .with_body(raw)
+        .expect(1)
+        .create_async()
+        .await;
+
+    let result = client
+        .get_bundle_posts(blog, bundle_id, 100, None)
+        .await
+        .unwrap();
+    assert_eq!(result.len(), 2);
+    assert_eq!(result[0].id, "post-bundle-001");
+    assert_eq!(result[1].id, "post-bundle-002");
+}
+
+#[tokio::test]
+async fn test_get_bundle_posts_paginates() {
+    let (mut server, base) = setup().await;
+    let client = ApiClient::new(Client::new(), &base);
+
+    let blog = "testblog";
+    let bundle_id = "bundle-001";
+    let raw = fs::read_to_string("tests/fixtures/api_response_bundle_items.json").unwrap();
+    let mut page1: serde_json::Value = serde_json::from_str(&raw).unwrap();
+    page1["extra"]["isLast"] = json!(false);
+    page1["extra"]["offset"] = json!(2);
+
+    let first_path = api_path(&format!(
+        "blog/{blog}/bundle/{bundle_id}/post/?full_data=true&limit=20&for_owner=false&comments_limit=0&reply_limit=0"
+    ));
+    let second_path = api_path(&format!(
+        "blog/{blog}/bundle/{bundle_id}/post/?full_data=true&limit=20&for_owner=false&comments_limit=0&reply_limit=0&offset=2"
+    ));
+
+    server
+        .mock("GET", first_path.as_str())
+        .with_status(200)
+        .with_header(CONTENT_TYPE, "application/json")
+        .with_body(page1.to_string())
+        .expect(1)
+        .create_async()
+        .await;
+
+    server
+        .mock("GET", second_path.as_str())
+        .with_status(200)
+        .with_header(CONTENT_TYPE, "application/json")
+        .with_body(raw)
+        .expect(1)
+        .create_async()
+        .await;
+
+    let result = client
+        .get_bundle_posts(blog, bundle_id, 100, None)
+        .await
+        .unwrap();
+    assert_eq!(result.len(), 4);
+    assert_eq!(result[0].id, "post-bundle-001");
+    assert_eq!(result[2].id, "post-bundle-001");
 }

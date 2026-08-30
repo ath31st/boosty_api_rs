@@ -82,8 +82,9 @@ Use with caution in production environments and pin specific versions if needed.
 
 ### 📂 Bundles
 
-- Get bundles via `get_bundles(blog_name)`.
-- Get bundle via `get_bundle(blog_name, bundle_id, query)`.
+- Get bundle list via `get_bundles(blog_name)` — `GET .../blog/{blog}/bundle/`.
+- Get one page of bundle posts via `get_bundle(blog_name, bundle_id, query)` — `GET .../blog/{blog}/bundle/{id}/post/`.
+- Get bundle posts with pagination via `get_bundle_posts(blog_name, bundle_id, limit, page_size)`.
 
 ### ⚙️ Low-level Features
 
