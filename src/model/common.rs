@@ -8,10 +8,10 @@ pub struct CurrencyPrices {
     #[serde(alias = "EUR", default)]
     pub eur: f64,
     /// Price in Russian Rubles.
-    #[serde(alias = "RUB")]
+    #[serde(alias = "RUB", default)]
     pub rub: f64,
     /// Price in US Dollars.
-    #[serde(alias = "USD")]
+    #[serde(alias = "USD", default)]
     pub usd: f64,
 }
 
@@ -49,4 +49,26 @@ pub struct Thumbnail {
     pub height: u32,
     /// File size in bytes.
     pub size: u64,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserializes_single_currency() {
+        let prices: CurrencyPrices = serde_json::from_str(r#"{"RUB": 1000}"#).unwrap();
+        assert_eq!(prices.rub, 1000.0);
+        assert_eq!(prices.usd, 0.0);
+        assert_eq!(prices.eur, 0.0);
+    }
+
+    #[test]
+    fn deserializes_all_currencies() {
+        let prices: CurrencyPrices =
+            serde_json::from_str(r#"{"RUB": 150, "USD": 1.84, "EUR": 1.58}"#).unwrap();
+        assert_eq!(prices.rub, 150.0);
+        assert_eq!(prices.usd, 1.84);
+        assert_eq!(prices.eur, 1.58);
+    }
 }
