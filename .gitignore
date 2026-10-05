@@ -1,1 +1,25 @@
+# cargo target
 /target
+/core/target
+
+# Logs
+logs
+*.log
+
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ide
+.vscode
+.idea
+.cursor
