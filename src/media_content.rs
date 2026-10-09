@@ -1,5 +1,44 @@
 use crate::model::{MediaData, PlayerUrl};
 
+/// Maximum OK.ru / Boosty video quality to prefer when picking a player URL.
+///
+/// Selection walks from this level downward (`UltraHd` → `Low`) and takes the
+/// first available non-empty URL at or below the ceiling.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VideoQuality {
+    /// Corresponds to player URL type `low`.
+    Low = 0,
+    /// Corresponds to player URL type `medium`.
+    Medium = 1,
+    /// Corresponds to player URL type `high`.
+    High = 2,
+    /// Corresponds to player URL type `full_hd`.
+    FullHd = 3,
+    /// Corresponds to player URL type `ultra_hd`.
+    UltraHd = 4,
+}
+
+impl VideoQuality {
+    /// Priority order from highest to lowest quality.
+    const PRIORITY_DESC: &[VideoQuality] = &[
+        VideoQuality::UltraHd,
+        VideoQuality::FullHd,
+        VideoQuality::High,
+        VideoQuality::Medium,
+        VideoQuality::Low,
+    ];
+
+    fn as_type_str(self) -> &'static str {
+        match self {
+            VideoQuality::UltraHd => "ultra_hd",
+            VideoQuality::FullHd => "full_hd",
+            VideoQuality::High => "high",
+            VideoQuality::Medium => "medium",
+            VideoQuality::Low => "low",
+        }
+    }
+}
+
 /// Represents a single content item extracted from a `Post` or `Comment`.
 #[derive(Debug, Clone)]
 pub enum ContentItem {
@@ -60,11 +99,23 @@ pub enum ContentItem {
     Unknown,
 }
 
+/// Extracts content items, picking the highest available OK.ru video quality.
 pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
+    extract_content_with_video_quality(data, VideoQuality::UltraHd)
+}
+
+/// Extracts content items, capping OK.ru video quality at `max_quality`.
+///
+/// For each `OkVideo`, selects the best URL at or below `max_quality`.
+/// If that level is missing, falls back to the next lower available quality.
+pub fn extract_content_with_video_quality(
+    data: &[MediaData],
+    max_quality: VideoQuality,
+) -> Vec<ContentItem> {
     let mut result = Vec::new();
 
     for media in data {
-        extract_media(media, &mut result);
+        extract_media(media, max_quality, &mut result);
     }
 
     result
@@ -75,7 +126,7 @@ pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
 /// Iterates over `self.data: Vec<MediaData>` and converts each variant:
 /// - `Image` → `ContentItem::Image { url, id }`
 /// - `Video` → `ContentItem::Video { url }`
-/// - `OkVideo` → picks best-quality URL via `pick_higher_quality_for_video`, then `ContentItem::OkVideo`
+/// - `OkVideo` → picks URL via `pick_video_quality`, then `ContentItem::OkVideo`
 /// - `Audio` → `ContentItem::Audio { url, title, id, file_type, size }`
 /// - `Text` → `ContentItem::Text { content, modificator }`
 /// - `Smile` → `ContentItem::Smile { small_url, medium_url, large_url, name, id, is_animated }`
@@ -83,7 +134,7 @@ pub fn extract_content(data: &[MediaData]) -> Vec<ContentItem> {
 /// - `File` → `ContentItem::File { url, title, id, size }`
 /// - `List` → `ContentItem::List { style, items }`
 /// - Other/Unknown → `ContentItem::Unknown`
-fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
+fn extract_media(media: &MediaData, max_quality: VideoQuality, out: &mut Vec<ContentItem>) {
     match media {
         MediaData::Image(img) => out.push(ContentItem::Image {
             url: img.url.clone(),
@@ -93,7 +144,7 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
             url: vd.url.clone(),
         }),
         MediaData::OkVideo(vd) => {
-            if let Some(best_url) = pick_higher_quality_for_video(&vd.player_urls) {
+            if let Some(best_url) = pick_video_quality(&vd.player_urls, max_quality) {
                 out.push(ContentItem::OkVideo {
                     url: best_url,
                     title: vd.title.clone(),
@@ -135,12 +186,12 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
             for li in &list.items {
                 let mut sub_items = Vec::new();
                 for d in &li.data {
-                    extract_media(d, &mut sub_items);
+                    extract_media(d, max_quality, &mut sub_items);
                 }
                 for nested in &li.items {
                     let mut nested_items = Vec::new();
                     for d in &nested.data {
-                        extract_media(d, &mut nested_items);
+                        extract_media(d, max_quality, &mut nested_items);
                     }
                     if !nested_items.is_empty() {
                         sub_items.push(ContentItem::List {
@@ -160,25 +211,31 @@ fn extract_media(media: &MediaData, out: &mut Vec<ContentItem>) {
     }
 }
 
-/// Selects the highest-priority non-empty URL from a list of `PlayerUrl`.
+/// Selects a non-empty player URL at or below `max_quality`.
 ///
-/// Quality priority order: "ultra_hd", "full_hd", "high", "medium", "low".
-/// If none matches or all URLs empty for those types, returns the first non-empty URL found.
+/// Walks from `max_quality` downward through `ultra_hd` … `low`.
+/// If none of those match, returns the first non-empty URL found.
 ///
 /// # Parameters
 ///
 /// - `player_urls`: slice of `PlayerUrl` containing `type_` and `url` fields.
+/// - `max_quality`: quality ceiling; higher levels are ignored.
 ///
 /// # Returns
 ///
 /// - `Some(String)` with selected URL, or `None` if all URLs are empty or list is empty.
-pub(crate) fn pick_higher_quality_for_video(player_urls: &[PlayerUrl]) -> Option<String> {
-    const PRIORITY: &[&str] = &["ultra_hd", "full_hd", "high", "medium", "low"];
-
-    for &pref in PRIORITY {
+pub fn pick_video_quality(
+    player_urls: &[PlayerUrl],
+    max_quality: VideoQuality,
+) -> Option<String> {
+    for &quality in VideoQuality::PRIORITY_DESC {
+        if quality > max_quality {
+            continue;
+        }
+        let type_str = quality.as_type_str();
         if let Some(pu) = player_urls
             .iter()
-            .find(|pu| pu.type_.as_str() == pref && !pu.url.is_empty())
+            .find(|pu| pu.type_.as_str() == type_str && !pu.url.is_empty())
         {
             return Some(pu.url.clone());
         }
@@ -453,7 +510,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pick_higher_quality() {
+    fn test_pick_video_quality_max() {
         let urls = vec![
             PlayerUrl {
                 type_: "medium".into(),
@@ -468,12 +525,48 @@ mod tests {
                 url: "low_url".into(),
             },
         ];
-        let result = pick_higher_quality_for_video(&urls);
+        let result = pick_video_quality(&urls, VideoQuality::UltraHd);
         assert_eq!(result.unwrap(), "ultra_url");
     }
 
     #[test]
-    fn test_pick_higher_quality_fallback() {
+    fn test_pick_video_quality_ceiling_full_hd() {
+        let urls = vec![
+            PlayerUrl {
+                type_: "ultra_hd".into(),
+                url: "ultra_url".into(),
+            },
+            PlayerUrl {
+                type_: "full_hd".into(),
+                url: "hd_url".into(),
+            },
+            PlayerUrl {
+                type_: "low".into(),
+                url: "low_url".into(),
+            },
+        ];
+        let result = pick_video_quality(&urls, VideoQuality::FullHd);
+        assert_eq!(result.unwrap(), "hd_url");
+    }
+
+    #[test]
+    fn test_pick_video_quality_ceiling_fallback_down() {
+        let urls = vec![
+            PlayerUrl {
+                type_: "medium".into(),
+                url: "medium_url".into(),
+            },
+            PlayerUrl {
+                type_: "low".into(),
+                url: "low_url".into(),
+            },
+        ];
+        let result = pick_video_quality(&urls, VideoQuality::High);
+        assert_eq!(result.unwrap(), "medium_url");
+    }
+
+    #[test]
+    fn test_pick_video_quality_fallback() {
         let urls = vec![
             PlayerUrl {
                 type_: "other".into(),
@@ -484,7 +577,52 @@ mod tests {
                 url: "fallback_url".into(),
             },
         ];
-        let result = pick_higher_quality_for_video(&urls);
+        let result = pick_video_quality(&urls, VideoQuality::UltraHd);
         assert_eq!(result.unwrap(), "fallback_url");
+    }
+
+    #[test]
+    fn test_extract_ok_video_with_quality_ceiling() {
+        let ok_video = OkVideoData {
+            upload_status: Some("".into()),
+            width: 0,
+            status: "".into(),
+            title: "vid".into(),
+            url: "".into(),
+            preview_id: None,
+            player_urls: vec![
+                PlayerUrl {
+                    type_: "ultra_hd".into(),
+                    url: "ultra_url".into(),
+                },
+                PlayerUrl {
+                    type_: "full_hd".into(),
+                    url: "hd_url".into(),
+                },
+                PlayerUrl {
+                    type_: "low".into(),
+                    url: "low_url".into(),
+                },
+            ],
+            id: "9876543210".into(),
+            vid: "0123456789".into(),
+            preview: "".into(),
+            height: 0,
+            time_code: 0,
+            show_views_counter: false,
+            duration: 0,
+            complete: false,
+            views_counter: 0,
+            default_preview: "".into(),
+            failover_host: "".into(),
+        };
+
+        let post = dummy_post(vec![MediaData::OkVideo(ok_video)], true);
+        let content = post.extract_content_with_video_quality(VideoQuality::FullHd);
+
+        assert!(
+            matches!(content[0], ContentItem::OkVideo { ref url, ref title, ref vid }
+                if url == "hd_url" && title == "vid" && vid == "0123456789")
+        );
     }
 }

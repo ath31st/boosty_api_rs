@@ -93,6 +93,19 @@ impl HasContent for Comment {
     fn extract_content(&self) -> Vec<ContentItem> {
         media_content::extract_content(&self.data)
     }
+
+    /// Extracts media items from comment into a vector of `ContentItem`,
+    /// capping OK.ru video quality at `max_quality`.
+    ///
+    /// # Returns
+    ///
+    /// Vector of `ContentItem` items.
+    fn extract_content_with_video_quality(
+        &self,
+        max_quality: media_content::VideoQuality,
+    ) -> Vec<ContentItem> {
+        media_content::extract_content_with_video_quality(&self.data, max_quality)
+    }
 }
 
 /// Comment block.
