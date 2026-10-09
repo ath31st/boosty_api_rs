@@ -98,7 +98,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-boosty_api = "0.31.1"
+boosty_api = "0.32.0"
 ```
 
 or
@@ -234,6 +234,27 @@ fn print_content(post: &Post) {
             ContentItem::Unknown => {
                 println!("Unknown content type");
             }
+        }
+    }
+}
+```
+
+By default `extract_content()` picks the highest available OK.ru video quality.
+To cap quality (and fall back to the next lower available level), use
+`extract_content_with_video_quality`:
+
+```rust
+use boosty_api::{
+    media_content::{ContentItem, VideoQuality},
+    model::Post,
+    traits::HasContent,
+};
+
+fn print_ok_videos(post: &Post) {
+    let content_items = post.extract_content_with_video_quality(VideoQuality::FullHd);
+    for item in content_items {
+        if let ContentItem::OkVideo { url, title, .. } = item {
+            println!("OK Video (≤ FullHd): {title} → {url}");
         }
     }
 }
